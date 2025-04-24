@@ -90,9 +90,6 @@ in working condition.
 
 # TODO
 
-- [x] Add option to filter eu-ch2 region prices
-- [x] Tier calculation use fixed prices -> speed up calculations
-- [x] normalize tiers -> duplicates?
 - [ ] Switch to openpyxl, to remove Prices sheet ... removing references
   to it from the components tab
   
