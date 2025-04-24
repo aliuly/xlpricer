@@ -1,0 +1,10 @@
+#!/bin/sh
+#
+# Run container
+#
+exec docker run --rm -it \
+	-v "$(pwd)":/src/ \
+	registry.gitlab.com/iliu.net/containers/win-pyinstaller "$@"
+
+#~ subprocess.run(["docker", "run", '--rm', "-v", f"{os.getcwd()}:/src/", "iipython-pyinstaller"])
+#~ print(f"\n[+] EXE has been written to dist/windows/{file.with_suffix('.exe').name}")
