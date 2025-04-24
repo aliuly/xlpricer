@@ -10,9 +10,9 @@ except ImportError:  # Graceful fallback if IceCream isn't installed.
 import xlsxwriter
 from xlsxwriter.utility import xl_col_to_name, xl_rowcol_to_cell, xl_cell_to_rowcol
 
-import xlu
-from constants import K
-from xlfmt import XlFmt
+from . import xlu
+from .constants import K
+from .xlfmt import XlFmt
 
 def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
   '''Write to components tab
@@ -379,6 +379,8 @@ def ws_tiers(xl:xlu.XlUtils, apidat:dict, r:int, yearrow:int, yrmx:int, COLUMNS:
   _, up_col = xl_cell_to_rowcol(xl.ref('#f_pmonth'))
   _, tot_col = xl_cell_to_rowcol(xl.ref('#f_tot_qty'))
   _, sku_col = xl_cell_to_rowcol(xl.ref('#f_sku'))
+  _, tot1_col = xl_cell_to_rowcol(xl.ref('#f_tot_1'))
+  _, totqty_col = xl_cell_to_rowcol(xl.ref('#f_tot_qty'))
 
   tiers = list(apidat['tiers'].keys())
   tiers.sort()
@@ -409,7 +411,7 @@ def ws_tiers(xl:xlu.XlUtils, apidat:dict, r:int, yearrow:int, yrmx:int, COLUMNS:
       if first is None: first = last
       
       for c in range(0,len(COLUMNS)):
-        ws_bom_cell(xl,r,c, COLUMNS[c], None if c >= sku_col else '')
+        ws_bom_cell(xl,r,c, COLUMNS[c], '')
       ws_bom_cell(xl,r,tier_col, COLUMNS[tier_col],'Tier')
       ws_bom_cell(xl,r,desc_col, COLUMNS[desc_col], tariff[K.COL_XLTITLE])
       
@@ -420,6 +422,9 @@ def ws_tiers(xl:xlu.XlUtils, apidat:dict, r:int, yearrow:int, yrmx:int, COLUMNS:
       # ~ if not R['Tmax'] is None: f = 'IF({#volcell}>{Tmax},{Tmax}-{Tmin},'+f+')'
       ws_bom_cell(xl,r,qty_col, COLUMNS[qty_col], '='+f)
       ws_bom_cell(xl,r,region_col, COLUMNS[region_col], '={#region}')
+      ws_bom_cell(xl,r,tot1_col, COLUMNS[tot1_col], tariff['priceAmount'])
+      ws_bom_cell(xl,r,totqty_col, COLUMNS[totqty_col])
+
       r += 1
 
     ws_bom_cell(xl,r, tot_col, COLUMNS[tot_col], f'=SUM({first}:{last})')

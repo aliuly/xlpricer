@@ -11,7 +11,7 @@ except ImportError:  # Graceful fallback if IceCream isn't installed.
 
 import re
 
-from constants import K
+from .constants import K
 
 def validate_tier(groupID:str, recID:str, region:str):
   '''Make sure that the groupID and recordID match correctly
@@ -94,6 +94,9 @@ def normalize(apidat:dict):
           elif RE_ISFLOAT.search(v):
             v = float(v)
         rec[k] = v
+
+      # Filter-out non-tiered items with tiered data!
+      if rec['idGroupTiered'] == '' and (rec['upTo'] != '' or rec['fromOn'] > 1): continue
         
       # Make it easier to identify PayG units...
       if rec['unit'].startswith('h'):
@@ -205,18 +208,5 @@ def normalize(apidat:dict):
 
       apidat['flatten'].sort(key = lambda d: d[K.COL_XLTITLE])
 
-  # Check for duplicates
-  dups = dict()
-  for r in range(0, len(apidat['flatten'])):
-    rowid = '\n'.join([apidat['flatten'][r][K.COL_XLTITLE],apidat['flatten'][r]['region']])
-    if rowid in dups:
-      dups[rowid].append(r)
-    else:
-      dups[rowid] = [r]
-  for k,v in dups.items():
-    if len(v) == 1: continue
-    ic(k,v)
-    # ~ for r in v:
-      # ~ ic(apidat['flatten'][r])
   
   

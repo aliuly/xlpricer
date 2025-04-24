@@ -11,6 +11,21 @@ import re
 import sys
 import os
 
+def show_proxy(autocfg:bool, debug:bool = False) -> None:
+  '''Handle show proxy sub-command
+
+  :param autocfg: Perform auto configuration
+  :param debug: Show extra details
+  '''
+  if autocfg:
+    proxy, url, jstext = proxy_auto_cfg()
+    print(f'Auto config URL: {url}')
+    print(f'Proxy: {proxy}')
+    if debug: print(f'Javascript:\n{jstext}')
+  else:
+    print('No proxy autoconfiguration')
+    if 'http_proxy' in os.environ: print('http_proxy:  {http_proxy}'.format(http_proxy=os.environ['http_proxy']))
+    if 'https_proxy' in os.environ: print('https_proxy: {https_proxy}'.format(https_proxy=os.environ['https_proxy']))
 
 def proxy_auto_cfg():
   ''' Configure PROXY from Windows registry AutoConfigURL

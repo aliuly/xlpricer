@@ -8,10 +8,10 @@ except ImportError:  # Graceful fallback if IceCream isn't installed.
 
 import xlsxwriter
 from xlsxwriter.utility import xl_col_to_name, xl_rowcol_to_cell, xl_cell_to_rowcol
-import xlu
-from constants import K
-from xlfmt import XlFmt
-from __meta__ import VERSION
+from . import xlu
+from .constants import K
+from .xlfmt import XlFmt
+from .version import VERSION
 
 
 def ws_ass(xl:xlu.XlUtils) -> None:

@@ -40,3 +40,5 @@ class K:
   AS_WK_HOURS = 174
   
   YEAR_MAX = 6
+
+  DEF_API_ENDPOINT = 'https://calculator.otc-service.com/{lang}/open-telekom-price-api/'

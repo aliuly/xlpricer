@@ -11,9 +11,9 @@ import re
 import xlsxwriter
 from xlsxwriter.utility import xl_col_to_name, xl_rowcol_to_cell, xl_cell_to_rowcol
 
-import xlu
-from constants import K
-from xlfmt import XlFmt
+from . import xlu
+from .constants import K
+from .xlfmt import XlFmt
 
 def ws_prices(xl:xlu.XlUtils, apidat:dict) -> None:
   '''Write to prices tab

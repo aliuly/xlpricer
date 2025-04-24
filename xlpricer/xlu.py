@@ -12,7 +12,6 @@ import sys
 import xlsxwriter
 from xlsxwriter.utility import xl_col_to_name, xl_rowcol_to_cell, xl_cell_to_rowcol
 
-import xlfmt
 
 # ~ import re
 # ~ import sys
