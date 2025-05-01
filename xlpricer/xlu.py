@@ -14,7 +14,7 @@ import sys
 
 class XlUtils():
   '''Basic Excel class utilities'''
-  def __init__(self, xlfile:str, rdonly=False):
+  def __init__(self, xlfile:str, rdonly=False, data=False):
     '''Constructor
     :param xlfile: Path to excel file to create
     '''
@@ -23,7 +23,7 @@ class XlUtils():
     self.xlfile = xlfile
 
     if os.path.isfile(xlfile):
-      self.xl = openpyxl.load_workbook(xlfile,rdonly)
+      self.xl = openpyxl.load_workbook(xlfile,read_only = rdonly, data_only = data)
       if rdonly: self.xlfile = None
       self.first_ws = False
     else:
@@ -122,6 +122,10 @@ class XlUtils():
     '''
     for k,v in ref.__dict__.items():
       if not k.startswith(prefix) or not isinstance(v,dict): continue
+      if k in self.xl.named_styles:
+        setattr(ref,k,str(k))
+        continue
+      
       custom_style = openpyxl.styles.NamedStyle(name=k)
       alignment = v['alignment'].copy() if 'alignment' in v else dict()
       if 'font' in v:
@@ -174,6 +178,21 @@ def pick_default(opts:list, pref:str) -> str:
   if len(opts) == 0: return ''
   if pref in opts: return pref
   return opts[0]
+
+def nuke_ws(ws:openpyxl.worksheet.worksheet.Worksheet) -> None:
+  '''Delete all cells in worksheet
+  
+  :param ws: worksheet
+  '''
+  ws.data_validations.dataValidation.clear()
+  for row in ws.iter_rows():
+    for cell in row:
+      cell.value = None
+      cell.font = openpyxl.styles.Font()
+      cell.fill = openpyxl.styles.PatternFill()
+      cell.border = openpyxl.styles.Border()
+      cell.alignment = openpyxl.styles.Alignment() 
+
 
 def write(ws:openpyxl.worksheet.worksheet.Worksheet, r:int, c:int, text:str, style:str|None = None) -> None:
   '''Write a cell value and optionally style
@@ -309,12 +328,10 @@ def group_columns(ws:openpyxl.worksheet.worksheet.Worksheet, start:int, end:int,
   opts = dict()
   if isinstance(start,int): start = col_to_name(start)
   if isinstance(end,int): end = col_to_name(end)
-  ic(start,end)
   for k,v in dict(hide='hidden', level='outline_level').items():
-    if k in kwargs: opts[v] = kwargs[k]
-  # ~ ws.column_dimensions.group(col_to_name(start), col_to_name(end), **opts)
-  
-  ws.column_dimensions.group(start, end)
+    if k in kwargs: opts[v] = kwargs[k]  
+  ws.column_dimensions.group(start, end, **opts)
+
 
 def group_rows(ws:openpyxl.worksheet.worksheet.Worksheet, start:int, end:int, **kwargs) ->None:
   '''Group columns

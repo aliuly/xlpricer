@@ -38,7 +38,7 @@ def make_parser():
   sub0.add_argument('-a','--no-autocfg',help='Skip proxy autoconfig', action='store_false', dest = 'autocfg')
 
   sub1 = subs.add_parser('build',help='Build a pricing calculator')
-  sub2 = subs.add_parser('refresh',help='Update prices of an existing sheet')
+  sub2 = subs.add_parser('reprice',help='Update prices of an existing sheet')
   for pp in [sub1,sub2]:
     pp.add_argument('-A','--autocfg',help='Use WinReg to configure proxy (default)', action='store_true', default = True)
     pp.add_argument('-a','--no-autocfg',help='Skip proxy autoconfig', action='store_false', dest = 'autocfg')
@@ -49,10 +49,11 @@ def make_parser():
     pp.add_argument('--swiss',help='Do not filter eu-ch2 entries', default=False,action='store_true')
 
   sub1.add_argument('xlsx', help = 'File to create',nargs='?')
-  sub2.add_argument('xlsx', help = 'File to modify',nargs='?')
+  sub2.add_argument('xlsx', help = 'File to modify')
 
   sub3 = subs.add_parser('prep', help = 'Prepare file for release')
-  sub3.add_argument('xlsx', help = 'File to modify',nargs='?')
+  sub3.add_argument('input_xlsx', help = 'Input file')
+  sub3.add_argument('output_xlsx', help = 'Output file',nargs='?')
 
   return cli
 
@@ -69,7 +70,7 @@ if __name__ == '__main__':
     sys.exit(0)
   if args.debug: price_api.http_logging()
 
-  if args.command == 'build' or args.command == 'refresh':
+  if args.command == 'build' or args.command == 'reprice':
     if args.load:
       sys.stderr.write(f'Loading prices from {args.load}..')
       with open(args.load, 'r') as fp:
@@ -110,8 +111,15 @@ if __name__ == '__main__':
         ic(dup,rows)
 
     if args.command == 'build':
-      xlsw.xlsx_write(f'open-telekom-cloud-prices-{today()}.xlsx' if args.xlsx is None else args.xlsx,res)
+      xlsw.xlsx_write(f'open-telekom-cloud-prices-{today()}.xlsx' if args.xlsx is None else args.xlsx, res)
       sys.exit(0)
+    elif args.command == 'reprice':
+      xlsw.xlsx_refresh(args.xlsx, res)
+      sys.exit(0)
+  elif args.command == 'prep':
+    if args.output_xlsx is None: args.output_xlsx = args.input_xlsx
+    xlsw.xlsx_sanitize(args.input_xlsx,args.output_xlsx)
+    sys.exit(0)
 
   raise RuntimeError(f'Command {args.command} not implemented')
 

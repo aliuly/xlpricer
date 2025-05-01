@@ -90,10 +90,11 @@ in working condition.
 
 # TODO
 
-- [ ] Switch to openpyxl, to remove Prices sheet ... removing references
+- [x] Switch to openpyxl, to remove Prices sheet ... removing references
   to it from the components tab
-- [ ] subcommand - sanitize
-- [ ] subcommand - reprice
+- [x] subcommand - prep
+- [x] subcommand - reprice
+- [ ] reprice command will not update tiering table.
 
 
 

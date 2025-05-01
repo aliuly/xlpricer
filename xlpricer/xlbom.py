@@ -213,11 +213,6 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
   '''Column definitions'''
   coloffs = len(COLUMNS)+1
 
-  xlu.group_columns(ws, ws_colname('vCPU',COLUMNS), ws_colname('RAM (GB)', COLUMNS), hide=False)
-  xlu.group_columns(ws, ws_colname('Region',COLUMNS), ws_colname('Backup (GB)', COLUMNS), hide=True)
-  xlu.group_columns(ws, ws_colname('Row Idx',COLUMNS), ws_colname('Tier Calc', COLUMNS), hide=True)
-  xlu.group_columns(ws, coloffs+1, coloffs+K.YEAR_MAX+1 , hide=True)
-
   r = 1
   xlu.write(ws,r,1, 'Cloud Components', XlFmt.f_title)
   xlu.write(ws,r,coloffs+1,
@@ -257,7 +252,7 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
         XlFmt.f_sumline_total)
 
   r += 1
-  xlu.freeze_panes(ws, r, 3)
+  xlu.freeze_panes(ws, r, 5)
 
   xlu.write(ws,r,2,'General', XlFmt.f_hr1)
   for c in range(3,coloffs): xlu.write(ws,r, c, None, XlFmt.f_hr1)
@@ -271,6 +266,11 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
 
   r += 2
   ws_tiers(xl, apidat, r, year_row, K.YEAR_MAX, COLUMNS)
+
+  xlu.group_columns(ws, ws_colname('vCPU',COLUMNS), ws_colname('RAM (GB)', COLUMNS), hide=False)
+  xlu.group_columns(ws, ws_colname('Region',COLUMNS), ws_colname('Backup (GB)', COLUMNS), hide=True)
+  xlu.group_columns(ws, ws_colname('Row Idx',COLUMNS), ws_colname('Tier Calc', COLUMNS), hide=True)
+  xlu.group_columns(ws, coloffs+1, coloffs+K.YEAR_MAX+1 , hide=True)
 
 
 def ws_bom_cell(xl:xlu.XlUtils,r:int,c:int, coldef:dict, o:str = None)->None:
