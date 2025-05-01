@@ -185,7 +185,12 @@ def write(ws:openpyxl.worksheet.worksheet.Worksheet, r:int, c:int, text:str, sty
   :param style: style to use or set to None
   '''
   cell = ws.cell(r,c)
-  cell.value = text
+  if isinstance(text,str) and text.startswith('=='):
+    text = text[1:]
+    p = rowcol_to_cell(r,c) 
+    ws[p] = openpyxl.worksheet.formula.ArrayFormula(f'{p}:{p}', text)
+  else:
+    cell.value = text
   if style is not None: cell.style = style
 
 def set_column_width(ws:openpyxl.worksheet.worksheet.Worksheet, c:int, width:float|int) -> None:
@@ -302,9 +307,14 @@ def group_columns(ws:openpyxl.worksheet.worksheet.Worksheet, start:int, end:int,
   - level : integer, outline level
   '''
   opts = dict()
+  if isinstance(start,int): start = col_to_name(start)
+  if isinstance(end,int): end = col_to_name(end)
+  ic(start,end)
   for k,v in dict(hide='hidden', level='outline_level').items():
     if k in kwargs: opts[v] = kwargs[k]
-  ws.column_dimensions.group(col_to_name(start), col_to_name(end), **opts)
+  # ~ ws.column_dimensions.group(col_to_name(start), col_to_name(end), **opts)
+  
+  ws.column_dimensions.group(start, end)
 
 def group_rows(ws:openpyxl.worksheet.worksheet.Worksheet, start:int, end:int, **kwargs) ->None:
   '''Group columns

@@ -386,7 +386,7 @@ def ws_tiers(xl:xlu.XlUtils, apidat:dict, r:int, yearrow:int, yrmx:int, COLUMNS:
 
   for ttariff in tiers:
     r += 2+len(apidat['tiers'][ttariff][K.COL_XLTARIFFS])
-  ic(sum_row,r)
+  # ~ ic(sum_row,r)
   xlu.group_rows(ws, sum_row, r, level=1,hide=True)
   r = sum_row
 
@@ -433,7 +433,7 @@ def ws_tiers(xl:xlu.XlUtils, apidat:dict, r:int, yearrow:int, yrmx:int, COLUMNS:
       ws_bom_cell(xl,r,totqty_col, COLUMNS[totqty_col-1])
 
       r += 1
-    ic(gstart,r)
+    # ~ ic(gstart,r)
     xlu.group_rows(ws, gstart, r-1, level=2,hide=True)
 
     ws_bom_cell(xl,r, tot_col, COLUMNS[tot_col-1], f'=SUM({first}:{last})')
