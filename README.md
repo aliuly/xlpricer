@@ -72,7 +72,7 @@ the different price bands.
 # Sharing with Customers
 
 When sharing the spreadsheet with the customer, you may want to remove
-the "Prices" tab before hand.  This will break calculations, so 
+the "Prices" tab before hand.  This will break calculations, so
 before you do that go to the "Components" tab.  Expand all column
 groups as some columns are hidden by default.
 
@@ -92,7 +92,9 @@ in working condition.
 
 - [ ] Switch to openpyxl, to remove Prices sheet ... removing references
   to it from the components tab
-  
+- [ ] subcommand - sanitize
+- [ ] subcommand - reprice
+
 
 
 

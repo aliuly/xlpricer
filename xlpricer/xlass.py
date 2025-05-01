@@ -6,13 +6,10 @@ try:
 except ImportError:  # Graceful fallback if IceCream isn't installed.
   ic = lambda *a: None if not a else (a[0] if len(a) == 1 else a)  # noqa
 
-import xlsxwriter
-from xlsxwriter.utility import xl_col_to_name, xl_rowcol_to_cell, xl_cell_to_rowcol
 from . import xlu
 from .constants import K
 from .xlfmt import XlFmt
 from .version import VERSION
-
 
 def ws_ass(xl:xlu.XlUtils) -> None:
   '''Write to assumptions tab
@@ -21,21 +18,21 @@ def ws_ass(xl:xlu.XlUtils) -> None:
 
   ws = xl.ws(K.WS_ASSUMPTIONS)
 
-  r = 0
-  ws.write(r,0, 'Assumptions', XlFmt.f_title)
-  
+  r = 1
+  xlu.write(ws,r,1, 'Assumptions', XlFmt.f_title)
+
   col_widths = [3,3,42,15,10,16,50]
-  for c in range(0,len(col_widths)):
-    ws.set_column(c,c,col_widths[c])
-    
+  for c in range(1,len(col_widths)+1):
+    xlu.set_column_width(ws,c,col_widths[c-1])
+
   r += 1
-  c = 0
-  ws.write(r,c := c +1,'#',XlFmt.f_header)
-  ws.write(r,c := c +1,'Assumption',XlFmt.f_header)
-  ws.write(r,c := c +1,'Value',XlFmt.f_header)
-  ws.write(r,c := c +1,'When',XlFmt.f_header)
-  ws.write(r,c := c +1,'Who',XlFmt.f_header)
-  ws.write(r,c := c +1,'Comment',XlFmt.f_header)
+  c = 1
+  xlu.write(ws,r,c := c +1,'#',XlFmt.f_header)
+  xlu.write(ws,r,c := c +1,'Assumption',XlFmt.f_header)
+  xlu.write(ws,r,c := c +1,'Value',XlFmt.f_header)
+  xlu.write(ws,r,c := c +1,'When',XlFmt.f_header)
+  xlu.write(ws,r,c := c +1,'Who',XlFmt.f_header)
+  xlu.write(ws,r,c := c +1,'Comment',XlFmt.f_header)
 
   vx = dict()
   # ~ if len(self.choices['EVS']) == 0: self.choices['EVS'].append('')
@@ -68,23 +65,24 @@ def ws_ass(xl:xlu.XlUtils) -> None:
   ]:
     r += 1
     if isinstance(row,str):
-      ws.write(r,1,row, XlFmt.f_hr1)
-      for c in range(2,7):
-        ws.write(r, c, None, XlFmt.f_hr1)
+      xlu.write(ws,r,2,row, XlFmt.f_hr1)
+      for c in range(3,8):
+        xlu.write(ws,r, c, None, XlFmt.f_hr1)
     else:
-      ws.write(r,1, None, XlFmt.f_def_data)
-      ws.write(r,2, row[0], XlFmt.f_def_data)
-      if isinstance(row[1],str) and row[1].startswith('='):
-        ws.write_formula(r,3, row[1].format(**vx), row[2])
-      else:
-        ws.write(r,3, row[1], row[2])
-      vx[row[0]] = xl_rowcol_to_cell(r,3)
-      if row[4]: ws.data_validation(xl_rowcol_to_cell(r,3),{
-            'validate': 'list',
-            'source': row[4],
-          })
-      ws.write(r,4, None, XlFmt.f_date_c)
-      ws.write(r,5, '*by script*' if row[0] else None, XlFmt.f_def_data)
-      ws.write(r,6, None, XlFmt.f_comment)
-      if row[3]: xl.ref(**{row[3]: f'{ws.name}!{xl_rowcol_to_cell(r,3,True,True)}'})
-  
+      xlu.write(ws,r,2, None, XlFmt.f_def_data)
+      xlu.write(ws,r,3, row[0], XlFmt.f_def_data)
+      xlu.write(ws,r,4,
+                row[1].format(**vx) if isinstance(row[1],str) else row[1],
+                row[2])
+      vx[row[0]] = xlu.rowcol_to_cell(r,4)
+      if row[4]:
+        xlu.data_validation_list(ws,r,4, row[4])
+        # ~ ws.data_validation(xlu.rowcol_to_cell(r,4),{
+            # ~ 'validate': 'list',
+            # ~ 'source': row[4],
+          # ~ })
+      xlu.write(ws,r,5, None, XlFmt.f_date_c)
+      xlu.write(ws,r,6, '*by script*' if row[0] else None, XlFmt.f_def_data)
+      xlu.write(ws,r,7, None, XlFmt.f_comment)
+      if row[3]: xl.ref(**{row[3]: f'{ws.title}!{xlu.rowcol_to_cell(r,4,True,True)}'})
+

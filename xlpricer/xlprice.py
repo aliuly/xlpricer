@@ -8,8 +8,6 @@ except ImportError:  # Graceful fallback if IceCream isn't installed.
   ic = lambda *a: None if not a else (a[0] if len(a) == 1 else a)  # noqa
 
 import re
-import xlsxwriter
-from xlsxwriter.utility import xl_col_to_name, xl_rowcol_to_cell, xl_cell_to_rowcol
 
 from . import xlu
 from .constants import K
@@ -22,12 +20,12 @@ def ws_prices(xl:xlu.XlUtils, apidat:dict) -> None:
   :param apidat: dictionary with results from API queries
   '''
   ws = xl.ws(K.WS_PRICES)
-  r = 0
+  r = 1
 
-  ws.write(r,0, 'Price List', XlFmt.f_title)
+  xlu.write(ws,r,1, 'Price List', XlFmt.f_title)
 
   colmap = dict()
-  c = 1
+  c = 2
   r += 1
 
   overrides = {
@@ -40,19 +38,19 @@ def ws_prices(xl:xlu.XlUtils, apidat:dict) -> None:
     'ram': 7,
     'fromOn': 10.5,
     'upTo': 10.5,
-  }  
-  ws.set_column(0,0, 50)
+  }
+  xlu.set_column_width(ws,1,50)
 
   for k,h in apidat['columns'].items():
     colmap[c] = k
     colmap[k] = c
-    ws.write(r,c, f'{h}\n({k})', XlFmt.f_header)
-    ws.set_column(c,c,overrides[k] if (k in overrides) else len(h)*1.25)
+    xlu.write(ws,r,c, f'{h}\n({k})', XlFmt.f_header)
+    xlu.set_column_width(ws,c,overrides[k] if (k in overrides) else len(h)*1.25)
     c += 1
 
   colmap[K.COL_LAST] = c
 
-  ws.freeze_panes(r+1, 1)
+  xlu.freeze_panes(ws, r+1, 2)
   top = r
 
   RE_ISINT = re.compile(r'^[0-9]+$')
@@ -62,7 +60,7 @@ def ws_prices(xl:xlu.XlUtils, apidat:dict) -> None:
     if rec['productName'] == '': continue
 
     r += 1
-    ws.write(r,0, rec[K.COL_XLTITLE], XlFmt.f_def_data)
+    xlu.write(ws,r,1, rec[K.COL_XLTITLE], XlFmt.f_def_data)
 
     for k in apidat['columns']:
       if not k in rec: continue
@@ -74,20 +72,20 @@ def ws_prices(xl:xlu.XlUtils, apidat:dict) -> None:
       else:
         fmt = XlFmt.f_def_data
 
-      ws.write(r,colmap[k], v, fmt)
-        
-  ws.autofilter(top,0, r, colmap[K.COL_LAST]-1)
-  
+      xlu.write(ws,r,colmap[k], v, fmt)
+
+  xlu.autofilter(ws, top,1, r, colmap[K.COL_LAST]-1)
+
   xl.ref(**{
-    K.RF_PRICES_DESCS: f'{ws.name}!{xl_col_to_name(0,True)}:{xl_col_to_name(0,True)}',
-    K.RF_PRICES_REGION: f'{ws.name}!{xl_col_to_name(colmap["region"],True)}:{xl_col_to_name(colmap["region"],True)}',
-    K.RF_PRICES_TABLE: f'{ws.name}!{xl_col_to_name(0,True)}:{xl_col_to_name(colmap[K.COL_LAST],True)}',
+    K.RF_PRICES_DESCS: f'{ws.title}!{xlu.col_to_name(1,True)}:{xlu.col_to_name(1,True)}',
+    K.RF_PRICES_REGION: f'{ws.title}!{xlu.col_to_name(colmap["region"],True)}:{xlu.col_to_name(colmap["region"],True)}',
+    K.RF_PRICES_TABLE: f'{ws.title}!{xlu.col_to_name(1,True)}:{xlu.col_to_name(colmap[K.COL_LAST],True)}',
   })
   for k in apidat['columns'].keys():
-    xl.ref(**{ 'cm_' + k : colmap[k]+1 })
+    xl.ref(**{ 'cm_' + k : colmap[k] })
 
-    
-    
 
-    
-    
+
+
+
+

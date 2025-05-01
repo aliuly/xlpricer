@@ -7,12 +7,7 @@ try:
 except ImportError:  # Graceful fallback if IceCream isn't installed.
   ic = lambda *a: None if not a else (a[0] if len(a) == 1 else a)  # noqa
 
-import datetime
-import json
-import re
-import sys
-import xlsxwriter
-from xlsxwriter.utility import xl_col_to_name, xl_rowcol_to_cell, xl_cell_to_rowcol
+import os
 
 from . import xlass
 from . import xlbom
@@ -24,10 +19,11 @@ from .xlfmt import XlFmt
 
 def xlsx_write(xlfile:str, apidat:dict) -> None:
   '''Create Pricing template
-  
+
   :param xlfile: File to write to
   :param apidat: API data read
   '''
+  if os.path.isfile(xlfile): os.unlink(xlfile)
   xl = xlu.XlUtils(xlfile)
   xl.add_worksheet(K.WS_COMPONENT)
   xl.add_worksheet(K.WS_PRICES)
@@ -41,11 +37,12 @@ def xlsx_write(xlfile:str, apidat:dict) -> None:
 
   xl.load_fmt(XlFmt)
   xlsrv.ws_services(xl, apidat)
-  xlass.ws_ass(xl)  
+  xlass.ws_ass(xl)
   xlprice.ws_prices(xl, apidat)
+  ic(xl.ref())
   xlbom.ws_bom(xl, apidat)
 
   xl.close()
-  
-    
-    
+
+
+
