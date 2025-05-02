@@ -16,6 +16,7 @@ import xlpricer.noswiss as noswiss
 import xlpricer.proxycfg as proxycfg
 import xlpricer.price_api as price_api
 import xlpricer.xlsw as xlsw
+import xlpricer.wiz as wiz
 from xlpricer.constants import K
 from xlpricer.version import VERSION
 from xlpricer.xlu import today
@@ -63,6 +64,8 @@ if __name__ == '__main__':
   args = cli.parse_args()
   if args.command is None:
     cli.print_help()
+    # ~ sys.stderr.write('Running Wizard interface...\nPrese ESC to exit\n')
+    # ~ wiz.run_ui()
     sys.exit(0)
   ic(args)
   if args.command == 'showproxy':

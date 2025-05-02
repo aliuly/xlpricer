@@ -1,13 +1,15 @@
 
-name: Python application
+name: Python windows application
 
 on:
   # Run this from the Action tab
+  workflow_dispatch:
   push:
+    branches: [ "prerel*" ]
     tags: [ "*" ]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -26,6 +28,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install pyinstaller
+    - name: get commit data
+      id: tag_data
+      run: |
+        python windows/github-meta.py
     - name: Fix version data
       run: |
         python windows/wrversion.py xlpricer/version.py
@@ -35,11 +41,28 @@ jobs:
         dir
         pyinstaller --clean -y --dist ./dist --onefile --name xlpricer --name xlpricer ./xlpricer/__main__.py
         dir dist
+    - uses: actions/upload-artifact@v4
+      #~ if: github.ref == 'refs/heads/prerel'
+      if: startsWith(github.ref, 'refs/heads/')
+      with:
+        name: xlpricer-artifacts
+        path: dist/
+    - name: Package EXEs
+      if: startsWith(github.ref, 'refs/tags/')
+      run: |
+        Write-Output "Zipping ${{ github.ref_name }}"
+        mkdir zips
+        Compress-Archive -Path dist/* -Destination zips/xlpricer-${{ github.ref_name }}.zip
+        dir zips
     - name: Upload binaries to release
+      if: startsWith(github.ref, 'refs/tags/')
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: dist/*
+        file: zips/*
         tag: ${{ github.ref }}
         overwrite: true
         file_glob: true
+        prerelease: ${{ steps.tag_data.outputs.PRERELEASE_TAG }}
+        body: |
+          ${{ steps.tag_data.outputs.RELEASE_BODY }}

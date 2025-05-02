@@ -103,7 +103,8 @@ in working condition.
   - look down and find the cells with "Tier", which are the ones that
     need updating.
   - search the price in the apidat, and update
-
+- Add a simple wizard like UI, to click if no options were given.
+- sphinx docs
 
 
 
