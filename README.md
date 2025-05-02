@@ -97,11 +97,7 @@ in working condition.
 
 # TODO
 
-- [x] Switch to openpyxl, to remove Prices sheet ... removing references
-  to it from the components tab
-- [x] subcommand - prep
-- [x] subcommand - reprice
-- [ ] reprice command  update tiering table.
+- [ ] reprice command to update tiering table.
   - scan the other sheets.  Finding relevant columns.
     - tier calc, description, region, vCPU, Price
   - look down and find the cells with "Tier", which are the ones that

@@ -1,0 +1,42 @@
+
+name: Python application
+
+on:
+  # Run this from the Action tab
+  workflow_dispatch:
+  push:
+    branches: [ "prerel" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.12"
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
+    - name: Fix version data
+      run: |
+        python windows/wrversion.py xlpricer/version.py
+        python windows/wrversion.py -w xlpricer/version.py
+    - name: Create exe
+      run: |
+        dir
+        pyinstaller --clean -y --dist ./dist --onefile --name xlpricer --name xlpricer ./xlpricer/__main__.py
+        dir dist
+    - uses: actions/upload-artifact@v4
+      with:
+        name: winbuild-artifacts
+        path: dist/
