@@ -265,7 +265,9 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
 
 
   r += 2
-  ws_tiers(xl, apidat, r, year_row, K.YEAR_MAX, COLUMNS)
+  # DISABLED TO REACH MVP STATUS 
+  # TODO: Re-enable tier calculations
+  # ~ ws_tiers(xl, apidat, r, year_row, K.YEAR_MAX, COLUMNS)
 
   xlu.group_columns(ws, ws_colname('vCPU',COLUMNS), ws_colname('RAM (GB)', COLUMNS), hide=False)
   xlu.group_columns(ws, ws_colname('Region',COLUMNS), ws_colname('Backup (GB)', COLUMNS), hide=True)

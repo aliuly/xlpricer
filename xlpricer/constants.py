@@ -42,3 +42,5 @@ class K:
   YEAR_MAX = 6
 
   DEF_API_ENDPOINT = 'https://calculator.otc-service.com/{lang}/open-telekom-price-api/'
+
+  FORMAT_VERSION ='1.0.0'

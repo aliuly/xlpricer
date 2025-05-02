@@ -41,6 +41,7 @@ def ws_ass(xl:xlu.XlUtils) -> None:
     'Meta data',
     ['Generated',xlu.today(), XlFmt.f_date_c, None, None ],
     ['Script version',VERSION, XlFmt.f_text_c, None, None ],
+    ['Format version',K.FORMAT_VERSION, XlFmt.f_text_c, None, None ],
     'General',
     [ 'Annual inflation rate', K.AS_ANNUAL_INFLATION, XlFmt.f_percent_c, K.RF_INFLATION, None ],
     [ 'Default Region', xlu.pick_default(xl.vlist(K.VL_REGIONS), K.DEFAULT_REGION), XlFmt.f_text_c, K.RF_DEF_REGION, xl.vlist(K.VL_REGIONS)  ],
