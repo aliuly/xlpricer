@@ -1,16 +1,17 @@
 # xlpricer
 
-Open Telekom Cloud API pricing client
+Open Telekom Cloud API, offline pricing calculator.
 
-This script uses the API as defined by https://docs.otc.t-systems.com/price-calculator/api-ref/
+This script uses the API as defined by
+https://docs.otc.t-systems.com/price-calculator/api-ref/
 to create a Excel template to be used as a pricing calculator.
 
-## Using the Components tab
+# Using the Components tab
 
 This spreadsheet is used for calculations.  The normalized table
-is good for finding components if you know what you are looking
-for.  If you are browsing for services, it is better to use the
-service description or other documentation.
+in the "Prices" tab is good for finding components if you know what
+you are looking for.  If you are browsing for services, it is better
+to use the service description or other documentation.
 
 Column titled "Cloud Desc" can be filled in with the "Name" of the
 component as defined in the "Prices" sheet.  The cells are restricted
@@ -23,7 +24,7 @@ the "Cloud Desc" columns.
 
 The "Assumptions" tab contains values that are used through the
 different cell calculations, such as "H/R", "Region", "EVS Class",
-"Backup Class", "Backup Factor".  However, these can be overriden
+"Backup Class", "Backup Factor", etc.  However, these can be overriden
 by modifying that individual cell in the relevant row.
 
 It is recommended that instead of modifying those columns in the
@@ -69,15 +70,21 @@ At the bottom of the sheet, there is a section "Tiered Volume Pricing"
 which will add up all the tiered volume entries and distributed into
 the different price bands.
 
-# Sharing with Customers
+# Preparing sheet for release
 
-When sharing the spreadsheet with the customer, you may want to remove
-the "Prices" tab before hand.  This will break calculations, so
-before you do that go to the "Components" tab.  Expand all column
-groups as some columns are hidden by default.
+The sub-command `prep` is available to prepare the file for release.
 
-Copy the columns highligted with *RED* column headers and paste them
-as "Values".  Afterwards, you may safely delete the "Prices" tab.
+The `prep` sub-command will remove the "Prices" tab, and remove
+references to "Prices" in the different formulas.  Make sure that
+the Excel file has been re-calculated before running `prep` as it
+will use the values from this last calculation to replace formulas
+referencing the "Prices" table.
+
+You can do this manually too, by copying the columns highligted
+with *RED* column headers and paste them as "Values".  Afterwards, you
+may safely delete the "Prices" tab.  Make sure that there are no
+broken calculations by expanding all groups as some columns/rows are
+hidden by default.
 
 Doing this keeps the pricing information for the relevant items
 and removes all other prices.  But it also keeps most formulas
@@ -94,7 +101,12 @@ in working condition.
   to it from the components tab
 - [x] subcommand - prep
 - [x] subcommand - reprice
-- [ ] reprice command will not update tiering table.
+- [ ] reprice command  update tiering table.
+  - scan the other sheets.  Finding relevant columns.
+    - tier calc, description, region, vCPU, Price
+  - look down and find the cells with "Tier", which are the ones that
+    need updating.
+  - search the price in the apidat, and update
 
 
 

@@ -1,7 +1,7 @@
 @echo off
 
 REM ~ call %~dp0pys.bat %~dp0try.py
-REM ~ call %~dp0pys.bat -m xlpricer -V
+call %~dp0pys.bat -m xlpricer %*
 REM ~ call %~dp0pys.bat %~dp0xlpricer\__main__.py %*
 
 REM ~ call %~dp0pys.bat -m xlpricer --save %~dp0prices.json
