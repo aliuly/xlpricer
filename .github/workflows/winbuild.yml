@@ -5,7 +5,7 @@ on:
   # Run this from the Action tab
   workflow_dispatch:
   push:
-    branches: [ "prerel*" ]
+    branches: [ "prerel", "prerel-*" ]
     tags: [ "*" ]
 
 permissions:

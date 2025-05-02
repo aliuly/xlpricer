@@ -48,9 +48,10 @@ def main():
 
   output_lines[K.prerelease_tag] = 'false'
   if ref_type == 'tag':
-    if re.search(r'-rc[0-9]+$', ref_name):
+    if re.search(r'-rc[0-9]+$', ref_name) or re.search(r'-dev[0-9]*$', ref_name) or re.search(r'-pre[0-9]*$', ref_name):
       output_lines[K.prerelease_tag] = 'true'
-    output_lines[K.release_body] = gitrun(['git','show','-s','--format=%B',ref_name])
+    relbody = gitrun(['git','show','-s','--format=%B',ref_name,'--'])
+    if relbody is not None: output_lines[K.release_body] = relbody
 
   if len(output_lines) > 0:
     with open(github_output,'a') as fp:
