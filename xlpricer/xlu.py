@@ -255,7 +255,7 @@ def cell_to_rowcol(pos:str) -> [int,int]:
   col,row = openpyxl.utils.cell.coordinate_from_string(pos)
   return row, openpyxl.utils.column_index_from_string(col)
 
-def escape_excel_formula(value:str) -> str:
+def escape_excel_formula(value:str, forced:bool=True) -> str:
     """
     Escapes double quotes and commas in a string for Excel formulas.
     Double quotes are escaped by doubling them.
@@ -266,11 +266,11 @@ def escape_excel_formula(value:str) -> str:
     """
     if '"' in value:  # Escape double quotes by doubling them
       value = value.replace('"', '""')
-    if ',' in value or '"' in value:  # Wrap the entire value in double quotes if it contains commas or double quotes
+    if forced or (',' in value) or ('"' in value):  # Wrap the entire value in double quotes if it contains commas or double quotes
       value = f'"{value}"'
     return value
 
-def data_validation_list(ws:openpyxl.worksheet.worksheet.Worksheet, r:int, c:int, vlist:list, hide_dropdown:bool=False) -> None:
+def data_validation_list(ws:openpyxl.worksheet.worksheet.Worksheet, r:int, c:int, vlist:list, hide_dropdown:bool=False, allow_blank:bool=True) -> None:
   '''Add data validation to a cell based on a list
 
   :param ws: worksheet
@@ -278,19 +278,20 @@ def data_validation_list(ws:openpyxl.worksheet.worksheet.Worksheet, r:int, c:int
   :param c: column
   :param vlist: either a string containing a formula or a list of options
   :param hide_dropdown: Do not show dropdown menu
+  :param allow_blank: Set the allow blanks flag
   '''
 
   # Sanitize the list...
   if isinstance(vlist,list):
-    f1 = ','.join([ escape_excel_formula(value) for value in vlist])
-    f1 = f'"{f1}"'
+    f1 = ','.join([ escape_excel_formula(value,True) for value in vlist])
   else:
     f1 = vlist
   validator = openpyxl.worksheet.datavalidation.DataValidation(type = 'list',
                                                               formula1 = f1,
-                                                              showErrorMessage = True,
-                                                              showInputMessage = True,
-                                                              showDropDown = hide_dropdown,
+                                                              showErrorMessage=True,
+                                                              showInputMessage=True,
+                                                              showDropDown=hide_dropdown,
+                                                              allowBlank=allow_blank,
                                                               )
   ws.add_data_validation(validator)
   validator.add(ws.cell(r,c))
