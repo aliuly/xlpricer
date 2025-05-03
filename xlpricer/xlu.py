@@ -125,7 +125,7 @@ class XlUtils():
       if k in self.xl.named_styles:
         setattr(ref,k,str(k))
         continue
-      
+
       custom_style = openpyxl.styles.NamedStyle(name=k)
       alignment = v['alignment'].copy() if 'alignment' in v else dict()
       if 'font' in v:
@@ -181,7 +181,7 @@ def pick_default(opts:list, pref:str) -> str:
 
 def nuke_ws(ws:openpyxl.worksheet.worksheet.Worksheet) -> None:
   '''Delete all cells in worksheet
-  
+
   :param ws: worksheet
   '''
   ws.data_validations.dataValidation.clear()
@@ -191,7 +191,7 @@ def nuke_ws(ws:openpyxl.worksheet.worksheet.Worksheet) -> None:
       cell.font = openpyxl.styles.Font()
       cell.fill = openpyxl.styles.PatternFill()
       cell.border = openpyxl.styles.Border()
-      cell.alignment = openpyxl.styles.Alignment() 
+      cell.alignment = openpyxl.styles.Alignment()
 
 
 def write(ws:openpyxl.worksheet.worksheet.Worksheet, r:int, c:int, text:str, style:str|None = None) -> None:
@@ -206,7 +206,7 @@ def write(ws:openpyxl.worksheet.worksheet.Worksheet, r:int, c:int, text:str, sty
   cell = ws.cell(r,c)
   if isinstance(text,str) and text.startswith('=='):
     text = text[1:]
-    p = rowcol_to_cell(r,c) 
+    p = rowcol_to_cell(r,c)
     ws[p] = openpyxl.worksheet.formula.ArrayFormula(f'{p}:{p}', text)
   else:
     cell.value = text
@@ -270,13 +270,14 @@ def escape_excel_formula(value:str) -> str:
       value = f'"{value}"'
     return value
 
-def data_validation_list(ws:openpyxl.worksheet.worksheet.Worksheet, r:int, c:int, vlist:list) -> None:
+def data_validation_list(ws:openpyxl.worksheet.worksheet.Worksheet, r:int, c:int, vlist:list, hide_dropdown:bool=False) -> None:
   '''Add data validation to a cell based on a list
 
   :param ws: worksheet
   :param r: row
   :param c: column
   :param vlist: either a string containing a formula or a list of options
+  :param hide_dropdown: Do not show dropdown menu
   '''
 
   # Sanitize the list...
@@ -289,7 +290,7 @@ def data_validation_list(ws:openpyxl.worksheet.worksheet.Worksheet, r:int, c:int
                                                               formula1 = f1,
                                                               showErrorMessage = True,
                                                               showInputMessage = True,
-                                                              showDropDown = False,
+                                                              showDropDown = hide_dropdown,
                                                               )
   ws.add_data_validation(validator)
   validator.add(ws.cell(r,c))
@@ -329,7 +330,7 @@ def group_columns(ws:openpyxl.worksheet.worksheet.Worksheet, start:int, end:int,
   if isinstance(start,int): start = col_to_name(start)
   if isinstance(end,int): end = col_to_name(end)
   for k,v in dict(hide='hidden', level='outline_level').items():
-    if k in kwargs: opts[v] = kwargs[k]  
+    if k in kwargs: opts[v] = kwargs[k]
   ws.column_dimensions.group(start, end, **opts)
 
 

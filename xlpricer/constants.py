@@ -38,9 +38,15 @@ class K:
   AS_NUM_INC_BACKUPS = 30
   AS_FT_HOURS = 730
   AS_WK_HOURS = 174
-  
+
   YEAR_MAX = 6
 
   DEF_API_ENDPOINT = 'https://calculator.otc-service.com/{lang}/open-telekom-price-api/'
 
   FORMAT_VERSION ='1.0.0'
+
+  CN_QTY = 'Qty'
+  CN_DESC = 'Cloud Desc'
+  CN_REGION = 'Region'
+  CN_TIER_CALC = 'Tier Calc'
+  CN_SUBTOTAL_UNIT = 'Sub-total per unit'

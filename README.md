@@ -58,6 +58,20 @@ but can be modified:
 - Backup class : CBR class being used.  At the moment all CBR classes
   have the same price.
 
+
+For prices that have Tiered volume discounts such as OBS storage, or
+Internet traffic, you can select the Tiered volume item (they are
+label "[T#]") from the prices sheet.  This will not calculate
+discounts automatically.  If you want to calculate the Tiered volume
+discount select the item from the Prices table that does **NOT**
+include the tiers (No "[T#]" in description).  These lines do
+not have prices, so the Sub-total for that line will be zero.
+
+At the bottom of the sheet, there is a section "Tiered Volume Pricing"
+which will add up all the tiered volume entries and distributed into
+the different price bands.
+
+
 # Preparing sheet for release
 
 The sub-command `prep` is available to prepare the file for release.
@@ -85,7 +99,7 @@ in working condition.
 
 # TODO
 
-- [ ] Tiered price support
+- [x] Tiered price support
 - [ ] Add a simple wizard like UI, to click if no options were given.
 - [ ] sphinx docs
 

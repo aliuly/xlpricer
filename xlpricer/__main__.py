@@ -93,9 +93,12 @@ if __name__ == '__main__':
       # Filter swiss entries...
       noswiss.filter(res)
 
+    sys.stderr.write('Normalizing prices..')
     normalize.normalize(res)
+    sys.stderr.write('..OK\n')
 
     # Check for duplicates
+    sys.stderr.write('Dup check\n')
     dups = dict()
     for r in range(0, len(res['flatten'])):
       rowid = '\n'.join([res['flatten'][r][K.COL_XLTITLE],res['flatten'][r]['region']])
@@ -112,6 +115,7 @@ if __name__ == '__main__':
       else:
         rows = ','.join(map(str,rows))
         ic(dup,rows)
+    sys.stderr.write('Done!\n')
 
     if args.command == 'build':
       xlsw.xlsx_write(f'open-telekom-cloud-prices-{today()}.xlsx' if args.xlsx is None else args.xlsx, res)

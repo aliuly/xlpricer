@@ -10,6 +10,7 @@ except ImportError:  # Graceful fallback if IceCream isn't installed.
 from . import xlu
 from .constants import K
 from .xlfmt import XlFmt
+from . import xltier
 
 def ws_colname(name:str, COLUMNS:list, offset=1) -> int:
   for c in range(0,len(COLUMNS)):
@@ -34,11 +35,11 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
   COLUMNS = [
     SPACER,
     {
-      'h': [ 'Qty', 10, XlFmt.f_header, 'f_qty' ],
+      'h': [ K.CN_QTY, 10, XlFmt.f_header, 'f_qty', True ],
       'f': XlFmt.f_qty,
     },
     {
-      'h': [ 'Cloud Desc', 42, XlFmt.f_header, 'f_desc' ],
+      'h': [ K.CN_DESC, 42, XlFmt.f_header, 'f_desc', True ],
       'f': XlFmt.f_desc,
       'validate-list': xl.ref(K.RF_PRICES_DESCS),
     },
@@ -73,7 +74,7 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
     },
     SPACER,
     {
-      'h': [ 'Region', 6, XlFmt.f_header, 'f_reg'  ],
+      'h': [ K.CN_REGION, 6, XlFmt.f_header, 'f_reg', True  ],
       'f': XlFmt.f_text,
       'c': '={DEF_REGION}',
       'validate-list': xl.vlist(K.VL_REGIONS),
@@ -169,7 +170,7 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
         ')'
     },
     {
-      'h': ['Tier Calc', 8, XlFmt.f_syshdr, 'f_tier_calc' ],
+      'h': [K.CN_TIER_CALC, 8, XlFmt.f_syshdr, 'f_tier_calc', True ],
       'f': XlFmt.f_def_data,
     },
     SPACER,
@@ -200,9 +201,10 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
       'c': '=IF({#f_bakvol}="",0,{#f_bakvol}*{#f_cbr_price})',
     },
     {
-      'h': ['Sub-total per unit', 10, XlFmt.f_refhdr, 'f_tot_1' ],
+      'h': [K.CN_SUBTOTAL_UNIT, 10, XlFmt.f_refhdr, 'f_tot_1', True ],
       'f': XlFmt.f_euro,
-      'c': '=IFERROR({#f_pmonth}+{#f_evs_sub}+{#f_cbr_sub},0)'
+      'c': '=IFERROR({#f_pmonth}+{#f_evs_sub}+{#f_cbr_sub},0)',
+
     },
     {
       'h': ['Sub-total', 10, XlFmt.f_refhdr, 'f_tot_qty' ],
@@ -265,9 +267,7 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
 
 
   r += 2
-  # DISABLED TO REACH MVP STATUS 
-  # TODO: Re-enable tier calculations
-  # ~ ws_tiers(xl, apidat, r, year_row, K.YEAR_MAX, COLUMNS)
+  xltier.bom_tiers(xl, apidat, r, year_row, K.YEAR_MAX, COLUMNS)
 
   xlu.group_columns(ws, ws_colname('vCPU',COLUMNS), ws_colname('RAM (GB)', COLUMNS), hide=False)
   xlu.group_columns(ws, ws_colname('Region',COLUMNS), ws_colname('Backup (GB)', COLUMNS), hide=True)
@@ -308,20 +308,10 @@ def ws_bom_cell(xl:xlu.XlUtils,r:int,c:int, coldef:dict, o:str = None)->None:
 
   xlu.write(ws,r,c, content, fmt)
 
-  # ~ if isinstance(content,str) and content.startswith('='):
-    # ~ if content.startswith('=='):
-      # ~ ws.write_dynamic_array_formula(r,c, r,c, content[1:], fmt)
-    # ~ else:
-      # ~ ws.write_formula(r,c, content, fmt)
-  # ~ else:
-    # ~ ws.write(r,c,content,fmt)
-    # ~ if XlBomCols.COLUMNS[c]['h'][0] == 'EVS Price':
-    # ~ ic('Value',XlBomCols.COLUMNS[c]['h'][0],r)
-
   if 'validate-list' in coldef and o is None:
     xlu.data_validation_list(ws, r, c, coldef['validate-list'])
 
-def ws_header(xl:xlu.XlUtils,r:int,c:int,hdef:dict)->None:
+def ws_header(xl:xlu.XlUtils,r:int,c:int,hdef:list)->None:
   '''Write a header cell (formatting columns on the way)
 
   :param xl: xl utility object
@@ -336,123 +326,13 @@ def ws_header(xl:xlu.XlUtils,r:int,c:int,hdef:dict)->None:
   w = hdef[1] if len(hdef) > 1 else None
   fmt = hdef[2] if len(hdef) > 2 else XlFmt.f_header
   fld_id = hdef[3] if len(hdef) > 3 else None
-  opts = hdef[4] if len(hdef) > 4 else None
+  hprot = hdef[4] if len(hdef) > 4 else False
   xlu.set_column_width(ws,c,w)
-  # TODO: groupings
+
   if h is None: return
   xlu.write(ws,r,c, h, fmt)
-  if not fld_id is None:
-    xl.ref(**{fld_id: xlu.col_to_name(c,True)})
-
-
-def ws_tiers(xl:xlu.XlUtils, apidat:dict, r:int, yearrow:int, yrmx:int, COLUMNS:list) -> None:
-  '''Write tiered calculations
-
-  Create rows that contain tiered calculations to apply volume discounts
-  depending on the total volume being used.
-
-  :param xl: xl utility object
-  :param apidat: dictionary with results from API queries
-  :param r: row being generated
-  :param yearrow: Row containing year index (for inflation adlustments)
-  :param yrmx: Max number of years to calculate (for inflation adjustments)
-  :param COLUMNS: column definitions
-  '''
-  ws = xl.ws(K.WS_COMPONENT)
-
-  coloffs = len(COLUMNS)
-
-  xlu.write(ws, r,2,'Tiered Volume Pricing', XlFmt.f_sumline)
-  for c in range(3,coloffs+1): xlu.write(ws, r, c, None, XlFmt.f_sumline)
-
-  # ~ n = dict()
-  # ~ for i in range(0,len(COLUMNS)): n[COLUMNS[i]] = i
-
-  _, desc_col = xlu.cell_to_rowcol(xl.ref('#f_desc'))
-  _, qty_col = xlu.cell_to_rowcol(xl.ref('#f_qty'))
-  _, vcpu_col = xlu.cell_to_rowcol(xl.ref('#f_vcpu'))
-  _, tier_col = xlu.cell_to_rowcol(xl.ref('#f_tier_calc'))
-  _, region_col = xlu.cell_to_rowcol(xl.ref('#f_reg'))
-  _, up_col = xlu.cell_to_rowcol(xl.ref('#f_pmonth'))
-  _, tot_col = xlu.cell_to_rowcol(xl.ref('#f_tot_qty'))
-  _, sku_col = xlu.cell_to_rowcol(xl.ref('#f_sku'))
-  _, tot1_col = xlu.cell_to_rowcol(xl.ref('#f_tot_1'))
-  _, totqty_col = xlu.cell_to_rowcol(xl.ref('#f_tot_qty'))
-
-  xlu.write(ws, r, tier_col, 'Total', XlFmt.f_sumline)
-  r += 1
-  sum_row = r
-
-  tiers = list(apidat['tiers'].keys())
-  tiers.sort()
-
-  for ttariff in tiers:
-    r += 2+len(apidat['tiers'][ttariff][K.COL_XLTARIFFS])
-  # ~ ic(sum_row,r)
-  xlu.group_rows(ws, sum_row, r, level=1,hide=True)
-  r = sum_row
-
-  for ttariff in tiers:
-    # ~ ws.set_row(r,None,None,{'level':1, 'hidden': 1})
-
-    xl.rowrefs(r)
-    for c in range(1,len(COLUMNS)+1):
-      ws_bom_cell(xl,r,c, COLUMNS[c-1],'')
-    ws_bom_cell(xl,r,vcpu_col, COLUMNS[region_col-1], apidat['tiers'][ttariff]['region'])
-    ws_bom_cell(xl,r,desc_col, COLUMNS[desc_col-1],apidat['tiers'][ttariff][K.COL_XLTITLE])
-    ws_bom_cell(xl,r,tier_col, COLUMNS[tier_col-1],'Vol')
-    ws_bom_cell(xl,r,qty_col, COLUMNS[qty_col-1], '=SUMIFS({f_qty}:{f_qty},{f_desc}:{f_desc},"="&{#f_desc},{f_tier_calc}:{f_tier_calc},"=",{f_reg}:{f_reg},"="&{#f_reg})')
-    ws_bom_cell(xl,r,region_col, COLUMNS[region_col-1],apidat['tiers'][ttariff]['region'])
-
-    # ~ XlBomCols.cell(ws,r,1,R,
-        # ~ '=SUMIFS({f_qty}:{f_qty},{f_desc}:{f_desc},"="&{#f_desc},{f_tier_calc}:{f_tier_calc},"=",{f_reg}:{f_reg},"="&{#f_reg})'.format(**R))
-    xl.ref(**{
-        '#volcell': xlu.rowcol_to_cell(r,2,False,True),
-        '#region': xl.ref('#f_reg'),
-    })
-    r += 1
-    first = None
-    gstart = r
-    for tariff in apidat['tiers'][ttariff][K.COL_XLTARIFFS]:
-      # ~ ws.set_row(r,None,None,{'level':2, 'hidden': 1})
-      xl.rowrefs(r)
-      last = xl.ref('#f_tot_qty')
-      if first is None: first = last
-
-      for c in range(1,len(COLUMNS)+1):
-        ws_bom_cell(xl,r,c, COLUMNS[c-1], '')
-      ws_bom_cell(xl,r,tier_col, COLUMNS[tier_col-1],'Tier')
-      ws_bom_cell(xl,r,desc_col, COLUMNS[desc_col-1], tariff[K.COL_XLTITLE])
-
-      xl.ref(Tmin = 0 if tariff['fromOn'] == 0 else tariff['fromOn']-1,
-             Tmax = tariff['upTo'])
-      f = 'IF({#volcell}>={Tmin},{#volcell}-{Tmin},0)'
-      if tariff['upTo']: f = 'IF({#volcell}>{Tmax},{Tmax}-{Tmin},'+f+')'
-      # ~ if not R['Tmax'] is None: f = 'IF({#volcell}>{Tmax},{Tmax}-{Tmin},'+f+')'
-      ws_bom_cell(xl,r,qty_col, COLUMNS[qty_col-1], '='+f)
-      ws_bom_cell(xl,r,region_col, COLUMNS[region_col-1], '={#region}')
-      ws_bom_cell(xl,r,tot1_col, COLUMNS[tot1_col-1], tariff['priceAmount'])
-      ws_bom_cell(xl,r,totqty_col, COLUMNS[totqty_col-1])
-
-      r += 1
-    # ~ ic(gstart,r)
-    xlu.group_rows(ws, gstart, r-1, level=2,hide=True)
-
-    ws_bom_cell(xl,r, tot_col, COLUMNS[tot_col-1], f'=SUM({first}:{last})')
-    # ~ XlBomCols.cell(ws,r,tot_col,R,f)
-    # ~ ws.set_row(r,None,None,{'level':1, 'hidden': 1})
-    ws_inflation(xl, r, yrmx, yearrow, COLUMNS, True)
-
-    r+=1
-
-  xlu.write(ws, sum_row-1, totqty_col, '=SUMIFS({start}:{end},{cstart}:{cend},"=")'.format(
-    start = xlu.rowcol_to_cell(sum_row,totqty_col,False,True),
-    end = xlu.rowcol_to_cell(r,totqty_col,False,True),
-    cstart = xlu.rowcol_to_cell(sum_row,tier_col,False,True),
-    cend = xlu.rowcol_to_cell(r,tier_col,False,True),
-  ), XlFmt.f_sumline_total)
-
-
+  if not fld_id is None: xl.ref(**{fld_id: xlu.col_to_name(c,True)})
+  if hprot: xlu.data_validation_list(ws, r, c, [ h ], True)
 
 def ws_inflation(xl:xlu.XlUtils,r:int,yrmx:int,year_row:int,COLUMNS:list,alt:bool = False)->None:
   '''Write row with inflation adjustments

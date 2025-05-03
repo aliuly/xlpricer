@@ -16,6 +16,7 @@ from . import xlbom
 from . import xlprice
 from . import xlsrv
 from . import xlu
+from . import xltier
 from .constants import K
 from .xlfmt import XlFmt
 
@@ -68,38 +69,39 @@ def xlsx_refresh(xlfile:str, apidat:dict) -> None:
   sys.stderr.write('.OK\n')
   xl.load_fmt(XlFmt)
   xlprice.ws_prices(xl, apidat)
-  xl.close()
-  
+  xltier.reprice_tiers(xl, apidat)
+  # ~ xl.close()
+
 def xlsx_sanitize(xlin:str, xlout:str) -> None:
-  
+
   # First read values from workbook...
   xd = xlu.XlUtils(xlin, rdonly=True, data=True)
   data = dict()
-  
-  sys.stderr.write('Reading values..')  
+
+  sys.stderr.write('Reading values..')
   for ws in xd.xl:
     if ws.title == K.WS_PRICES: continue
     data[ws.title] = dict()
     for row in ws.iter_rows():
-      for cell in row:      
+      for cell in row:
         if cell.value is None: continue
         pos = cell.coordinate
         data[ws.title][pos] = cell.value
   del xd
   sys.stderr.write('.OK\n')
 
-    
+
   # Load the workbook for updating
   xd = xlu.XlUtils(xlin)
 
-  sys.stderr.write('Sanitizing...')  
+  sys.stderr.write('Sanitizing...')
   # Iterate over all sheets
   for ws in xd.xl:
     if ws.title == K.WS_PRICES: continue
     sys.stderr.write(f' {ws.title}')
 
     for row in ws.iter_rows():
-      for cell in row:      
+      for cell in row:
         if cell.value is None: continue
         # ~ ic(cell)
           # ~ ic(pos)
@@ -114,11 +116,11 @@ def xlsx_sanitize(xlin:str, xlout:str) -> None:
         cell.value = data_value
   sys.stderr.write('. OK\n')
 
-  sys.stderr.write('Finalizing..')  
+  sys.stderr.write('Finalizing..')
   ws = xd.ws(K.WS_PRICES)
   xd.xl.remove(ws)
   sys.stderr.write('.OK\n')
 
   xd.close(xlout)
 
-  
+

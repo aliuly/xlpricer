@@ -9,15 +9,16 @@ except ImportError:  # Graceful fallback if IceCream isn't installed.
 import sys
 
 def filter(apidat:dict) -> None:
-  '''Filter records for NL region
+  '''Filter records for Swiss region
 
   :param apidat: API data
   '''
+  region = 'eu-ch2'
   count = 0
   for idg in apidat['records']:
     r = 0
     while r < len(apidat['records'][idg]):
-      if 'region' in apidat['records'][idg][r] and apidat['records'][idg][r]['region'] == 'eu-ch2':
+      if 'region' in apidat['records'][idg][r] and apidat['records'][idg][r]['region'] == region:
         del apidat['records'][idg][r]
         count += 1
       else:
@@ -27,6 +28,6 @@ def filter(apidat:dict) -> None:
   else:
     sys.stderr.write(f'{count} records removed\n')
 
-  
-    
-    
+
+
+
