@@ -121,6 +121,7 @@ To delete tags use:
 - [x] Tiered price support
 - [x] Add a simple wizard like UI, to click if no options were given.
 - [ ] sphinx docs
+- [ ] Add hide-console to pyinstaller
 
 # Versions
 
