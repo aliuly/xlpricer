@@ -58,7 +58,7 @@ def xlsx_write(xlfile:str, apidat:dict) -> None:
 
   xl.close()
 
-def xlsx_refresh(xlfile:str, apidat:dict) -> None:
+def xlsx_refresh(xlfile:str, apidat:dict, xlout:str|None = None) -> None:
   '''Update workbook with latest pricing
   :param xlfile: File to reprice
   :param apidat: API data read
@@ -70,7 +70,7 @@ def xlsx_refresh(xlfile:str, apidat:dict) -> None:
   xl.load_fmt(XlFmt)
   xlprice.ws_prices(xl, apidat)
   xltier.reprice_tiers(xl, apidat)
-  # ~ xl.close()
+  xl.close(xlout)
 
 def xlsx_sanitize(xlin:str, xlout:str) -> None:
 

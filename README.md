@@ -100,7 +100,7 @@ in working condition.
 # TODO
 
 - [x] Tiered price support
-- [ ] Add a simple wizard like UI, to click if no options were given.
+- [x] Add a simple wizard like UI, to click if no options were given.
 - [ ] sphinx docs
 
 # Release procedure

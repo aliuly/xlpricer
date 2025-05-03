@@ -11,6 +11,7 @@ import json
 import os
 import sys
 
+import xlpricer.cache as cache
 import xlpricer.normalize as normalize
 import xlpricer.noswiss as noswiss
 import xlpricer.proxycfg as proxycfg
@@ -64,8 +65,8 @@ if __name__ == '__main__':
   args = cli.parse_args()
   if args.command is None:
     cli.print_help()
-    # ~ sys.stderr.write('Running Wizard interface...\nPrese ESC to exit\n')
-    # ~ wiz.run_ui()
+    sys.stderr.write('Running Wizard interface...\nPrese ESC to exit\n')
+    wiz.run_ui()
     sys.exit(0)
   ic(args)
   if args.command == 'showproxy':
@@ -75,19 +76,12 @@ if __name__ == '__main__':
 
   if args.command == 'build' or args.command == 'reprice':
     if args.load:
-      sys.stderr.write(f'Loading prices from {args.load}..')
-      with open(args.load, 'r') as fp:
-        res = json.load(fp)
-      sys.stderr.write('..OK\n')
+      res = cache.load(args.load)
     else:
       if args.autocfg: proxycfg.proxy_cfg(args.debug)
       res = price_api.fetch_prices(args.url.format(lang = args.lang))
 
-    if args.save:
-      sys.stderr.write(f'Saving prices to {args.save}..')
-      with open(args.save,'w') as fp:
-        fp.write(json.dumps(res,indent=2))
-      sys.stderr.write('..OK\n')
+    if args.save: cache.save(args.save, res)
 
     if not args.swiss:
       # Filter swiss entries...
