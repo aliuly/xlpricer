@@ -97,11 +97,6 @@ in working condition.
 - No Science pricing
 - No Oracle Optimized pricing
 
-# TODO
-
-- [x] Tiered price support
-- [x] Add a simple wizard like UI, to click if no options were given.
-- [ ] sphinx docs
 
 # Release procedure
 
@@ -121,3 +116,16 @@ To delete tags use:
 - `git push origin --delete tagname` : deletes remotely
 
 
+# TODO
+
+- [x] Tiered price support
+- [x] Add a simple wizard like UI, to click if no options were given.
+- [ ] sphinx docs
+
+# Versions
+
+- next:
+  - Added tiered price support
+  - Added simple wizard-like UI
+- 1.0.0:
+  - Initial release
