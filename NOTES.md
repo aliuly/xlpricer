@@ -1,3 +1,36 @@
+# Release procedure
+
+Create a branch "prerel" or "prerel-number" to test pre-releases.
+Just push to create artifacts that can be downloaded, or tag with
+"x.y.z-dev" or "x.y.z-rcN" or 'x.y.z-pre' for create pre-releases.
+
+Once ready, merge everything to main.  And commit. The final commit message
+will be used for the release text body.
+
+Create a tag with a "x.y.z" or "x.y.z-rel".  This will be the release
+name.  Once pushed to github, it will automatically create the release.
+
+To delete tags use:
+
+- `git tag -d tagname` : deletes locally
+- `git push origin --delete tagname` : deletes remotely
+
+
+# TODO
+
+- [ ] Load/Save some settings to a config file
+  - proxy settings
+  - API URL
+  - API language
+  - swiss
+- [ ] Add setup costs: unit == Item/ot (to a different sheet)
+  - xlbom, should make Item/ot set to zero
+  - Non Recurrent costs use a format:
+    - `=FILTER(Components!$B$5:$V$20,Components!$V$5:$V$20="Item/ot")`
+    - B = Qty, V = unit
+- [ ] sphinx docs
+- [ ] Allow for additional JSON files containing pricing data
+
 
 ```python
 ic| pkg['response']['columns']: {'R12': 'Reserved (12 months)',
@@ -37,9 +70,3 @@ ic| pkg['response']['columns']: {'R12': 'Reserved (12 months)',
 
 ```
 
-- missing Science prices
-- missing oracle optimized
-
-2	Compute: General Purpose s3.m.2 Linux 1 vcpu 2 GB
-2,000	Storage: OBS Standard Data Transfer Outbound [T2] (2 to 1,000)
-1	Network: Elastic IP

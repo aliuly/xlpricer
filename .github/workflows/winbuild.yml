@@ -39,7 +39,7 @@ jobs:
     - name: Create exe
       run: |
         dir
-        pyinstaller --clean -y --dist ./dist --onefile --name xlpricer --name xlpricer ./xlpricer/__main__.py
+        pyinstaller --clean -y --dist ./dist --onefile --name xlpricer --name xlpricer --hide-console hide-early ./xlpricer/__main__.py
         dir dist
     - uses: actions/upload-artifact@v4
       #~ if: github.ref == 'refs/heads/prerel'

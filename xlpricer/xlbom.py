@@ -70,11 +70,11 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
     {
       'h': [ 'H/R', 5.5, XlFmt.f_header, 'f_hrs' ],
       'f': XlFmt.f_qty,
-      'c': '={STD_HOURS}',
+      'c': '={DEF_HOURS}',
     },
     SPACER,
     {
-      'h': [ K.CN_REGION, 6, XlFmt.f_header, 'f_reg', True  ],
+      'h': [ K.CN_REGION, 7, XlFmt.f_header, 'f_reg', True  ],
       'f': XlFmt.f_text,
       'c': '={DEF_REGION}',
       'validate-list': xl.vlist(K.VL_REGIONS),
@@ -175,7 +175,7 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
     },
     SPACER,
     {
-      'h': ['Price', 8, XlFmt.f_refhdr, 'f_pmonth' ],
+      'h': ['Price', 10, XlFmt.f_refhdr, 'f_pmonth' ],
       'f': XlFmt.f_euro,
       'c': '=IF({#f_sku}="","",'
           'IF(AND({#f_pr12m}<>"",{#f_hrs}="R12M"),{#f_pr12m},'
@@ -186,7 +186,7 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
         '))))'
     },
     {
-      'h': ['EVS Price', 10, XlFmt.f_refhdr, 'f_evs_sub' ],
+      'h': ['EVS Price', 12, XlFmt.f_refhdr, 'f_evs_sub' ],
       'f': XlFmt.f_euro,
       'c': '=IF({#f_storage}="",0,'
           '{#f_storage}*{#f_evs_price}*IF('
@@ -201,13 +201,13 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
       'c': '=IF({#f_bakvol}="",0,{#f_bakvol}*{#f_cbr_price})',
     },
     {
-      'h': [K.CN_SUBTOTAL_UNIT, 10, XlFmt.f_refhdr, 'f_tot_1', True ],
+      'h': [K.CN_SUBTOTAL_UNIT, 12, XlFmt.f_refhdr, 'f_tot_1', True ],
       'f': XlFmt.f_euro,
       'c': '=IFERROR({#f_pmonth}+{#f_evs_sub}+{#f_cbr_sub},0)',
 
     },
     {
-      'h': ['Sub-total', 10, XlFmt.f_refhdr, 'f_tot_qty' ],
+      'h': ['Sub-total', 15, XlFmt.f_refhdr, 'f_tot_qty' ],
       'f': XlFmt.f_euro,
       'c': '={#f_qty}*{#f_tot_1}',
     },
@@ -245,7 +245,7 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
 
   for y in range(0,K.YEAR_MAX):
     c = coloffs+y+2
-    xlu.set_column_width(ws,c,12)
+    xlu.set_column_width(ws,c,15)
     cn = xlu.col_to_name(c)
     xlu.write(ws,r,c,
             ('=SUMIFS({cn}:{cn},' +
@@ -332,7 +332,7 @@ def ws_header(xl:xlu.XlUtils,r:int,c:int,hdef:list)->None:
   if h is None: return
   xlu.write(ws,r,c, h, fmt)
   if not fld_id is None: xl.ref(**{fld_id: xlu.col_to_name(c,True)})
-  if hprot: xlu.data_validation_list(ws, r, c, [ h ], True)
+  if hprot: xlu.data_validation_list(ws, r, c, [ h ], True, False)
 
 def ws_inflation(xl:xlu.XlUtils,r:int,yrmx:int,year_row:int,COLUMNS:list,alt:bool = False)->None:
   '''Write row with inflation adjustments

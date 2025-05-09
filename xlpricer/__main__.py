@@ -112,13 +112,15 @@ if __name__ == '__main__':
     sys.stderr.write('Done!\n')
 
     if args.command == 'build':
-      xlsw.xlsx_write(f'open-telekom-cloud-prices-{today()}.xlsx' if args.xlsx is None else args.xlsx, res)
+      xlsw.xlsx_write(K.DEF_BUILD_FILENAME.format(date=today()) if args.xlsx is None else args.xlsx, res)
       sys.exit(0)
     elif args.command == 'reprice':
       xlsw.xlsx_refresh(args.xlsx, res)
       sys.exit(0)
   elif args.command == 'prep':
-    if args.output_xlsx is None: args.output_xlsx = args.input_xlsx
+    if args.output_xlsx is None:
+      args.output_xlsx = args.input_xlsx.replace(K.DEF_BUILD_RENAME_TAG,K.DEF_BUILD_RENAME_NEW)
+      if args.output_xlsx == args.input_xlsx: args.output_xlsx = f'{K.DEF_BUILD_RENAME_NEW} {args.input_xlsx}'
     xlsw.xlsx_sanitize(args.input_xlsx,args.output_xlsx)
     sys.exit(0)
 

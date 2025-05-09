@@ -100,6 +100,23 @@ def xlsx_sanitize(xlin:str, xlout:str) -> None:
     if ws.title == K.WS_PRICES: continue
     sys.stderr.write(f' {ws.title}')
 
+    dv_victims = list()
+    for dv in ws.data_validations.dataValidation:
+      if dv.type != 'list' or not dv.formula1.startswith(K.WS_PRICES+'!'): continue
+      dv_victims.append(dv)
+    for dv in dv_victims:
+      ws.data_validations.dataValidation.remove(dv)
+  
+      # ~ ic(dv.cells, dv.formula1)
+      # ~ for i in dv.cells.ranges:
+        # ~ pos = i.coord
+        # ~ f1 = data[ws.title][pos] if pos in data[ws.title]: data[ws.title][pos]
+        # ~ ic(i,type(i),i.coord)
+      # ~ c = [[dv.cells.ranges][0]][0]
+      # ~ ic(c,type(c),c.coord)
+      
+      
+
     for row in ws.iter_rows():
       for cell in row:
         if cell.value is None: continue

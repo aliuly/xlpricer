@@ -42,8 +42,11 @@ class K:
   YEAR_MAX = 6
 
   DEF_API_ENDPOINT = 'https://calculator.otc-service.com/{lang}/open-telekom-price-api/'
+  DEF_BUILD_FILENAME = 'INTERNAL-open-telekom-cloud-prices-{date}.xlsx' 
+  DEF_BUILD_RENAME_TAG = 'INTERNAL'
+  DEF_BUILD_RENAME_NEW = 'PREPed'
 
-  FORMAT_VERSION ='1.0.0'
+  FORMAT_VERSION ='1.0.1'
 
   CN_QTY = 'Qty'
   CN_DESC = 'Cloud Desc'

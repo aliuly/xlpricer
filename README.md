@@ -72,9 +72,9 @@ which will add up all the tiered volume entries and distributed into
 the different price bands.
 
 
-# Preparing sheet for release
+# Preparing sheet for sharing
 
-The sub-command `prep` is available to prepare the file for release.
+The sub-command `prep` is available to prepare the file for sharing.
 
 The `prep` sub-command will remove the "Prices" tab, and remove
 references to "Prices" in the different formulas.  Make sure that
@@ -90,43 +90,19 @@ hidden by default.
 
 Doing this keeps the pricing information for the relevant items
 and removes all other prices.  But it also keeps most formulas
-in working condition.
+in working condition.  Specially, it reduces the file size
+significantly.
 
-# Developer Notes
+# Known issues
 
 - No Science pricing
 - No Oracle Optimized pricing
 
-
-# Release procedure
-
-Create a branch "prerel" or "prerel-number" to test pre-releases.
-Just push to create artifacts that can be downloaded, or tag with
-"x.y.z-dev" or "x.y.z-rcN" or 'x.y.z-pre' for create pre-releases.
-
-Once ready, merge everything to main.  And commit. The final commit message
-will be used for the release text body.
-
-Create a tag with a "x.y.z" or "x.y.z-rel".  This will be the release
-name.  Once pushed to github, it will automatically create the release.
-
-To delete tags use:
-
-- `git tag -d tagname` : deletes locally
-- `git push origin --delete tagname` : deletes remotely
-
-
-# TODO
-
-- [x] Tiered price support
-- [x] Add a simple wizard like UI, to click if no options were given.
-- [ ] sphinx docs
-- [ ] Add hide-console to pyinstaller
-
 # Versions
 
-- next:
+- 1.1.0:
   - Added tiered price support
   - Added simple wizard-like UI
+  - Other tweaks and bugfixes
 - 1.0.0:
   - Initial release

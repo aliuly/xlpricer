@@ -34,6 +34,7 @@ def normalize(apidat:dict):
   '''
   RE_ISINT = re.compile(r'^[0-9]+$')
   RE_ISFLOAT = re.compile(r'^[0-9]+\.[0-9]+$')
+  RE_OPIFLAVOR = re.compile(r'^([^\.]+)\.')
 
   apidat['tiers'] = dict()
   apidat['choices'] = {
@@ -71,6 +72,8 @@ def normalize(apidat:dict):
         continue
       elif rec['productFamily'] == 'Network':
         if rec['productSection'] == 'eip' or rec['productIdParameter'] == 'drs': continue
+        if rec['productIdParameter'] == 'elb' and rec['unit'] == 'GB':
+          rec['unit'] = 'h'
       
         
       # Normalize data a bit...
@@ -172,6 +175,11 @@ def normalize(apidat:dict):
 
       if rec['vCpu'] and rec['vCpu'] != '0': rec[K.COL_XLTITLE] += f' {rec["vCpu"]} vcpu'
       if rec['ram'] and rec['ram'] != '0': rec[K.COL_XLTITLE] += f' {rec["ram"]} GB'
+      if (rec['vCpu'] and rec['vCpu'] != '0') and (rec['ram'] and rec['ram'] != '0') and rec['opiFlavour'] != '' and rec['serviceType'] != 'CSS':
+        if mv := RE_OPIFLAVOR.search(rec['opiFlavour']):
+          rec[K.COL_XLTITLE] += f' {mv.group(1)}'
+        else:
+          rec[K.COL_XLTITLE] += f' {rec["opiFlavour"]}'
       if rec["additionalText"] != '':
         if rec['productFamily'] == 'Container' and isinstance(rec['additionalText'],int):
           rec[K.COL_XLTITLE] += f' (max {rec["additionalText"]} nodes)'

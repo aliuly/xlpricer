@@ -10,6 +10,7 @@ from argparse import Namespace
 import os
 import subprocess
 import sys
+import time
 import tkinter as tk
 from tkinter import filedialog, messagebox
 
@@ -102,7 +103,9 @@ class RepriceScr:
     # - autoproxy cfg
     # - open xlsx file (cmd /c start xlsfile)
     if (xofile := self.parent.ui_data.outputname.get()) == '':
-      self.parent.ui_data.outputname.set(xofile := f'open-telekom-cloud-prices-{today()}.xlsx')
+      self.parent.ui_data.outputname.set(xofile := K.DEF_BUILD_FILENAME.format(date=today()))
+    elif not xofile.lower().endswith('.xlsx'):
+      self.parent.ui_data.outputname.set(xofile := xofile + '.xlsx')
     xifile = self.parent.ui_data.inputname.get()
 
     self.parent.start_task('Re-price XLSX...', self.do_open_xlsx)
@@ -206,7 +209,9 @@ class BuildScr:
     # - autoproxy cfg
     # - open xlsx file (cmd /c start xlsfile)
     if (xlfile := self.parent.ui_data.filename.get()) == '':
-      self.parent.ui_data.filename.set(xlfile := f'open-telekom-cloud-prices-{today()}.xlsx')
+      self.parent.ui_data.filename.set(xlfile := K.DEF_BUILD_FILENAME.format(date=today()))
+    elif not xlfile.lower().endswith('.xlsx'):
+      self.parent.ui_data.filename.set(xlfile := xlfile + '.xlsx')
 
     while True:
       try:
@@ -317,9 +322,21 @@ class PrepScr:
     self.parent.open_xlsx(xlfile)
 
   def do_prep(self):
-    if (xofile := self.parent.ui_data.outputname.get()) == '':
-      self.parent.ui_data.outputname.set(xofile := f'open-telekom-cloud-prices-{today()}.xlsx')
     xifile = self.parent.ui_data.inputname.get()
+    if (xofile := self.parent.ui_data.outputname.get()) == '':
+      xofile = xifile.replace(K.DEF_BUILD_RENAME_TAG,K.DEF_BUILD_RENAME_NEW)
+      if xofile == xifile: xofile = f'{K.DEF_BUILD_RENAME_NEW} {xifile}'
+      self.parent.ui_data.outputname.set(xofile)
+    elif not xofile.lower().endswith('.xlsx'):
+      self.parent.ui_data.outputname.set(xofile := xofile + '.xlsx')
+
+    if os.path.isfile(xofile):
+        yesno = messagebox.askyesno('Prep XLSX',
+                  f'"{xofile}" already exists.  Are you sure you want to continue?')
+        if not yesno:
+          self.parent.clear_ui()
+          self.screen_ui()
+          return
 
     self.parent.start_task('Prep XLSX...', self.do_open_xlsx)
     print('start preping...')
@@ -395,11 +412,11 @@ class MainMenuScr:
         'pady': 5,
         'fill': 'x',
       }
-    build_cmd = tk.Button(button_frame, text='Build', command=self.on_build)
+    build_cmd = tk.Button(button_frame, text='Build', command=self.on_build, width=20)
     build_cmd.pack(**bp_opts)
-    reprice_cmd = tk.Button(button_frame, text='Reprice', command=self.on_reprice)
+    reprice_cmd = tk.Button(button_frame, text='Reprice', command=self.on_reprice, width=20)
     reprice_cmd.pack(**bp_opts)
-    prep_cmd = tk.Button(button_frame, text = 'Prep', command=self.on_prep)
+    prep_cmd = tk.Button(button_frame, text = 'Prep', command=self.on_prep, width=20)
     prep_cmd.pack(**bp_opts)
 
 
@@ -484,17 +501,18 @@ class WizUI:
       self.do_open = None
 
   def open_xlsx(self, xlfile:str):
-    subprocess.run(['cmd','/c',os.path.normpath(xlfile)],
-        stdout=subprocess.PIPE,   # Capture standard output
-        stderr=subprocess.PIPE,   # Capture standard error (optional)
-        text=True,                # Decode bytes to string
-        check=True                # Raise a CalledProcessError for non-zero exit codes
-      )
+    sys.stderr.write(f'Openning {xlfile}\n')
+    subprocess.Popen(['cmd','/c',os.path.normpath(xlfile)])
+    time.sleep(1)
+    sys.stderr.write(f'DONE... Terminating...\n')
     sys.exit(0)
 
 def run_ui():
   # Create the main window
   root = tk.Tk()
+  
+  root.option_add('*Button*font','Helvetica 8 bold', 20)
+  
   app = WizUI(root)
   MainMenuScr(app)
   # Start the Tkinter event loop

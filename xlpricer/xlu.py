@@ -283,7 +283,9 @@ def data_validation_list(ws:openpyxl.worksheet.worksheet.Worksheet, r:int, c:int
 
   # Sanitize the list...
   if isinstance(vlist,list):
-    f1 = ','.join([ escape_excel_formula(value,True) for value in vlist])
+    # ~ f1 = ','.join([ escape_excel_formula(value,True) for value in vlist])
+    f1 = ','.join(vlist)
+    f1 = f'"{f1}"'
   else:
     f1 = vlist
   validator = openpyxl.worksheet.datavalidation.DataValidation(type = 'list',
