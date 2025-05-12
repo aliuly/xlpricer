@@ -35,7 +35,7 @@ def save(cache_file:str, apidata:dict) -> None:
     fp.write(json.dumps(apidata,indent=2))
   sys.stderr.write('..OK\n')
 
-def default_cache() -> str:
+def default_cache(ext:str = '-cache.json') -> str:
   '''Generate a default cache file name
   :returns: string with a path to the cache file
   '''
@@ -47,7 +47,7 @@ def default_cache() -> str:
     argv0 = argv0[0:-3]
   elif argv0.lower().endswith('.exe'):
     argv0 = argv0[0:-4]
-  return f'{argv0}-c.json'
+  return f'{argv0}{ext}'
 
 def validate_cache(cache_file:str,use_cache:bool=True) -> dict|None:
   '''Validate cache data

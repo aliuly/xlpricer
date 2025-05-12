@@ -6,12 +6,46 @@ try:
 except ImportError:  # Graceful fallback if IceCream isn't installed.
   ic = lambda *a: None if not a else (a[0] if len(a) == 1 else a)  # noqa
 
+import openpyxl
+
+from . import whoami
 from . import xlu
 from .constants import K
 from .xlfmt import XlFmt
 from .version import VERSION
 
-def ws_ass(xl:xlu.XlUtils) -> None:
+def write_row(xl:xlu.XlUtils, r:int, row:list|str, vx:dict) -> None:
+  '''Write one row in the assumptions
+  :param xl: xl utility object
+  :param row: in spreadsheet
+  :param row: row definition to write
+  :param vx: variable state
+  '''
+  ws = xl.ws(K.WS_ASSUMPTIONS)
+  if isinstance(row,str):
+    xlu.write(ws,r,2,row, XlFmt.f_hr1)
+    for c in range(3,8):
+      xlu.write(ws,r, c, None, XlFmt.f_hr1)
+  else:
+    xlu.write(ws,r,2, None, XlFmt.f_def_data)
+    xlu.write(ws,r,3, row[0], XlFmt.f_def_data)
+    xlu.write(ws,r,4,
+              row[1].format(**vx) if isinstance(row[1],str) else row[1],
+              row[2])
+    vx[row[0]] = xlu.rowcol_to_cell(r,4)
+    if row[4]:
+      xlu.data_validation_list(ws,r,4, row[4])
+      # ~ ws.data_validation(xlu.rowcol_to_cell(r,4),{
+          # ~ 'validate': 'list',
+          # ~ 'source': row[4],
+        # ~ })
+    xlu.write(ws,r,5, None, XlFmt.f_date_c)
+    xlu.write(ws,r,6, '*by script*' if row[0] else None, XlFmt.f_def_data)
+    xlu.write(ws,r,7, None, XlFmt.f_comment)
+    if row[3]: xl.ref(**{row[3]: f'{ws.title}!{xlu.rowcol_to_cell(r,4,True,True)}'})
+
+
+def ws_ass(xl:xlu.XlUtils, apidat:dict) -> None:
   '''Write to assumptions tab
   :param xl: xl utility object
   '''
@@ -37,11 +71,37 @@ def ws_ass(xl:xlu.XlUtils) -> None:
   vx = dict()
   # ~ if len(self.choices['EVS']) == 0: self.choices['EVS'].append('')
   # ~ if len(self.choices['CBR']) == 0: self.choices['CBR'].append('')
+  me = whoami.whoami()
+  
+  write_row(xl, r:=r+1, 'Meta data', vx)
+  write_row(xl, r:=r+1,
+      ['Generated', me.username, XlFmt.f_text_c, None, None],
+      vx)
+  xlu.write(ws,r, 5, xlu.today(), XlFmt.f_date_c)
+  if me.fullname != whoami.ERROR_STR and me.email != whoami.ERROR_STR:
+    xlu.write(ws,r, 6, f'{me.fullname} <{me.email}>', XlFmt.f_def_data)
+  elif me.fullname != whoami.ERROR_STR and me.email == whoami.ERROR_STR:
+    xlu.write(ws,r, 6, me.fullname, XlFmt.f_def_data)
+  elif me.fullname == whoami.ERROR_STR and me.email != whoami.ERROR_STR:
+    xlu.write(ws,r, 6, me.email, XlFmt.f_def_data)
+  write_row(xl, r:=r+1,
+      ['Script version',VERSION, XlFmt.f_text_c, None, None ],
+      vx)
+  write_row(xl, r:=r+1,
+      ['Format version',K.FORMAT_VERSION, XlFmt.f_text_c, None, None ],
+      vx)
+  write_row(xl, r:=r+1, 
+      [ 'Non-recurrent items', K.AS_ONE_TIME, XlFmt.f_text_c, K.RF_ONE_TIME_ITEM, None ],
+      vx)
+
+  if 'includes' in apidat and len(apidat['includes']) > 0:
+    write_row(xl, r:=r+1, 'Include files', vx)
+    for s in apidat['includes']:
+      grp, fpath, mtime = s
+      write_row(xl, r:=r+1, [grp, xlu.datestr(mtime), XlFmt.f_date_c, None, None ], vx)
+      xlu.write(ws,r,7, fpath, XlFmt.f_def_data)
+
   for row in [
-    'Meta data',
-    ['Generated',xlu.today(), XlFmt.f_date_c, None, None ],
-    ['Script version',VERSION, XlFmt.f_text_c, None, None ],
-    ['Format version',K.FORMAT_VERSION, XlFmt.f_text_c, None, None ],
     'General',
     [ 'Annual inflation rate', K.AS_ANNUAL_INFLATION, XlFmt.f_percent_c, K.RF_INFLATION, None ],
     [ 'Default Region', xlu.pick_default(xl.vlist(K.VL_REGIONS), K.DEFAULT_REGION), XlFmt.f_text_c, K.RF_DEF_REGION, xl.vlist(K.VL_REGIONS)  ],
@@ -62,26 +122,5 @@ def ws_ass(xl:xlu.XlUtils) -> None:
     ['', '', XlFmt.f_def_data, None, None],
     ['', '', XlFmt.f_def_data, None, None],
   ]:
-    r += 1
-    if isinstance(row,str):
-      xlu.write(ws,r,2,row, XlFmt.f_hr1)
-      for c in range(3,8):
-        xlu.write(ws,r, c, None, XlFmt.f_hr1)
-    else:
-      xlu.write(ws,r,2, None, XlFmt.f_def_data)
-      xlu.write(ws,r,3, row[0], XlFmt.f_def_data)
-      xlu.write(ws,r,4,
-                row[1].format(**vx) if isinstance(row[1],str) else row[1],
-                row[2])
-      vx[row[0]] = xlu.rowcol_to_cell(r,4)
-      if row[4]:
-        xlu.data_validation_list(ws,r,4, row[4])
-        # ~ ws.data_validation(xlu.rowcol_to_cell(r,4),{
-            # ~ 'validate': 'list',
-            # ~ 'source': row[4],
-          # ~ })
-      xlu.write(ws,r,5, None, XlFmt.f_date_c)
-      xlu.write(ws,r,6, '*by script*' if row[0] else None, XlFmt.f_def_data)
-      xlu.write(ws,r,7, None, XlFmt.f_comment)
-      if row[3]: xl.ref(**{row[3]: f'{ws.title}!{xlu.rowcol_to_cell(r,4,True,True)}'})
+    write_row(xl, r:=r+1, row, vx)
 

@@ -51,7 +51,7 @@ def xlsx_write(xlfile:str, apidat:dict) -> None:
 
   xl.load_fmt(XlFmt)
   xlsrv.ws_services(xl, apidat)
-  xlass.ws_ass(xl)
+  xlass.ws_ass(xl, apidat)
   xlprice.ws_prices(xl, apidat)
   # ~ ic(xl.ref())
   xlbom.ws_bom(xl, apidat)

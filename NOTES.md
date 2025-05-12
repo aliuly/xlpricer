@@ -18,18 +18,21 @@ To delete tags use:
 
 # TODO
 
-- [ ] Load/Save some settings to a config file
+- [x] Load some settings from file
   - proxy settings
   - API URL
   - API language
   - swiss
-- [ ] Add setup costs: unit == Item/ot (to a different sheet)
-  - xlbom, should make Item/ot set to zero
-  - Non Recurrent costs use a format:
-    - `=FILTER(Components!$B$5:$V$20,Components!$V$5:$V$20="Item/ot")`
-    - B = Qty, V = unit
+- [x] Allow for additional JSON files containing pricing data
+- [x] Added support for Item/ot (setup/one time) charges
+  - ~~Add setup costs: unit == Item/ot (to a different sheet)~~
+  - ~~xlbom, should make Item/ot set to zero~~
+  - ~~Non Recurrent costs use a format:~~
+    - ~~`=FILTER(Components!$B$5:$V$20,Components!$V$5:$V$20="Item/ot")`~~
+    - ~~B = Qty, V = unit~~
+  - ~~This requires a dynamic array formula which openpyxl is not generating~~
+    ~~properly.~~
 - [ ] sphinx docs
-- [ ] Allow for additional JSON files containing pricing data
 
 
 ```python

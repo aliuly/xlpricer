@@ -160,6 +160,14 @@ class XlUtils():
       self.xl.add_named_style(custom_style)
       setattr(ref,k,str(k))
 
+def datestr(epoch:int, fmt:str = '%Y-%m-%d') -> str:
+  '''Return epoch as a formatted string
+  :param epoch: seconds since epoch
+  :param fmt: Date format to use
+  :returns: a string with formatted date
+  '''
+  return datetime.datetime.fromtimestamp(epoch).strftime(fmt)
+
 def today(fmt:str = '%Y-%m-%d') -> str:
   ''' Return today's date as a string
 

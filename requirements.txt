@@ -1,3 +1,4 @@
 # --only-binary=cryptography
-requests
 openpyxl
+pyyaml
+requests

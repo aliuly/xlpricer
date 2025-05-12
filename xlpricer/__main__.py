@@ -10,8 +10,10 @@ import argparse
 import json
 import os
 import sys
+import yaml
 
 import xlpricer.cache as cache
+import xlpricer.includes as includes
 import xlpricer.normalize as normalize
 import xlpricer.noswiss as noswiss
 import xlpricer.proxycfg as proxycfg
@@ -22,8 +24,37 @@ from xlpricer.constants import K
 from xlpricer.version import VERSION
 from xlpricer.xlu import today
 
+def load_defaults() -> argparse.Namespace:
+  '''Load defaults from a possible configuration file'''
+  cfgfile = cache.default_cache('-settings.yaml')
+  try:
+    with open(cfgfile, 'r') as fp:
+      cfgdata = yaml.safe_load(fp)
+    if not isinstance(cfgdata,dict): cfgdata = dict()
+  except FileNotFoundError:
+    cfgdata = dict()
+  
+  select = lambda k,dv: cfgdata[k] if (k in cfgdata) else dv
+  if 'proxy' in cfgdata:
+    if isinstance(cfgdata['proxy'],dict) and ('http' in cfgdata['proxy']) and ('https' in cfgdata['proxy']):
+      for i in ['http','https']:
+        os.environ[f'{i}_proxy'] = cfgdata['proxy'][i]
+      cfgdata['proxy'] = False
+    else:
+      cfgdata['proxy'] = True if cfgdata['proxy'] else False
 
-def make_parser():
+  return argparse.Namespace(
+      proxy_cfg = select('proxy',True),
+      api_url = select('api',K.DEF_API_ENDPOINT),
+      api_lang = select('api_lang', 'en'),
+      swiss = select('swiss', False),
+      use_cache = select('use_cache', True),
+      cache_file = select('cache_file', None),
+      includes = select('include',[]),
+      
+    )
+
+def make_parser(defaults:argparse.Namespace):
   ''' Command Line Interface argument parser '''
   name = sys.argv[0]
   if os.path.basename(name) == '__main__.py':
@@ -36,19 +67,20 @@ def make_parser():
   subs = cli.add_subparsers(dest='command', help='Available subcommands')
 
   sub0 = subs.add_parser('showproxy',help ='Show proxy configuration')
-  sub0.add_argument('-A','--autocfg',help='Use WinReg to configure proxy (default)', action='store_true', default = True)
+  sub0.add_argument('-A','--autocfg',help='Use WinReg to configure proxy (default)', action='store_true', default = defaults.proxy_cfg)
   sub0.add_argument('-a','--no-autocfg',help='Skip proxy autoconfig', action='store_false', dest = 'autocfg')
 
   sub1 = subs.add_parser('build',help='Build a pricing calculator')
   sub2 = subs.add_parser('reprice',help='Update prices of an existing sheet')
   for pp in [sub1,sub2]:
-    pp.add_argument('-A','--autocfg',help='Use WinReg to configure proxy (default)', action='store_true', default = True)
+    pp.add_argument('-A','--autocfg',help='Use WinReg to configure proxy (default)', action='store_true', default = defaults.proxy_cfg)
     pp.add_argument('-a','--no-autocfg',help='Skip proxy autoconfig', action='store_false', dest = 'autocfg')
-    pp.add_argument('--url', help='Specify the API URL format', default = K.DEF_API_ENDPOINT, type=str)
-    pp.add_argument('-l','--lang', help='Select language API',type=str, default = 'en', choices=['en','de'])
+    pp.add_argument('--url', help='Specify the API URL format', default = defaults.api_url, type=str)
+    pp.add_argument('-l','--lang', help='Select language API',type=str, default = defaults.api_lang, choices=['en','de'])
     pp.add_argument('--load',help='Do not query API, but load from file', type=str, default =None)
     pp.add_argument('--save',help='Save the results of the API queries to a file', type=str, default =None)
-    pp.add_argument('--swiss',help='Do not filter eu-ch2 entries', default=False,action='store_true')
+    pp.add_argument('--swiss',help='Do not filter eu-ch2 entries', default=defaults.swiss,action='store_true')
+    pp.add_argument('-I','--include',help='Include additional pricing data',default=None,action='append')
 
   sub1.add_argument('xlsx', help = 'File to create',nargs='?')
   sub2.add_argument('xlsx', help = 'File to modify')
@@ -61,20 +93,24 @@ def make_parser():
 
 
 if __name__ == '__main__':
-  cli = make_parser()
+  defaults = load_defaults()
+  ic(defaults)
+  cli = make_parser(defaults)
   args = cli.parse_args()
+  ic(args)
   if args.command is None:
     cli.print_help()
     sys.stderr.write('Running Wizard interface...\nPrese ESC to exit\n')
-    wiz.run_ui()
+    wiz.run_ui(defaults)
     sys.exit(0)
-  ic(args)
   if args.command == 'showproxy':
     proxycfg.show_proxy(args.autocfg, args.debug)
     sys.exit(0)
   if args.debug: price_api.http_logging()
 
   if args.command == 'build' or args.command == 'reprice':
+    if defaults.includes and args.include is None: args.include = defaults.includes
+
     if args.load:
       res = cache.load(args.load)
     else:
@@ -82,6 +118,10 @@ if __name__ == '__main__':
       res = price_api.fetch_prices(args.url.format(lang = args.lang))
 
     if args.save: cache.save(args.save, res)
+
+    includes.fixed_prices(res)
+    for inc in args.include:
+      includes.json_prices(inc, res)
 
     if not args.swiss:
       # Filter swiss entries...

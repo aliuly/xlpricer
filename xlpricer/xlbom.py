@@ -204,7 +204,6 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
       'h': [K.CN_SUBTOTAL_UNIT, 12, XlFmt.f_refhdr, 'f_tot_1', True ],
       'f': XlFmt.f_euro,
       'c': '=IFERROR({#f_pmonth}+{#f_evs_sub}+{#f_cbr_sub},0)',
-
     },
     {
       'h': ['Sub-total', 15, XlFmt.f_refhdr, 'f_tot_qty' ],
@@ -214,6 +213,7 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
   ]
   '''Column definitions'''
   coloffs = len(COLUMNS)+1
+  tier_calc = ws_colname(K.CN_TIER_CALC,COLUMNS)
 
   r = 1
   xlu.write(ws,r,1, 'Cloud Components', XlFmt.f_title)
@@ -234,12 +234,26 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
                 '=' + xlu.rowcol_to_cell(r,coloffs+y+1) + '+1',
                 XlFmt.f_header)
 
+
+  r += 1
+  xlu.write(ws,r,2,'Non-recurrent Charges', XlFmt.f_sumline)
+  for c in range(3,coloffs): xlu.write(ws,r, c, None, XlFmt.f_sumline)
+  xlu.write(ws,r, tier_calc, 'setup', XlFmt.f_sumline)
+  xlu.write(ws,r,coloffs-1,
+        ('=SUMIFS({f_tot_qty}:{f_tot_qty},' 
+            '{f_qty}:{f_qty},"<>"&{f_qty}{r1},'
+            '{f_unit}:{f_unit},"="&{ONE_TIME_ITEM},'
+            '{f_tier_calc}:{f_tier_calc},"=")').format(r1=r,**xl.ref()),
+        XlFmt.f_sumline_total)
+
   r += 1
   xlu.write(ws,r,2,'Monthly Price', XlFmt.f_sumline)
   for c in range(3,coloffs): xlu.write(ws,r, c, None, XlFmt.f_sumline)
+  xlu.write(ws,r, tier_calc, 'total', XlFmt.f_sumline)
   xlu.write(ws,r,coloffs-1,
-        ('=SUMIFS({f_tot_qty}:{f_tot_qty},' +
-            '{f_qty}:{f_qty},"<>"&{f_qty}{r1},'+
+        ('=SUMIFS({f_tot_qty}:{f_tot_qty},' 
+            '{f_qty}:{f_qty},"<>"&{f_qty}{r1},'
+            '{f_unit}:{f_unit},"<>"&{ONE_TIME_ITEM},'
             '{f_tier_calc}:{f_tier_calc},"=")').format(r1=r,**xl.ref()),
         XlFmt.f_sumline_total)
 
@@ -248,8 +262,8 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
     xlu.set_column_width(ws,c,15)
     cn = xlu.col_to_name(c)
     xlu.write(ws,r,c,
-            ('=SUMIFS({cn}:{cn},' +
-                '{f_qty}:{f_qty},"<>"&{f_qty}{r1},' +
+            ('=SUMIFS({cn}:{cn},'
+                '{f_qty}:{f_qty},"<>"&{f_qty}{r1},'
                 '{f_tier_calc}:{f_tier_calc},"=")').format(cn=cn,r1=r,**xl.ref()),
         XlFmt.f_sumline_total)
 
@@ -354,15 +368,17 @@ def ws_inflation(xl:xlu.XlUtils,r:int,yrmx:int,year_row:int,COLUMNS:list,alt:boo
             r1=r,year = xlu.rowcol_to_cell(year_row, c,True,False), **xl.ref())
     else:
       f = (
-        '=IF( AND({#f_hrs}="R24M",{#f_pr24m}<>0),'+
-            '{#f_qty}*'+
-              '(' +
-                '{#f_pmonth}*(1+{INFLATION})^(FLOOR({year}-1,2))'+
-                '+' +
-                '({#f_cbr_sub}+{#f_evs_sub})*(1 + {INFLATION})^({year}-1)' +
-              ')' +
-          ','+
-            '{#f_tot_qty}*(1+{INFLATION})^({year}-1)'+
+        '=IF({#f_unit}={ONE_TIME_ITEM},0,'
+          'IF( AND({#f_hrs}="R24M",{#f_pr24m}<>0),'
+              '{#f_qty}*'
+                '(' 
+                  '{#f_pmonth}*(1+{INFLATION})^(FLOOR({year}-1,2))'
+                  '+' 
+                  '({#f_cbr_sub}+{#f_evs_sub})*(1 + {INFLATION})^({year}-1)' 
+                ')' 
+            ','
+              '{#f_tot_qty}*(1+{INFLATION})^({year}-1)'
+          ')'
         ')').format(year = xlu.rowcol_to_cell(year_row, c,True,False), **xl.ref())
     xlu.write(ws, r,c,f,XlFmt.f_euro)
 
