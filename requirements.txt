@@ -1,4 +1,5 @@
 # --only-binary=cryptography
 openpyxl
+pdfplumber
 pyyaml
 requests

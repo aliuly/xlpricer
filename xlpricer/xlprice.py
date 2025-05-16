@@ -76,8 +76,14 @@ def ws_prices(xl:xlu.XlUtils, apidat:dict) -> None:
 
   xlu.autofilter(ws, top,1, r, colmap[K.COL_LAST]-1)
 
+  #
+  # Define a name for Price descs.  This makes datavalidation support
+  # work properly when re-pricing.
+  #
+  desc = f'{ws.title}!{xlu.col_to_name(1,True)}:{xlu.col_to_name(1,True)}'
+  xl.define_name(K.XLN_PRICES_DESCS, desc)
   xl.ref(**{
-    K.RF_PRICES_DESCS: f'{ws.title}!{xlu.col_to_name(1,True)}:{xlu.col_to_name(1,True)}',
+    K.RF_PRICES_DESCS: desc,
     K.RF_PRICES_REGION: f'{ws.title}!{xlu.col_to_name(colmap["region"],True)}:{xlu.col_to_name(colmap["region"],True)}',
     K.RF_PRICES_TABLE: f'{ws.title}!{xlu.col_to_name(1,True)}:{xlu.col_to_name(colmap[K.COL_LAST],True)}',
   })

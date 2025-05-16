@@ -95,6 +95,9 @@ def xlsx_sanitize(xlin:str, xlout:str) -> None:
   xd = xlu.XlUtils(xlin)
 
   sys.stderr.write('Sanitizing...')
+  # Delete defined names... currently only price description list..
+  xd.delete_name(K.XLN_PRICES_DESCS)
+
   # Iterate over all sheets
   for ws in xd.xl:
     if ws.title == K.WS_PRICES: continue
@@ -102,7 +105,7 @@ def xlsx_sanitize(xlin:str, xlout:str) -> None:
 
     dv_victims = list()
     for dv in ws.data_validations.dataValidation:
-      if dv.type != 'list' or not dv.formula1.startswith(K.WS_PRICES+'!'): continue
+      if dv.type != 'list' or not (dv.formula1.startswith(K.WS_PRICES+'!') or (K.XLN_PRICES_DESCS in str(dv.formula1))): continue
       dv_victims.append(dv)
     for dv in dv_victims:
       ws.data_validations.dataValidation.remove(dv)
@@ -114,8 +117,6 @@ def xlsx_sanitize(xlin:str, xlout:str) -> None:
         # ~ ic(i,type(i),i.coord)
       # ~ c = [[dv.cells.ranges][0]][0]
       # ~ ic(c,type(c),c.coord)
-      
-      
 
     for row in ws.iter_rows():
       for cell in row:

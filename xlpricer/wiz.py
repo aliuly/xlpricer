@@ -525,7 +525,9 @@ class WizUI:
     '''Set the UI for completion of a task'''
     sys.stdout =self.stdio.stdout
     sys.stderr =self.stdio.stderr
-    if ok and self.do_open is not None: self.do_open.config(state='normal')
+    if ok and self.do_open is not None:
+      self.do_open.config(state='normal')
+      self.cancel_button.config(text='Close')
 
   def run_ui(self, title:str, callback=None, open_text = 'Open file...'):
     '''Create UI to display the status of a running task'''

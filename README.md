@@ -100,10 +100,11 @@ significantly.
 
 # Versions
 
-- next:
+- 1.2.0-dev:
   - Added support for settings file
   - Include prices by additional JSON files
   - Added Non-recurrent charges calculations
+  - Added scrapping run-time
 - 1.1.0:
   - Added tiered price support
   - Added simple wizard-like UI

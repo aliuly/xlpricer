@@ -18,7 +18,7 @@ def load(cache_file:str) -> dict:
 
   :param cache_file: path to cache file
   '''
-  sys.stderr.write(f'Loading prices from {cache_file}..')
+  sys.stderr.write(f'Loading records from {cache_file}..')
   with open(cache_file, 'r') as fp:
     res = json.load(fp)
   sys.stderr.write('..OK\n')
@@ -30,7 +30,7 @@ def save(cache_file:str, apidata:dict) -> None:
   :param cache_file: path to cache file
   :param apidata: api data to save
   '''
-  sys.stderr.write(f'Saving prices to {cache_file}..')
+  sys.stderr.write(f'Saving records to {cache_file}..')
   with open(cache_file,'w') as fp:
     fp.write(json.dumps(apidata,indent=2))
   sys.stderr.write('..OK\n')

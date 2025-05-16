@@ -41,7 +41,7 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
     {
       'h': [ K.CN_DESC, 42, XlFmt.f_header, 'f_desc', True ],
       'f': XlFmt.f_desc,
-      'validate-list': xl.ref(K.RF_PRICES_DESCS),
+      'validate-list': K.XLN_PRICES_DESCS,
     },
     SPACER,
     {
@@ -177,7 +177,7 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
     {
       'h': ['Price', 10, XlFmt.f_refhdr, 'f_pmonth' ],
       'f': XlFmt.f_euro,
-      'c': '=IF({#f_sku}="","",'
+      'c': '=IF({#f_sku}="",0,'
           'IF(AND({#f_pr12m}<>"",{#f_hrs}="R12M"),{#f_pr12m},'
             'IF(AND({#f_pr24m}<>"",{#f_hrs}="R24M"),{#f_pr24m},'
               'IF(LEFT({#f_unit},1)="h",'

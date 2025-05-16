@@ -32,6 +32,7 @@ class K:
   RF_PRICES_REGION = 'PRICES_REGION'
   RF_PRICES_TABLE = 'PRICES_TABLE'
   RF_ONE_TIME_ITEM = 'ONE_TIME_ITEM'
+  XLN_PRICES_DESCS = 'PriceListDescs'
 
   AS_ANNUAL_INFLATION = 0.02
   AS_DAILY_CHANGE_RATE = 0.03
@@ -46,12 +47,26 @@ class K:
   DEF_API_ENDPOINT = 'https://calculator.otc-service.com/{lang}/open-telekom-price-api/'
   DEF_BUILD_FILENAME = 'INTERNAL-open-telekom-cloud-prices-{date}.xlsx' 
   DEF_BUILD_RENAME_TAG = 'INTERNAL'
-  DEF_BUILD_RENAME_NEW = 'PREPed'
+  DEF_BUILD_RENAME_NEW = 'PUBLIC'
 
-  FORMAT_VERSION ='1.0.2'
+  FORMAT_VERSION ='1.1.0'
+  # - 1.0.2 : First "complete" version
+  # - 1.1.0 : Introduces defined name PriceListNames to workaround an
+  #   unsupported feature in OpenPyxl w.r.t data validation.
 
   CN_QTY = 'Qty'
   CN_DESC = 'Cloud Desc'
   CN_REGION = 'Region'
   CN_TIER_CALC = 'Tier Calc'
   CN_SUBTOTAL_UNIT = 'Sub-total per unit'
+
+  KW_meta = 'meta'
+  KW_input = 'input'
+  KW_content = 'content'
+  KW_text = 'text'
+  KW_tables = 'tables'
+  KW_revised = 'revised'
+  KW_revised_ = '_revised_'
+  KW_mtime = 'mtime'
+  KW_mdate = 'mdate'
+  KW_page = 'page'

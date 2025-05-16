@@ -32,6 +32,16 @@ To delete tags use:
     - ~~B = Qty, V = unit~~
   - ~~This requires a dynamic array formula which openpyxl is not generating~~
     ~~properly.~~
+- [x] Add a scrapper run-time and the ability to run scrapper scripts
+- [x] Price formula should show 0 instead "" when not available
+- [x] Cloud Desc losing Validation list when repricing
+  - workaround ... create a Name for the pricelist
+- [ ] As the BOM grows, performance suffers
+- [ ] Styles get lost after one run
+  - run using UI to generate a xlsx.
+  - If an error happens and the user is sent back to the build menu
+  - Clicking on "Run" again will not work because styles are no longer
+    definable.
 - [ ] sphinx docs
 
 

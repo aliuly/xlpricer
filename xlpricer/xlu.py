@@ -160,6 +160,25 @@ class XlUtils():
       self.xl.add_named_style(custom_style)
       setattr(ref,k,str(k))
 
+  def define_name(self, name:str, text:str) -> None:
+    '''Define a Workbook name
+    
+    :param name: Name to define
+    :param text: Cell or range reference to define
+    '''
+    wb_name = openpyxl.workbook.defined_name.DefinedName(name, attr_text = text)
+    self.xl.defined_names.add(wb_name)
+
+  def delete_name(self, name:str) -> None:
+    '''Delete defined Workbook name
+    :param name: Name to delete
+    '''
+    wb = self.xl
+    # Find and remove the defined name
+    if name in wb.defined_names: del wb.defined_names[name]
+      
+
+
 def datestr(epoch:int, fmt:str = '%Y-%m-%d') -> str:
   '''Return epoch as a formatted string
   :param epoch: seconds since epoch
