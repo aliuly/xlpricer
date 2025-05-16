@@ -1,0 +1,10 @@
+#!/bin/sh
+#
+# Run container
+#
+image=ghcr.io/tortugalabs/win-pyinstaller
+exec docker run --rm -it \
+	-v "$(pwd)":/src/ \
+	"$image" \
+	"$@"
+

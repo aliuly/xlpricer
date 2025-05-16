@@ -34,7 +34,7 @@ def load_defaults() -> argparse.Namespace:
     if not isinstance(cfgdata,dict): cfgdata = dict()
   except FileNotFoundError:
     cfgdata = dict()
-  
+
   select = lambda k,dv: cfgdata[k] if (k in cfgdata) else dv
   if 'proxy' in cfgdata:
     if isinstance(cfgdata['proxy'],dict) and ('http' in cfgdata['proxy']) and ('https' in cfgdata['proxy']):
@@ -115,7 +115,7 @@ if __name__ == '__main__':
   if args.debug: price_api.http_logging()
 
   if args.command == 'build' or args.command == 'reprice':
-    if defaults.includes and args.include is None: args.include = defaults.includes
+    if args.include is None: args.include = defaults.includes
 
     if args.load:
       res = cache.load(args.load)
@@ -169,7 +169,7 @@ if __name__ == '__main__':
       if args.output_xlsx == args.input_xlsx: args.output_xlsx = f'{K.DEF_BUILD_RENAME_NEW} {args.input_xlsx}'
     xlsw.xlsx_sanitize(args.input_xlsx,args.output_xlsx)
     sys.exit(0)
-  elif args.command == 'run':  
+  elif args.command == 'run':
     if args.autocfg: proxycfg.proxy_cfg(args.debug)
     scrapper.run(args.script, args.args)
     sys.exit(0)

@@ -38,12 +38,16 @@ def proxy_auto_cfg():
   if not has_winreg:
     sys.stderr.write('No proxy_auto_cfg possible\n')
     return None, None, None
-  REG_PATH = r'Software\Microsoft\Windows\CurrentVersion\Internet Settings'
-  REG_KEY_NAME = 'AutoConfigURL'
-  registry_key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, REG_PATH, 0,
+  try:
+    REG_PATH = r'Software\Microsoft\Windows\CurrentVersion\Internet Settings'
+    REG_KEY_NAME = 'AutoConfigURL'
+    registry_key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, REG_PATH, 0,
                                        winreg.KEY_READ)
-  value, regtype = winreg.QueryValueEx(registry_key, REG_KEY_NAME)
-  winreg.CloseKey(registry_key)
+    value, regtype = winreg.QueryValueEx(registry_key, REG_KEY_NAME)
+    winreg.CloseKey(registry_key)
+  except FileNotFoundError:
+    print('No AutoConfig URL')
+    return None,None,None
 
   if not value: return None, None, None
 
