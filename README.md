@@ -105,6 +105,7 @@ significantly.
   - Include prices by additional JSON files
   - Added Non-recurrent charges calculations
   - Added scrapping run-time
+  - Bugfixes
 - 1.1.0:
   - Added tiered price support
   - Added simple wizard-like UI

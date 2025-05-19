@@ -12,7 +12,11 @@ import openpyxl
 import os
 import sys
 
+
 class XlUtils():
+  style_cache = dict()
+  '''Used to save style definitions'''
+  
   '''Basic Excel class utilities'''
   def __init__(self, xlfile:str, rdonly=False, data=False):
     '''Constructor
@@ -115,49 +119,60 @@ class XlUtils():
       return ws
     return self.xl.create_sheet(title=name)
 
+  def make_style(k:str, v:dict) -> openpyxl.styles.NamedStyle|None:
+    '''Convert a style from dict defintion to the right type'''
+    custom_style = openpyxl.styles.NamedStyle(name=k)
+    alignment = v['alignment'].copy() if 'alignment' in v else dict()
+    if 'font' in v:
+      custom_style.font = openpyxl.styles.Font(**v['font'])
+    if 'fill' in v:
+      if isinstance(v['fill'],str):
+        custom_style.fill = openpyxl.styles.PatternFill(
+                start_color =  v['fill'],
+                end_color = v['fill'],
+                fill_type = 'solid',
+        )
+      else:
+        custom_style.fill = openpyxl.styles.PatternFill(**v['fill'])
+    if 'text_wrap' in v: alignment['wrap_text'] = v['text_wrap']
+    if 'align' in v: alignment['horizontal'] = v['align']
+    if 'valign' in v: alignment['vertical'] = v['valign']
+    if 'border' in v:
+      border = v['border']
+      if not isinstance(border,dict) or not (('left' in border) or ('right' in border) or ('top' in border) or ('bottom' in border)):
+        border = { 'left': border, 'right': border, 'top': border, 'bottom': border }
+      for kw in list(border.keys()):
+        if isinstance(border[kw],dict):
+          border[kw] = openpyxl.styles.Side(**border[kw])
+        else:
+          border[kw] = openpyxl.styles.Side(style=border[kw])
+      custom_style.border = openpyxl.styles.Border(**border)
+    if 'num_format' in v:
+      custom_style.number_format = v['num_format']
+
+    if len(alignment) > 0: custom_style.alignment = openpyxl.styles.Alignment(**alignment)
+    return custom_style
+    
+
   def load_fmt(self, ref:type, prefix = 'f_') -> None:
     '''Loads the defined formats into the open XLSX objec
 
     :param ref: class containing formats
     '''
+
+    for k,v in XlUtils.style_cache.items():
+      self.xl.add_named_style(XlUtils.make_style(k,v))
+
     for k,v in ref.__dict__.items():
       if not k.startswith(prefix) or not isinstance(v,dict): continue
+      
       if k in self.xl.named_styles:
         setattr(ref,k,str(k))
         continue
-
-      custom_style = openpyxl.styles.NamedStyle(name=k)
-      alignment = v['alignment'].copy() if 'alignment' in v else dict()
-      if 'font' in v:
-        custom_style.font = openpyxl.styles.Font(**v['font'])
-      if 'fill' in v:
-        if isinstance(v['fill'],str):
-          custom_style.fill = openpyxl.styles.PatternFill(
-                  start_color =  v['fill'],
-                  end_color = v['fill'],
-                  fill_type = 'solid',
-          )
-        else:
-          custom_style.fill = openpyxl.styles.PatternFill(**v['fill'])
-      if 'text_wrap' in v: alignment['wrap_text'] = v['text_wrap']
-      if 'align' in v: alignment['horizontal'] = v['align']
-      if 'valign' in v: alignment['vertical'] = v['valign']
-      if 'border' in v:
-        border = v['border']
-        if not isinstance(border,dict) or not (('left' in border) or ('right' in border) or ('top' in border) or ('bottom' in border)):
-          border = { 'left': border, 'right': border, 'top': border, 'bottom': border }
-        for kw in list(border.keys()):
-          if isinstance(border[kw],dict):
-            border[kw] = openpyxl.styles.Side(**border[kw])
-          else:
-            border[kw] = openpyxl.styles.Side(style=border[kw])
-        custom_style.border = openpyxl.styles.Border(**border)
-      if 'num_format' in v:
-        custom_style.number_format = v['num_format']
-
-      if len(alignment) > 0: custom_style.alignment = openpyxl.styles.Alignment(**alignment)
-
+        
+      custom_style = XlUtils.make_style(k,v)
       self.xl.add_named_style(custom_style)
+      if k not in XlUtils.style_cache: XlUtils.style_cache[k] = v
       setattr(ref,k,str(k))
 
   def define_name(self, name:str, text:str) -> None:

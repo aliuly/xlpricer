@@ -118,6 +118,7 @@ def ws_ass(xl:xlu.XlUtils, apidat:dict) -> None:
     ['Full Time (24x7)',K.AS_FT_HOURS, XlFmt.f_num_c, 'FT_HOURS', None ],
     ['Working Hours (10x5)', K.AS_WK_HOURS, XlFmt.f_num_c, None, None ],
     ['Default Hours', '={Full Time (24x7)}', XlFmt.f_num_c, 'DEF_HOURS', None ],
+    ['Default Reserved Pkg', 'R24M', XlFmt.f_text_c, 'DEF_RXM', ['','R12M','R24M'] ],
     '',
     ['', '', XlFmt.f_def_data, None, None],
     ['', '', XlFmt.f_def_data, None, None],

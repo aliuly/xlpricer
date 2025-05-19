@@ -50,9 +50,9 @@ class K:
   DEF_BUILD_RENAME_NEW = 'PUBLIC'
 
   FORMAT_VERSION ='1.1.0'
-  # - 1.0.2 : First "complete" version
   # - 1.1.0 : Introduces defined name PriceListNames to workaround an
   #   unsupported feature in OpenPyxl w.r.t data validation.
+  # - 1.0.2 : First "complete" version
 
   CN_QTY = 'Qty'
   CN_DESC = 'Cloud Desc'

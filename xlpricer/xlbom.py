@@ -70,7 +70,22 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
     {
       'h': [ 'H/R', 5.5, XlFmt.f_header, 'f_hrs' ],
       'f': XlFmt.f_qty,
-      'c': '={DEF_HOURS}',
+      'c': '=IF({DEF_RXM}="R24M",'
+         # Default Reserved is R24M
+         'IF({#f_pr24m}<>"","R24M",'
+           # But we don't have r24m pricing...
+           #   so we use R12M if available... otherwise just use {DEF_HOURS} hours
+           'IF({#f_pr12m}<>"","R12M",{DEF_HOURS})'
+         ')'
+        ','
+         'IF({DEF_RXM}="R12M",'
+           # Default Reserved is R12M
+           'IF({#f_pr12m}<>"","R12M",{DEF_HOURS})'
+         ','
+           # No valid default reserved always use PAYG
+           '{DEF_HOURS}'
+         ')'
+        ')',
     },
     SPACER,
     {
@@ -287,6 +302,7 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
   xlu.group_columns(ws, ws_colname('Region',COLUMNS), ws_colname('Backup (GB)', COLUMNS), hide=True)
   xlu.group_columns(ws, ws_colname('Row Idx',COLUMNS), ws_colname('Tier Calc', COLUMNS), hide=True)
   xlu.group_columns(ws, coloffs+1, coloffs+K.YEAR_MAX+1 , hide=True)
+
 
 
 def ws_bom_cell(xl:xlu.XlUtils,r:int,c:int, coldef:dict, o:str = None)->None:

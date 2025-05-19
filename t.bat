@@ -10,8 +10,7 @@ REM ~ call %~dp0pys.bat -m xlpricer build --save %~dp0xlpricer-c.json
 REM ~ call %~dp0pys.bat -m xlpricer build --load %~dp0xlpricer-cache.json %*
 REM ~ call %~dp0pys.bat -m xlpricer reprice --load %~dp0prices.json open-telekom-cloud-prices-2025-05-01.xlsx
 REM ~ call %~dp0pys.bat -m xlpricer prep INTERNAL-open-telekom-cloud-prices-2025-05-12.xlsx  non.xlsx
-REM ~ preped.xlsx
-
+REM ~ call %~dp0pys.bat -m xlpricer run flex.py
 
 
 REM ~ setlocal
