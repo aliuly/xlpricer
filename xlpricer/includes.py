@@ -142,6 +142,20 @@ def fixed_prices(apidat:dict) -> None:
       'unit': 'item',
       'region': '*',
     },    
+    {
+      'id': 'FREE_AS',
+      'productName': 'Auto Scaling',
+      'productFamily': 'Free',
+      'unit': 'item',
+      'region': '*',
+    },    
+    {
+      'id': 'FREE_IMS',
+      'productName': 'Image Management Service',
+      'productFamily': 'Free',
+      'unit': 'item',
+      'region': '*',
+    },    
   ], 'free', apidat)
   
   
