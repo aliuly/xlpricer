@@ -18,32 +18,8 @@ To delete tags use:
 
 # TODO
 
-- [x] Load some settings from file
-  - proxy settings
-  - API URL
-  - API language
-  - swiss
-- [x] Allow for additional JSON files containing pricing data
-- [x] Added support for Item/ot (setup/one time) charges
-  - ~~Add setup costs: unit == Item/ot (to a different sheet)~~
-  - ~~xlbom, should make Item/ot set to zero~~
-  - ~~Non Recurrent costs use a format:~~
-    - ~~`=FILTER(Components!$B$5:$V$20,Components!$V$5:$V$20="Item/ot")`~~
-    - ~~B = Qty, V = unit~~
-  - ~~This requires a dynamic array formula which openpyxl is not generating~~
-    ~~properly.~~
-- [x] Add a scrapper run-time and the ability to run scrapper scripts
-- [x] Price formula should show 0 instead "" when not available
-- [x] Cloud Desc losing Validation list when repricing
-  - workaround ... create a Name for the pricelist
-- [x] Styles get lost after one run
-  - run using UI to generate a xlsx.
-  - If an error happens and the user is sent back to the build menu
-  - Clicking on "Run" again will not work because styles are no longer
-    definable.
 - [ ] As the BOM grows, performance suffers
 - [ ] sphinx docs
-
 
 ```python
 ic| pkg['response']['columns']: {'R12': 'Reserved (12 months)',

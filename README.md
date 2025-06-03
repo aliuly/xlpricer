@@ -100,6 +100,9 @@ significantly.
 
 # Versions
 
+- next:
+  - Services tab only gets generated if data is found.  Latest API
+    change does not return sevices records.
 - 1.2.0:
   - Added support for settings file
   - Include prices by additional JSON files
