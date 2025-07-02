@@ -18,6 +18,10 @@ To delete tags use:
 
 # TODO
 
+- [ ] Add Forecast tab
+  - components: add 2 columns after D (for use for classifying)
+  - In Inflation calculations, add a column for setup charges
+  - Add sample sum calculation with Column D
 - [ ] As the BOM grows, performance suffers
 - [ ] sphinx docs
 

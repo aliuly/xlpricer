@@ -100,6 +100,10 @@ significantly.
 
 # Versions
 
+- 1.2.2: 
+  - GPU flavors to description
+  - Price API module debug code
+  - Tweaked language settings
 - 1.2.1: bugfix
   - Services tab only gets generated if data is found.  Latest API
     change does not return sevices records.
