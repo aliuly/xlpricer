@@ -43,7 +43,7 @@ def fetch(url:str, **params) -> dict:
   return js['response']
 
 
-def fetch_prices(url:str,verbose:bool = True) -> dict:
+def fetch_prices(url:str,verbose:bool = True,**params) -> dict:
   '''Fetch API results
   
   Handles pagination and initial data normalization
@@ -58,10 +58,12 @@ def fetch_prices(url:str,verbose:bool = True) -> dict:
      value in the dict is a list of records.
   
   :param url: URL for API end-point format
+  :param verbose: show verbose messages
+  :param params: kwargs to be passed as HTTP query
   :returns: A dict containing results.
   '''
   if verbose: sys.stderr.write('Querying API..')
-  r = fetch(url, limitMax=1)
+  r = fetch(url, limitMax=1, **params)
   res = {
     'columns': r['columns'],
     'services': r['services']['records'],
@@ -69,12 +71,12 @@ def fetch_prices(url:str,verbose:bool = True) -> dict:
     'records': {},
   }
   if verbose: sys.stderr.write(f'..OK\nRecord count: {res["count"]}\n')
-  
+
   limit_max = 499
   offset = 0
   while True:
     if verbose: sys.stderr.write(f'Query offset {offset}..')
-    r = fetch(url, limitMax=limit_max,limitFrom=offset)
+    r = fetch(url, limitMax=limit_max,limitFrom=offset, **params)
     if verbose: sys.stderr.write('Ok\n')
 
     if len(r['result']) == 0: break
@@ -88,4 +90,32 @@ def fetch_prices(url:str,verbose:bool = True) -> dict:
   
   return res
   
+if __name__ == '__main__':
+  import argparse
+  from constants import K
+  import proxycfg
+  import yaml
 
+  cli = argparse.ArgumentParser(description='Pricing API test')
+  cli.add_argument('-d', '--debug', help='Turn on debugging options', action='store_true', default = False)
+  cli.add_argument('-v','--verbose', action='store_true', default=True)
+  cli.add_argument('-q','--quite', action='store_false', dest='verbose')
+  cli.add_argument('-A','--autocfg',help='Use WinReg to configure proxy (default)', action='store_true', default = True)
+  cli.add_argument('-a','--no-autocfg',help='Skip proxy autoconfig', action='store_false', dest = 'autocfg')
+  cli.add_argument('--url', help='Specify the API URL format', default = K.DEF_API_ENDPOINT, type=str)
+  cli.add_argument('params',help='Additional parameters',nargs='*')
+  args = cli.parse_args()
+  ic(args)
+  params = dict()
+  for i in args.params:
+    if '=' in i:
+      k,v = i.split('=',1)
+      params[k] = v
+    else:
+      params[i] = i
+  ic(params)
+
+  if args.debug: http_logging()
+  if args.autocfg: proxycfg.proxy_cfg(args.debug)
+  prices = fetch_prices(args.url,args.verbose,**params)
+  print(yaml.dump(prices))
