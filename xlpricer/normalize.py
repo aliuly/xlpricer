@@ -251,6 +251,8 @@ def normalize(apidat:dict):
           rec[K.COL_XLTITLE] += f' (max {rec["additionalText"]} nodes)'
         elif rec['serviceType'] in ['DWS', 'd2', 'i3']:
           rec[K.COL_XLTITLE] += f' {rec["additionalText"]}'
+        elif rec['productIdParameter'] == 'gpu':
+          rec[K.COL_XLTITLE] += f' - {rec["additionalText"]}'
 
       if rec['productFamily'] == 'AI':
         # Special rules for AI products

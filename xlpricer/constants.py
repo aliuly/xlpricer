@@ -2,6 +2,12 @@
 Constant definitions
 '''
 class K:
+  FORMAT_VERSION ='1.1.1'
+  # - 1.1.1 : Added GPU type to title
+  # - 1.1.0 : Introduces defined name PriceListNames to workaround an
+  #   unsupported feature in OpenPyxl w.r.t data validation.
+  # - 1.0.2 : First "complete" version
+
   WS_COMPONENT = 'Components'
   WS_PRICES = 'Prices'
   WS_ASSUMPTIONS = 'Assumptions'
@@ -44,15 +50,12 @@ class K:
 
   YEAR_MAX = 6
 
-  DEF_API_ENDPOINT = 'https://calculator.otc-service.com/{lang}/open-telekom-price-api/'
+  DEF_API_ENDPOINT = 'https://calculator.otc-service.com/en/open-telekom-price-api/'
+  DE_API_ENDPOINT = 'https://calculator.otc-service.com/de/open-telekom-price-api/'
+  EN_API_ENDPOINT = 'https://calculator.otc-service.com/en/open-telekom-price-api/'
   DEF_BUILD_FILENAME = 'INTERNAL-open-telekom-cloud-prices-{date}.xlsx' 
   DEF_BUILD_RENAME_TAG = 'INTERNAL'
   DEF_BUILD_RENAME_NEW = 'PUBLIC'
-
-  FORMAT_VERSION ='1.1.0'
-  # - 1.1.0 : Introduces defined name PriceListNames to workaround an
-  #   unsupported feature in OpenPyxl w.r.t data validation.
-  # - 1.0.2 : First "complete" version
 
   CN_QTY = 'Qty'
   CN_DESC = 'Cloud Desc'
