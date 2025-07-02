@@ -47,7 +47,6 @@ def load_defaults() -> argparse.Namespace:
   return argparse.Namespace(
       proxy_cfg = select('proxy',True),
       api_url = select('api',K.DEF_API_ENDPOINT),
-      api_lang = select('api_lang', 'en'),
       swiss = select('swiss', False),
       use_cache = select('use_cache', True),
       cache_file = select('cache_file', None),
@@ -75,11 +74,12 @@ def make_parser(defaults:argparse.Namespace):
   for pp in [sub1,sub2]:
     pp.add_argument('-A','--autocfg',help='Use WinReg to configure proxy (default)', action='store_true', default = defaults.proxy_cfg)
     pp.add_argument('-a','--no-autocfg',help='Skip proxy autoconfig', action='store_false', dest = 'autocfg')
-    pp.add_argument('--url', help='Specify the API URL format', default = defaults.api_url, type=str)
-    pp.add_argument('-l','--lang', help='Select language API',type=str, default = defaults.api_lang, choices=['en','de'])
+    pp.add_argument('--url', help='Specify the API URL endpoint', default = defaults.api_url, type=str)
+    pp.add_argument('--lang-de', help='Use German URL', action='store_const', dest='url', const=K.DE_API_ENDPOINT)
+    pp.add_argument('--lang-en', help='Use English URL', action='store_const', dest='url', const=K.EN_API_ENDPOINT)
     pp.add_argument('--load',help='Do not query API, but load from file', type=str, default =None)
     pp.add_argument('--save',help='Save the results of the API queries to a file', type=str, default =None)
-    pp.add_argument('--swiss',help='Do not filter eu-ch2 entries', default=defaults.swiss,action='store_true')
+    pp.add_argument('--swiss',help='Keep eu-ch2 entries', default=defaults.swiss,action='store_true')
     pp.add_argument('-I','--include',help='Include additional pricing data',default=None,action='append')
 
   sub1.add_argument('xlsx', help = 'File to create',nargs='?')
@@ -121,7 +121,7 @@ if __name__ == '__main__':
       res = cache.load(args.load)
     else:
       if args.autocfg: proxycfg.proxy_cfg(args.debug)
-      res = price_api.fetch_prices(args.url.format(lang = args.lang))
+      res = price_api.fetch_prices(args.url)
 
     if args.save: cache.save(args.save, res)
 

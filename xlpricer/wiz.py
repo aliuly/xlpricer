@@ -110,7 +110,7 @@ class RepriceScr:
     apidat = cache.validate_cache(cache_file, use_cache)
     if apidat is None:
       if self.parent.ui_data.autocfg.get(): proxycfg.proxy_cfg(True)
-      apidat = price_api.fetch_prices(self.parent.defaults.api_url.format(lang=self.parent.defaults.api_lang))
+      apidat = price_api.fetch_prices(self.parent.defaults.api_url)
       if use_cache: cache.save(cache_file,apidat)
     print(apidat.keys())
     includes.fixed_prices(apidat)
@@ -241,7 +241,7 @@ class BuildScr:
     apidat = cache.validate_cache(cache_file, use_cache)
     if apidat is None:
       if self.parent.ui_data.autocfg.get(): proxycfg.proxy_cfg(True)
-      apidat = price_api.fetch_prices(self.parent.defaults.api_url.format(lang=self.parent.defaults.api_lang))
+      apidat = price_api.fetch_prices(self.parent.defaults.api_url)
       if use_cache: cache.save(cache_file,apidat)
     print(apidat.keys())
     includes.fixed_prices(apidat)
