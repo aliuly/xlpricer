@@ -100,6 +100,10 @@ significantly.
 
 # Versions
 
+- 1.2.3:
+  - Add set-up column to inflation forecast
+  - Update proxy settings
+  - Change
 - 1.2.2: 
   - GPU flavors to description
   - Price API module debug code
@@ -119,3 +123,5 @@ significantly.
   - Other tweaks and bugfixes
 - 1.0.0:
   - Initial release
+
+

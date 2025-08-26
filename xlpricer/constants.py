@@ -2,7 +2,8 @@
 Constant definitions
 '''
 class K:
-  FORMAT_VERSION ='1.1.1'
+  FORMAT_VERSION ='1.2.0'
+  # - 1.2.0 : Added grouping and set-up calc columns
   # - 1.1.1 : Added GPU type to title
   # - 1.1.0 : Introduces defined name PriceListNames to workaround an
   #   unsupported feature in OpenPyxl w.r.t data validation.
@@ -61,6 +62,7 @@ class K:
   CN_DESC = 'Cloud Desc'
   CN_REGION = 'Region'
   CN_TIER_CALC = 'Tier Calc'
+  CN_GROUPING = 'Grouping'
   CN_SUBTOTAL_UNIT = 'Sub-total per unit'
 
   KW_meta = 'meta'

@@ -65,10 +65,14 @@ def proxy_auto_cfg():
 
   if not resp.ok: return None, value, None
 
-  mv = re.search(r'PROXY (\d+\.\d+\.\d+\.\d+:\d+);', resp.text)
-  proxy = mv[1] if mv else None
+  if mv := re.search(r'PROXY (\d+\.\d+\.\d+\.\d+:\d+)', resp.text):
+    return mv[1], value, resp.text
+  
+  # OK, this is another proxy regexp matching string.
+  if mv := re.search(r'PROXY ([A-Za-z][-\.A-Za-z0-9]+:\d+)', resp.text):
+    return mv[1], value, resp.text
 
-  return proxy, value, resp.text
+  return None
 
 def show_autocfg(opts = None):
   ''' Print the proxy auto configuration results
@@ -84,7 +88,7 @@ def show_autocfg(opts = None):
     print(jstext)
 
 def proxy_cfg(debug=False):
-  ''' Configure proxy
+  '''Configure proxy
 
   :param bool debug: (optional) Show the proxy being used
 

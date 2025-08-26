@@ -188,6 +188,10 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
       'h': [K.CN_TIER_CALC, 8, XlFmt.f_syshdr, 'f_tier_calc', True ],
       'f': XlFmt.f_def_data,
     },
+    {
+      'h': [K.CN_GROUPING, 8, XlFmt.f_syshdr, 'f_grouping', True ],
+      'f': XlFmt.f_def_data,
+    },
     SPACER,
     {
       'h': ['Price', 10, XlFmt.f_refhdr, 'f_pmonth' ],
@@ -242,11 +246,15 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
 
   xlu.write(ws,r,coloffs+1,'Year:',XlFmt.f_header)
   xlu.set_column_width(ws,coloffs+1,6)
-  xlu.write(ws,r,coloffs+2,1,XlFmt.f_header)
+
+  xlu.write(ws,r,coloffs+2,'Set-up',XlFmt.f_header)
+  xlu.set_column_width(ws,coloffs+2,6)
+
+  xlu.write(ws,r,coloffs+3,1,XlFmt.f_header)
   year_row = r
   for y in range(1,K.YEAR_MAX):
-    xlu.write(ws,r,coloffs+y+2,
-                '=' + xlu.rowcol_to_cell(r,coloffs+y+1) + '+1',
+    xlu.write(ws,r,coloffs+y+3,
+                '=' + xlu.rowcol_to_cell(r,coloffs+y+2) + '+1',
                 XlFmt.f_header)
 
 
@@ -255,10 +263,12 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
   for c in range(3,coloffs): xlu.write(ws,r, c, None, XlFmt.f_sumline)
   xlu.write(ws,r, tier_calc, 'setup', XlFmt.f_sumline)
   xlu.write(ws,r,coloffs-1,
-        ('=SUMIFS({f_tot_qty}:{f_tot_qty},' 
-            '{f_qty}:{f_qty},"<>"&{f_qty}{r1},'
-            '{f_unit}:{f_unit},"="&{ONE_TIME_ITEM},'
-            '{f_tier_calc}:{f_tier_calc},"=")').format(r1=r,**xl.ref()),
+        ('=SUMIFS({f_tot_qty}:{f_tot_qty},'           # Column to sum
+            '{f_qty}:{f_qty},"<>"&{f_qty}{r1},'       # We are on the same row
+            '{f_unit}:{f_unit},"="&{ONE_TIME_ITEM},'  # Select One Time Items
+            '{f_grouping}:{f_grouping},"<>Total *",'  # Skip per-group totals
+            '{f_tier_calc}:{f_tier_calc},"=")'        # Select the valid tiered calculation rows
+        ).format(r1=r,**xl.ref()),
         XlFmt.f_sumline_total)
 
   r += 1
@@ -266,20 +276,24 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
   for c in range(3,coloffs): xlu.write(ws,r, c, None, XlFmt.f_sumline)
   xlu.write(ws,r, tier_calc, 'total', XlFmt.f_sumline)
   xlu.write(ws,r,coloffs-1,
-        ('=SUMIFS({f_tot_qty}:{f_tot_qty},' 
-            '{f_qty}:{f_qty},"<>"&{f_qty}{r1},'
-            '{f_unit}:{f_unit},"<>"&{ONE_TIME_ITEM},'
-            '{f_tier_calc}:{f_tier_calc},"=")').format(r1=r,**xl.ref()),
+        ('=SUMIFS({f_tot_qty}:{f_tot_qty},'           # Column to sum
+            '{f_qty}:{f_qty},"<>"&{f_qty}{r1},'       # We are on the same row
+            '{f_unit}:{f_unit},"<>"&{ONE_TIME_ITEM},' # Skip one-time items
+            '{f_grouping}:{f_grouping},"<>Total *",'  # Skip per-group totals
+            '{f_tier_calc}:{f_tier_calc},"=")'        # Select the valid tiered calculation rows
+        ).format(r1=r,**xl.ref()),
         XlFmt.f_sumline_total)
 
-  for y in range(0,K.YEAR_MAX):
+  for y in range(0,K.YEAR_MAX+1):
     c = coloffs+y+2
     xlu.set_column_width(ws,c,15)
     cn = xlu.col_to_name(c)
     xlu.write(ws,r,c,
-            ('=SUMIFS({cn}:{cn},'
-                '{f_qty}:{f_qty},"<>"&{f_qty}{r1},'
-                '{f_tier_calc}:{f_tier_calc},"=")').format(cn=cn,r1=r,**xl.ref()),
+            ('=SUMIFS({cn}:{cn},'                       # Column to sum
+              '{f_qty}:{f_qty},"<>"&{f_qty}{r1},'       # We are on the same row
+              '{f_grouping}:{f_grouping},"<>Total *",'  # Skip per-group totals
+              '{f_tier_calc}:{f_tier_calc},"=")'        # Select the valid tiered calculation rows
+            ).format(cn=cn,r1=r,**xl.ref()),
         XlFmt.f_sumline_total)
 
   r += 1
@@ -300,8 +314,8 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
 
   xlu.group_columns(ws, ws_colname('vCPU',COLUMNS), ws_colname('RAM (GB)', COLUMNS), hide=False)
   xlu.group_columns(ws, ws_colname('Region',COLUMNS), ws_colname('Backup (GB)', COLUMNS), hide=True)
-  xlu.group_columns(ws, ws_colname('Row Idx',COLUMNS), ws_colname('Tier Calc', COLUMNS), hide=True)
-  xlu.group_columns(ws, coloffs+1, coloffs+K.YEAR_MAX+1 , hide=True)
+  xlu.group_columns(ws, ws_colname('Row Idx',COLUMNS), ws_colname(K.CN_GROUPING, COLUMNS), hide=True)
+  xlu.group_columns(ws, coloffs+1, coloffs+K.YEAR_MAX+2 , hide=True)
 
 
 
@@ -377,12 +391,19 @@ def ws_inflation(xl:xlu.XlUtils,r:int,yrmx:int,year_row:int,COLUMNS:list,alt:boo
   ws = xl.ws(K.WS_COMPONENT)
   coloffs = len(COLUMNS)
 
+  xlu.write(ws,r,coloffs+3,
+        ('=IF({#f_unit}={ONE_TIME_ITEM},' 
+            '{#f_tot_qty},'
+            '0)').format(r1=r,**xl.ref()),
+        XlFmt.f_euro)
+
   for y in range(0,yrmx):
-    c = coloffs+y+3
+    c = coloffs+y+4
     if alt:
       f = '={f_tot_qty}{r1}*(1+{INFLATION})^({year}-1)'.format(
             r1=r,year = xlu.rowcol_to_cell(year_row, c,True,False), **xl.ref())
     else:
+      
       f = (
         '=IF({#f_unit}={ONE_TIME_ITEM},0,'
           'IF( AND({#f_hrs}="R24M",{#f_pr24m}<>0),'
