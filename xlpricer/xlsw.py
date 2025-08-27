@@ -14,9 +14,9 @@ import sys
 from . import xlass
 from . import xlbom
 from . import xlprice
+from . import xlover
 from . import xlsrv
 from . import xlu
-from . import xltier
 from .constants import K
 from .xlfmt import XlFmt
 
@@ -39,6 +39,7 @@ def xlsx_write(xlfile:str, apidat:dict) -> None:
     break
 
   xl = xlu.XlUtils(xlfile)
+  xl.add_worksheet(K.WS_OVERVIEW)
   xl.add_worksheet(K.WS_COMPONENT)
   xl.add_worksheet(K.WS_PRICES)
   xl.add_worksheet(K.WS_ASSUMPTIONS)
@@ -49,6 +50,10 @@ def xlsx_write(xlfile:str, apidat:dict) -> None:
     xl.add_vlist(lst)
     for item in apidat['choices'][lst]:
       xl.vlist(lst,item)
+  
+  xl.add_vlist(K.VL_RXM)
+  for item in ['R24M','R12M','Elastic-FT','Elastic-Office']:
+    xl.vlist(K.VL_RXM, item)
 
   xl.load_fmt(XlFmt)
   if len(apidat['services']): xlsrv.ws_services(xl, apidat)
@@ -56,6 +61,8 @@ def xlsx_write(xlfile:str, apidat:dict) -> None:
   xlprice.ws_prices(xl, apidat)
   # ~ ic(xl.ref())
   xlbom.ws_bom(xl, apidat)
+  xlover.sheet(xl)
+  
 
   xl.close()
 
@@ -70,7 +77,6 @@ def xlsx_refresh(xlfile:str, apidat:dict, xlout:str|None = None) -> None:
   sys.stderr.write('.OK\n')
   xl.load_fmt(XlFmt)
   xlprice.ws_prices(xl, apidat)
-  xltier.reprice_tiers(xl, apidat)
   xl.close(xlout)
 
 def xlsx_sanitize(xlin:str, xlout:str) -> None:

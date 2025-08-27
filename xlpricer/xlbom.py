@@ -1,6 +1,6 @@
 #!python
 #
-# Grab tables
+# Component worksheet
 #
 try:
   from icecream import ic
@@ -10,7 +10,7 @@ except ImportError:  # Graceful fallback if IceCream isn't installed.
 from . import xlu
 from .constants import K
 from .xlfmt import XlFmt
-from . import xltier
+from . import preload
 
 def ws_colname(name:str, COLUMNS:list, offset=1) -> int:
   for c in range(0,len(COLUMNS)):
@@ -39,28 +39,17 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
       'f': XlFmt.f_qty,
     },
     {
+      'h': [ "Function", 12, XlFmt.f_header, 'f_func', True ],
+      'f': XlFmt.f_info,
+    },
+    {
       'h': [ K.CN_DESC, 42, XlFmt.f_header, 'f_desc', True ],
       'f': XlFmt.f_desc,
       'validate-list': K.XLN_PRICES_DESCS,
     },
-    SPACER,
     {
-      'h': [ 'vCPU', 6, XlFmt.f_syshdr, 'f_vcpu' ],
-      'f': XlFmt.f_num_c,
-      'c': '=IF({#f_sku}="","",IF('
-              'INDEX({PRICES_TABLE},{#f_sku},{cm_vCpu})>0,'
-              'INDEX({PRICES_TABLE},{#f_sku},{cm_vCpu}),'
-              '""'
-        '))'
-    },
-    {
-      'h': [ 'RAM (GB)', 6, XlFmt.f_syshdr ],
-      'f': XlFmt.f_num_c,
-      'c': '=IF({#f_sku}="","",IF('
-              'INDEX({PRICES_TABLE},{#f_sku},{cm_ram})>0,'
-              'INDEX({PRICES_TABLE},{#f_sku},{cm_ram}),'
-              '""'
-        '))'
+      'h': [K.CN_GROUPING, 12, XlFmt.f_header, 'f_grouping', True ],
+      'f': XlFmt.f_info,
     },
     SPACER,
     {
@@ -70,7 +59,7 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
     {
       'h': [ 'H/R', 5.5, XlFmt.f_header, 'f_hrs' ],
       'f': XlFmt.f_qty,
-      'c': '=IF({DEF_RXM}="R24M",'
+      'c': '=IF({WS_RXM}="R24M",'
          # Default Reserved is R24M
          'IF({#f_pr24m}<>"","R24M",'
            # But we don't have r24m pricing...
@@ -78,12 +67,22 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
            'IF({#f_pr12m}<>"","R12M",{DEF_HOURS})'
          ')'
         ','
-         'IF({DEF_RXM}="R12M",'
+         'IF({WS_RXM}="R12M",'
            # Default Reserved is R12M
            'IF({#f_pr12m}<>"","R12M",{DEF_HOURS})'
          ','
-           # No valid default reserved always use PAYG
-           '{DEF_HOURS}'
+          'IF({WS_RXM}="Elastic-FT",'
+           # System operates 24x7
+           '{FT_HOURS}'
+          ','
+           'IF({WS_RXM}="Elastic-Office",'
+            # System operates office hours
+            '{WK_HOURS}'
+           ','
+            # OK, use the default hours in assumptions
+            '{DEF_HOURS}'
+           ')'
+          ')'
          ')'
         ')',
     },
@@ -91,7 +90,7 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
     {
       'h': [ K.CN_REGION, 7, XlFmt.f_header, 'f_reg', True  ],
       'f': XlFmt.f_text,
-      'c': '={DEF_REGION}',
+      'c': '={WS_REGION}',
       'validate-list': xl.vlist(K.VL_REGIONS),
     },
     {
@@ -121,6 +120,25 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
       'h': [ 'Backup (GB)', 7, XlFmt.f_header, 'f_bakvol' ],
       'f': XlFmt.f_num_in,
       'c': '=IF(AND({#f_evs_perm}="Y",{#f_storage}>0),{#f_storage}*{#f_bak},"")',
+    },
+    SPACER,
+    {
+      'h': [ 'vCPU', 6, XlFmt.f_syshdr, 'f_vcpu' ],
+      'f': XlFmt.f_num_c,
+      'c': '=IF({#f_sku}="","",IF('
+              'INDEX({PRICES_TABLE},{#f_sku},{cm_vCpu})>0,'
+              'INDEX({PRICES_TABLE},{#f_sku},{cm_vCpu}),'
+              '""'
+        '))'
+    },
+    {
+      'h': [ 'RAM (GB)', 6, XlFmt.f_syshdr ],
+      'f': XlFmt.f_num_c,
+      'c': '=IF({#f_sku}="","",IF('
+              'INDEX({PRICES_TABLE},{#f_sku},{cm_ram})>0,'
+              'INDEX({PRICES_TABLE},{#f_sku},{cm_ram}),'
+              '""'
+        '))'
     },
     SPACER,
     {
@@ -184,14 +202,6 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
               'INDEX({PRICES_TABLE},{#f_cbr_id},{cm_priceAmount})'
         ')'
     },
-    {
-      'h': [K.CN_TIER_CALC, 8, XlFmt.f_syshdr, 'f_tier_calc', True ],
-      'f': XlFmt.f_def_data,
-    },
-    {
-      'h': [K.CN_GROUPING, 8, XlFmt.f_syshdr, 'f_grouping', True ],
-      'f': XlFmt.f_def_data,
-    },
     SPACER,
     {
       'h': ['Price', 10, XlFmt.f_refhdr, 'f_pmonth' ],
@@ -207,17 +217,17 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
     {
       'h': ['EVS Price', 12, XlFmt.f_refhdr, 'f_evs_sub' ],
       'f': XlFmt.f_euro,
-      'c': '=IF({#f_storage}="",0,'
+      'c': '=IFERROR(IF({#f_storage}="",0,'
           '{#f_storage}*{#f_evs_price}*IF('
             'AND({#f_evs_perm}="N",ISNUMBER({#f_hrs})),'
               '{#f_hrs}/{FT_HOURS},'
               '1'
-        '))',
+        ')),0)',
     },
     {
       'h': ['CBR Price', 10, XlFmt.f_refhdr, 'f_cbr_sub' ],
       'f': XlFmt.f_euro,
-      'c': '=IF({#f_bakvol}="",0,{#f_bakvol}*{#f_cbr_price})',
+      'c': '=IFERROR(IF({#f_bakvol}="",0,{#f_bakvol}*{#f_cbr_price}),0)',
     },
     {
       'h': [K.CN_SUBTOTAL_UNIT, 12, XlFmt.f_refhdr, 'f_tot_1', True ],
@@ -232,7 +242,6 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
   ]
   '''Column definitions'''
   coloffs = len(COLUMNS)+1
-  tier_calc = ws_colname(K.CN_TIER_CALC,COLUMNS)
 
   r = 1
   xlu.write(ws,r,1, 'Cloud Components', XlFmt.f_title)
@@ -241,14 +250,43 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
             XlFmt.f_title)
 
   r += 1
+  RS = r
+  xlu.write(ws,r, 2,'Region:', XlFmt.f_key)
+  xlu.write(ws,r, 3, '={DEF_REGION}'.format(**xl.ref()), XlFmt.f_val)
+  xlu.data_validation_list(ws,r,3, xl.vlist(K.VL_REGIONS))
+  xl.ref(WS_REGION =  xlu.rowcol_to_cell(r,3,True,True))
+
+  r += 1
+  xlu.write(ws,r, 2,'Pricing:',  XlFmt.f_key)
+  xlu.write(ws,r, 3,'={DEF_RXM}'.format(**xl.ref()), XlFmt.f_val)
+  xlu.data_validation_list(ws,r,3, xl.vlist(K.VL_RXM))
+  xl.ref(WS_RXM =  xlu.rowcol_to_cell(r,3,True,True))
+
+  r += 1
+
+  r += 1
   for c in range(1,coloffs):
     ws_header(xl, r, c, COLUMNS[c-1]['h'])
+
+  xlu.write(ws,RS, 4, 'Set-up: ',XlFmt.f_key)
+  xlu.write(ws,RS, 5, '=SUMIFS({f_tot_qty}:{f_tot_qty},'  # Column to sum
+            '{f_unit}:{f_unit},"="&{ONE_TIME_ITEM}'       # Select One Time Items
+            ')'.format(r1=RS,**xl.ref()),
+            XlFmt.f_sumline_total)
+  RS += 1
+  xlu.write(ws,RS, 4, 'Monthly Total: ',XlFmt.f_key)
+  xlu.write(ws,RS, 5, '=SUMIFS({f_tot_qty}:{f_tot_qty},'   # Column to sum
+            '{f_unit}:{f_unit},"<>"&{ONE_TIME_ITEM},'      # Remove One Time Items
+            '{f_qty}:{f_qty},"<>Total *"'                  # Remove totals
+            ')'.format(r1=RS,**xl.ref()),
+            XlFmt.f_sumline_total)
 
   xlu.write(ws,r,coloffs+1,'Year:',XlFmt.f_header)
   xlu.set_column_width(ws,coloffs+1,6)
 
   xlu.write(ws,r,coloffs+2,'Set-up',XlFmt.f_header)
   xlu.set_column_width(ws,coloffs+2,6)
+  xl.ref(IDXTAB = coloffs+2)
 
   xlu.write(ws,r,coloffs+3,1,XlFmt.f_header)
   year_row = r
@@ -258,63 +296,64 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
                 XlFmt.f_header)
 
 
-  r += 1
-  xlu.write(ws,r,2,'Non-recurrent Charges', XlFmt.f_sumline)
-  for c in range(3,coloffs): xlu.write(ws,r, c, None, XlFmt.f_sumline)
-  xlu.write(ws,r, tier_calc, 'setup', XlFmt.f_sumline)
-  xlu.write(ws,r,coloffs-1,
-        ('=SUMIFS({f_tot_qty}:{f_tot_qty},'           # Column to sum
-            '{f_qty}:{f_qty},"<>"&{f_qty}{r1},'       # We are on the same row
-            '{f_unit}:{f_unit},"="&{ONE_TIME_ITEM},'  # Select One Time Items
-            '{f_grouping}:{f_grouping},"<>Total *",'  # Skip per-group totals
-            '{f_tier_calc}:{f_tier_calc},"=")'        # Select the valid tiered calculation rows
-        ).format(r1=r,**xl.ref()),
-        XlFmt.f_sumline_total)
+  # ~ r += 1
+  # ~ xlu.write(ws,r,2,'Non-recurrent Charges', XlFmt.f_sumline)
+  # ~ for c in range(3,coloffs): xlu.write(ws,r, c, None, XlFmt.f_sumline)
+  # ~ xlu.write(ws,r,coloffs-1,
+        # ~ ('=SUMIFS({f_tot_qty}:{f_tot_qty},'           # Column to sum
+            # ~ '{f_qty}:{f_qty},"<>"&{f_qty}{r1},'       # We are on the same row
+            # ~ '{f_unit}:{f_unit},"="&{ONE_TIME_ITEM},'  # Select One Time Items
+            # ~ '{f_grouping}:{f_grouping},"<>Total *",'  # Skip per-group totals
+            # ~ '{f_tier_calc}:{f_tier_calc},"=")'        # Select the valid tiered calculation rows
+        # ~ ).format(r1=r,**xl.ref()),
+        # ~ XlFmt.f_sumline_total)
+
+  # ~ r += 1
 
   r += 1
-  xlu.write(ws,r,2,'Monthly Price', XlFmt.f_sumline)
-  for c in range(3,coloffs): xlu.write(ws,r, c, None, XlFmt.f_sumline)
-  xlu.write(ws,r, tier_calc, 'total', XlFmt.f_sumline)
-  xlu.write(ws,r,coloffs-1,
-        ('=SUMIFS({f_tot_qty}:{f_tot_qty},'           # Column to sum
-            '{f_qty}:{f_qty},"<>"&{f_qty}{r1},'       # We are on the same row
-            '{f_unit}:{f_unit},"<>"&{ONE_TIME_ITEM},' # Skip one-time items
-            '{f_grouping}:{f_grouping},"<>Total *",'  # Skip per-group totals
-            '{f_tier_calc}:{f_tier_calc},"=")'        # Select the valid tiered calculation rows
-        ).format(r1=r,**xl.ref()),
-        XlFmt.f_sumline_total)
+  xlu.freeze_panes(ws, r, 6)
 
-  for y in range(0,K.YEAR_MAX+1):
-    c = coloffs+y+2
-    xlu.set_column_width(ws,c,15)
-    cn = xlu.col_to_name(c)
-    xlu.write(ws,r,c,
-            ('=SUMIFS({cn}:{cn},'                       # Column to sum
-              '{f_qty}:{f_qty},"<>"&{f_qty}{r1},'       # We are on the same row
-              '{f_grouping}:{f_grouping},"<>Total *",'  # Skip per-group totals
-              '{f_tier_calc}:{f_tier_calc},"=")'        # Select the valid tiered calculation rows
-            ).format(cn=cn,r1=r,**xl.ref()),
-        XlFmt.f_sumline_total)
+  for i in range(0,len(preload.ITEMS)):
+    ri = r+i
+    xl.rowrefs(ri)
+    if (preload.ITEMS[i] is None) or isinstance(preload.ITEMS[i],list):
+      for c in range(1,len(COLUMNS)+1):
+        cc = c-2
+        ws_bom_cell(xl,ri,c, COLUMNS[c-1],
+          None if preload.ITEMS[i] is None else (
+            preload.ITEMS[i][cc] if 0 <= cc and cc < len(preload.ITEMS[i]) else None
+          ))
+      ws_inflation(xl, ri, K.YEAR_MAX, year_row, COLUMNS)
+    elif isinstance(preload.ITEMS[i],str):
+      if preload.ITEMS[i].startswith('Total '):
+        xlu.write(ws,ri, 2, preload.ITEMS[i], XlFmt.f_sumline)
+        for c in range(3,coloffs): xlu.write(ws,ri, c, None, XlFmt.f_sumline)
+        xlu.write(ws, ri, coloffs-1,
+            ('=SUMIFS({f_tot_qty}:{f_tot_qty},'         # Column to sum
+             '{f_unit}:{f_unit},"<>"&{ONE_TIME_ITEM},'  # Skip one-time items
+             '{f_grouping}:{f_grouping},"="&MID({f_qty}{r1},7,LEN({f_qty}{r1})-6)' # Pick only the right group
+             ')').format(r1=ri, **xl.ref()),
+            XlFmt.f_sumline_total)
 
-  r += 1
-  xlu.freeze_panes(ws, r, 5)
+        for y in range(0,K.YEAR_MAX+1):
+          c = coloffs+y+2
+          cn = xlu.col_to_name(c)
+          xlu.write(ws,ri,c, 
+                  ('=SUMIFS({cn}:{cn},'                       # Column to sum
+                    '{f_grouping}:{f_grouping},"="&MID({f_qty}{r1},7,LEN({f_qty}{r1})-6)' # Pick only the right group
+                  ')').format(cn=cn,r1=ri,**xl.ref()),
+              XlFmt.f_sumline_total)
+      else:
+        xlu.write(ws,ri,2,preload.ITEMS[i], XlFmt.f_hr1)
+        for c in range(3,coloffs): xlu.write(ws,ri, c, None, XlFmt.f_hr1)
+        
 
-  xlu.write(ws,r,2,'General', XlFmt.f_hr1)
-  for c in range(3,coloffs): xlu.write(ws,r, c, None, XlFmt.f_hr1)
 
-  for r in range(r+1,r+20):
-    xl.rowrefs(r)
-    for c in range(1,len(COLUMNS)+1):
-      ws_bom_cell(xl,r,c, COLUMNS[c-1])
-    ws_inflation(xl, r, K.YEAR_MAX, year_row, COLUMNS)
+  r += i
 
-
-  r += 2
-  xltier.bom_tiers(xl, apidat, r, year_row, K.YEAR_MAX, COLUMNS)
-
-  xlu.group_columns(ws, ws_colname('vCPU',COLUMNS), ws_colname('RAM (GB)', COLUMNS), hide=False)
   xlu.group_columns(ws, ws_colname('Region',COLUMNS), ws_colname('Backup (GB)', COLUMNS), hide=True)
-  xlu.group_columns(ws, ws_colname('Row Idx',COLUMNS), ws_colname(K.CN_GROUPING, COLUMNS), hide=True)
+  xlu.group_columns(ws, ws_colname('vCPU',COLUMNS), ws_colname('RAM (GB)', COLUMNS), hide=False)
+  xlu.group_columns(ws, ws_colname('Row Idx',COLUMNS), ws_colname('CBR Price per GB', COLUMNS), hide=True)
   xlu.group_columns(ws, coloffs+1, coloffs+K.YEAR_MAX+2 , hide=True)
 
 
@@ -352,7 +391,7 @@ def ws_bom_cell(xl:xlu.XlUtils,r:int,c:int, coldef:dict, o:str = None)->None:
 
   xlu.write(ws,r,c, content, fmt)
 
-  if 'validate-list' in coldef and o is None:
+  if 'validate-list' in coldef:
     xlu.data_validation_list(ws, r, c, coldef['validate-list'])
 
 def ws_header(xl:xlu.XlUtils,r:int,c:int,hdef:list)->None:
@@ -378,14 +417,13 @@ def ws_header(xl:xlu.XlUtils,r:int,c:int,hdef:list)->None:
   if not fld_id is None: xl.ref(**{fld_id: xlu.col_to_name(c,True)})
   if hprot: xlu.data_validation_list(ws, r, c, [ h ], True, False)
 
-def ws_inflation(xl:xlu.XlUtils,r:int,yrmx:int,year_row:int,COLUMNS:list,alt:bool = False)->None:
+def ws_inflation(xl:xlu.XlUtils,r:int,yrmx:int,year_row:int,COLUMNS:list)->None:
   '''Write row with inflation adjustments
 
   :param xl: xl utility object
   :param r: row being generated
   :param year_row: Row containing year index (for inflation adlustments)
   :param yrmx: Max number of years to calculate (for inflation adjustments)
-  :param alt: Calculation selection.  If False, use the normal calculation used by normal prices.  True use a simplified calculation for Tiered prices.
   :param COLUMNS: column definitions
   '''
   ws = xl.ws(K.WS_COMPONENT)
@@ -398,13 +436,8 @@ def ws_inflation(xl:xlu.XlUtils,r:int,yrmx:int,year_row:int,COLUMNS:list,alt:boo
         XlFmt.f_euro)
 
   for y in range(0,yrmx):
-    c = coloffs+y+4
-    if alt:
-      f = '={f_tot_qty}{r1}*(1+{INFLATION})^({year}-1)'.format(
-            r1=r,year = xlu.rowcol_to_cell(year_row, c,True,False), **xl.ref())
-    else:
-      
-      f = (
+    c = coloffs+y+4      
+    f = (
         '=IF({#f_unit}={ONE_TIME_ITEM},0,'
           'IF( AND({#f_hrs}="R24M",{#f_pr24m}<>0),'
               '{#f_qty}*'

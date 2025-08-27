@@ -71,91 +71,92 @@ def fixed_prices(apidat:dict) -> None:
   
   :param apidat: result set to modify
   '''
+  
   inc_records([
     { # Anti DDOS
       'id': 'FREE_ANTI_DDOS',
       'productName': 'Anti-DDOS',
-      'productFamily': 'Free',
+      'productFamily': K.FAMILY,
       'unit': 'item',
       'region': '*',
     },
     {
       'id': 'FREE_CES',
       'productName': 'Cloud Eye Service',
-      'productFamily': 'Free',
+      'productFamily': K.FAMILY,
       'unit': 'item',
       'region': '*',
     },
     {
       'id': 'FREE_CTS',
       'productName': 'Cloud Trace Service',
-      'productFamily': 'Free',
+      'productFamily': K.FAMILY,
       'unit': 'item',
       'region': '*',
     },
     {
       'id': 'FREE_IAM',
       'productName': 'Identity and Access Management',
-      'productFamily': 'Free',
+      'productFamily': K.FAMILY,
       'unit': 'item',
       'region': '*',
     },
     {
       'id': 'OTC_SWR_TRAFFIC',
       'productName': 'Software Repository Traffic for Containers',
-      'productFamily': 'Free',
+      'productFamily': K.FAMILY,
       'unit': 'item',
       'region': '*',
     },
     {
       'id': 'OTC_SWR_SIZE',
       'productName': 'Software Repository Storage for Containers',
-      'productFamily': 'Free',
+      'productFamily': K.FAMILY,
       'unit': 'item',
       'region': '*',
     },
     {
       'id': 'FREE_VPC_PEER',
       'productName': 'VPC peering',
-      'productFamily': 'Free',
+      'productFamily': K.FAMILY,
       'unit': 'item',
       'region': '*',
     },
     {
       'id': 'FREE_VPC',
       'productName': 'Virtual Private Cloud (VPC)',
-      'productFamily': 'Free',
+      'productFamily': K.FAMILY,
       'unit': 'item',
       'region': '*',
     },
     {
       'id': 'FREE_VPCFW',
       'productName': 'VPC Basic Firewall',
-      'productFamily': 'Free',
+      'productFamily': K.FAMILY,
       'unit': 'item',
       'region': '*',
     },
     {
       'id': 'FREE_ASM',
       'productName': 'Application Service Mesh (ASM)',
-      'productFamily': 'Free',
+      'productFamily': K.FAMILY,
       'unit': 'item',
       'region': '*',
     },    
     {
       'id': 'FREE_AS',
       'productName': 'Auto Scaling',
-      'productFamily': 'Free',
+      'productFamily': K.FAMILY,
       'unit': 'item',
       'region': '*',
     },    
     {
       'id': 'FREE_IMS',
       'productName': 'Image Management Service',
-      'productFamily': 'Free',
+      'productFamily': K.FAMILY,
       'unit': 'item',
       'region': '*',
     },    
-  ], 'free', apidat)
+  ], K.FAMILY, apidat)
   
   

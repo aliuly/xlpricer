@@ -100,6 +100,14 @@ significantly.
 
 # Versions
 
+- 1.3.0:
+  - On components sheet, default region and pricing model. 
+  - Added overview page
+  - Re-worked total calculations to include group sub-totals
+  - Wording of platform services.
+  - Added example contents and example Outbound Internet traffic
+    assumption
+  - Fully removed tier calculation
 - 1.2.3:
   - Add set-up column to inflation forecast
   - Update proxy settings

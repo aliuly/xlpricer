@@ -18,33 +18,8 @@ To delete tags use:
 
 # TODO
 
-
-
-- [ ] Add function column
-- [ ] move grouping to the left
-  - Rows 3 and 4 show: Total (gg) and Set-up (gg)
-  - grouping by default has (gg)
-  - Write grouping formulas
-- [ ] move columns vCPU and RAM to the right
-- [ ] Create per-group totals -- import sample BOM
-  - rethink total calculations
-  - Added column f_grouping for doing per-group total.
-  - Row with "Total XXX" is used to sum total
-  - Row with "XXX" is the item for that group
-  - Row with "Total XXX" should have:
-            ('=SUMIFS({cn}:{cn},'                       # Column to sum
-              '{f_qty}:{f_qty},"<>"&{f_qty}{r1},'       # We are on the same row
-              '{f_grouping}:{f_grouping},"="&MID({#f_grouping},{totln}+1,LEN({#f_grouping})-{totln}),'
-                                                        # Match group items
-              '{f_tier_calc}:{f_tier_calc},"=")'        # Select the valid tiered calculation rows
-            ).format(totln=len('Total '),cn=cn,r1=r,**xl.ref()),
-- [ ] Add Forecast tab
-  - In Inflation calculations, add a column for setup charges
-  - Add sample sum calculation with Column D
-- [ ] Add discount calculator
-- [ ] As the BOM grows, performance suffers
-  - make tier pricing formulas optional
 - [ ] sphinx docs
+- [ ] Add discount calculator
 
 ```python
 ic| pkg['response']['columns']: {'R12': 'Reserved (12 months)',

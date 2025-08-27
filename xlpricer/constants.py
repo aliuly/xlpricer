@@ -2,13 +2,16 @@
 Constant definitions
 '''
 class K:
-  FORMAT_VERSION ='1.2.0'
+  FORMAT_VERSION ='1.3.0'
+  # - 1.3.0 : Removed tier calculations, re-implemented totals, new
+  #   overview tab.
   # - 1.2.0 : Added grouping and set-up calc columns
   # - 1.1.1 : Added GPU type to title
   # - 1.1.0 : Introduces defined name PriceListNames to workaround an
   #   unsupported feature in OpenPyxl w.r.t data validation.
   # - 1.0.2 : First "complete" version
 
+  WS_OVERVIEW = 'Overview'
   WS_COMPONENT = 'Components'
   WS_PRICES = 'Prices'
   WS_ASSUMPTIONS = 'Assumptions'
@@ -17,6 +20,7 @@ class K:
   VL_EVS = 'EVS'
   VL_CBR = 'CBR'
   VL_REGIONS = 'REGIONS'
+  VL_RXM = 'RXM'
 
   DEFAULT_REGION = 'eu-de'
   DEFAULT_EVS = 'High I/O'
@@ -44,7 +48,7 @@ class K:
   AS_ANNUAL_INFLATION = 0.02
   AS_DAILY_CHANGE_RATE = 0.03
   AS_NUM_FULL_BACKUPS = 1
-  AS_NUM_INC_BACKUPS = 30
+  AS_NUM_INC_BACKUPS = 29
   AS_FT_HOURS = 730
   AS_WK_HOURS = 174
   AS_ONE_TIME = 'Item/ot'
@@ -61,8 +65,7 @@ class K:
   CN_QTY = 'Qty'
   CN_DESC = 'Cloud Desc'
   CN_REGION = 'Region'
-  CN_TIER_CALC = 'Tier Calc'
-  CN_GROUPING = 'Grouping'
+  CN_GROUPING = 'Group'
   CN_SUBTOTAL_UNIT = 'Sub-total per unit'
 
   KW_meta = 'meta'
@@ -75,3 +78,5 @@ class K:
   KW_mtime = 'mtime'
   KW_mdate = 'mdate'
   KW_page = 'page'
+
+  FAMILY = 'Essentials'

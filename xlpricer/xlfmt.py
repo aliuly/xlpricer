@@ -12,7 +12,7 @@ class XlFmt:
   f_title = {
               'font': {
                 'bold': True,
-                'size': 12,
+                'size': 16,
                 'color': 'FF0000',
               },
             }
@@ -100,14 +100,14 @@ class XlFmt:
                   'bold': True,
                   'color': 'FFFFFF',
                 },
-                'fill': 'A52A2A',
+                'fill': 'E20074',
               }
   f_sumline_total = {
                 'font': {
                   'bold': True,
                   'color': 'FFFFFF',
                 },
-                'fill': 'A52A2A',
+                'fill': 'E20074',
                 'num_format': '#,##0.00 €',
               }
   f_qty = {
@@ -121,6 +121,13 @@ class XlFmt:
                 'num_format': '#,##0',
                 'fill': 'F0F0F0',
                 'text_wrap': True,
+            }
+  f_info = {
+                'border': 'thin',
+                'num_format': '#,##0',
+                'fill': 'F0F0F0',
+                'text_wrap': True,
+                'align': 'center',
             }
   f_float_in = {
                 'border': 'thin',
@@ -159,3 +166,31 @@ class XlFmt:
                 'text_wrap': True,
               }
 
+  # Components settings
+  f_key = {
+    'font': {
+      'bold': True,
+      'color': '0000FF',
+    },
+    'align': 'right',
+    'border': 'thin',
+  }
+  f_val = {
+    'align': 'left',
+    'border': 'thin',
+  }
+  
+  # Formats for overview
+  f_ov_center = {
+    'align': 'center',
+    'border': 'thin',
+  }
+  f_ov_percent = {
+    'align': 'center',
+    'border': 'thin',
+    'num_format': '0%'
+  }
+  f_ov_euro = {
+    'border': 'thin',
+    'num_format': '#,##0.00 €'
+  }
