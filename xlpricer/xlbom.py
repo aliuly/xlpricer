@@ -295,58 +295,68 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
                 '=' + xlu.rowcol_to_cell(r,coloffs+y+2) + '+1',
                 XlFmt.f_header)
 
-
-  # ~ r += 1
-  # ~ xlu.write(ws,r,2,'Non-recurrent Charges', XlFmt.f_sumline)
-  # ~ for c in range(3,coloffs): xlu.write(ws,r, c, None, XlFmt.f_sumline)
-  # ~ xlu.write(ws,r,coloffs-1,
-        # ~ ('=SUMIFS({f_tot_qty}:{f_tot_qty},'           # Column to sum
-            # ~ '{f_qty}:{f_qty},"<>"&{f_qty}{r1},'       # We are on the same row
-            # ~ '{f_unit}:{f_unit},"="&{ONE_TIME_ITEM},'  # Select One Time Items
-            # ~ '{f_grouping}:{f_grouping},"<>Total *",'  # Skip per-group totals
-            # ~ '{f_tier_calc}:{f_tier_calc},"=")'        # Select the valid tiered calculation rows
-        # ~ ).format(r1=r,**xl.ref()),
-        # ~ XlFmt.f_sumline_total)
-
-  # ~ r += 1
-
   r += 1
   xlu.freeze_panes(ws, r, 6)
+  has_grouping = False
+  col_grouping = ws_colname(K.CN_GROUPING, COLUMNS)
 
   for i in range(0,len(preload.ITEMS)):
     ri = r+i
     xl.rowrefs(ri)
     if (preload.ITEMS[i] is None) or isinstance(preload.ITEMS[i],list):
+      #
+      # Preloaded or template rows.
+      #
       for c in range(1,len(COLUMNS)+1):
-        cc = c-2
-        ws_bom_cell(xl,ri,c, COLUMNS[c-1],
-          None if preload.ITEMS[i] is None else (
-            preload.ITEMS[i][cc] if 0 <= cc and cc < len(preload.ITEMS[i]) else None
-          ))
+        cc = c -2
+        ts = None if (preload.ITEMS[i] is None) or not (0 <= cc and cc < len(preload.ITEMS[i])) else preload.ITEMS[i][cc]
+        if c == col_grouping:
+          if ts is None:
+            if has_grouping: ts = '={prev}'.format(prev=xlu.rowcol_to_cell(ri-1,c))
+          else:
+            has_grouping = True
+        ws_bom_cell(xl,ri,c, COLUMNS[c-1],ts)                    
       ws_inflation(xl, ri, K.YEAR_MAX, year_row, COLUMNS)
-    elif isinstance(preload.ITEMS[i],str):
-      if preload.ITEMS[i].startswith('Total '):
-        xlu.write(ws,ri, 2, preload.ITEMS[i], XlFmt.f_sumline)
-        for c in range(3,coloffs): xlu.write(ws,ri, c, None, XlFmt.f_sumline)
-        xlu.write(ws, ri, coloffs-1,
-            ('=SUMIFS({f_tot_qty}:{f_tot_qty},'         # Column to sum
-             '{f_unit}:{f_unit},"<>"&{ONE_TIME_ITEM},'  # Skip one-time items
-             '{f_grouping}:{f_grouping},"="&MID({f_qty}{r1},7,LEN({f_qty}{r1})-6)' # Pick only the right group
-             ')').format(r1=ri, **xl.ref()),
-            XlFmt.f_sumline_total)
 
-        for y in range(0,K.YEAR_MAX+1):
-          c = coloffs+y+2
-          cn = xlu.col_to_name(c)
-          xlu.write(ws,ri,c, 
-                  ('=SUMIFS({cn}:{cn},'                       # Column to sum
-                    '{f_grouping}:{f_grouping},"="&MID({f_qty}{r1},7,LEN({f_qty}{r1})-6)' # Pick only the right group
-                  ')').format(cn=cn,r1=ri,**xl.ref()),
-              XlFmt.f_sumline_total)
+    elif isinstance(preload.ITEMS[i], preload.H):
+      #
+      # Header rows
+      #
+      xlu.write(ws,ri,2,preload.ITEMS[i].name, XlFmt.f_hr1)
+      has_grouping = False  # Make sure there is a grouping, otherwise hte formula later looks incomplete
+      for c in range(3,coloffs):
+        if c == col_grouping:
+          if preload.ITEMS[i].grp is not None:
+            xlu.write(ws,ri, c, preload.ITEMS[i].grp, XlFmt.f_hr1)
+            has_grouping = True
+            continue
+        xlu.write(ws,ri, c, None, XlFmt.f_hr1)
+    elif isinstance(preload.ITEMS[i], preload.Total):
+      if preload.ITEMS[i].grp is None:
+        if has_grouping:
+          total = '="Total "&{prev}'.format(prev=xlu.rowcol_to_cell(ri-1,col_grouping))
+        else:
+          total = '="Total "&"grpid"'
       else:
-        xlu.write(ws,ri,2,preload.ITEMS[i], XlFmt.f_hr1)
-        for c in range(3,coloffs): xlu.write(ws,ri, c, None, XlFmt.f_hr1)
-        
+        total = 'Total '+(preload.ITEMS[i].grp if preload.ITEMS[i].grp else ' NONE')
+      has_grouping = False
+      xlu.write(ws,ri, 2, total, XlFmt.f_sumline)
+      for c in range(3,coloffs): xlu.write(ws,ri, c, None, XlFmt.f_sumline)
+      xlu.write(ws, ri, coloffs-1,
+          ('=SUMIFS({f_tot_qty}:{f_tot_qty},'         # Column to sum
+           '{f_unit}:{f_unit},"<>"&{ONE_TIME_ITEM},'  # Skip one-time items
+           '{f_grouping}:{f_grouping},"="&MID({f_qty}{r1},7,LEN({f_qty}{r1})-6)' # Pick only the right group
+           ')').format(r1=ri, **xl.ref()),
+          XlFmt.f_sumline_total)
+
+      for y in range(0,K.YEAR_MAX+1):
+        c = coloffs+y+2
+        cn = xlu.col_to_name(c)
+        xlu.write(ws,ri,c, 
+                ('=SUMIFS({cn}:{cn},'                       # Column to sum
+                  '{f_grouping}:{f_grouping},"="&MID({f_qty}{r1},7,LEN({f_qty}{r1})-6)' # Pick only the right group
+                ')').format(cn=cn,r1=ri,**xl.ref()),
+            XlFmt.f_sumline_total)
 
 
   r += i
