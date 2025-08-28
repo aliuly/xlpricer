@@ -118,6 +118,7 @@ def sheet(xl:xlu.XlUtils) -> None:
       xlu.write(ws,r, i+y,
               ('=SUMIFS('
                   '{bom_sheet}!{bom_col}:{bom_col},'
+                  '{bom_sheet}!{f_qty}:{f_qty},"<>Total*",'
                   '{bom_sheet}!{f_grouping}:{f_grouping},"="&{grpcell}'
                 ')').format(
                   bom_sheet = K.WS_COMPONENT,

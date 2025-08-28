@@ -327,36 +327,52 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
       for c in range(3,coloffs):
         if c == col_grouping:
           if preload.ITEMS[i].grp is not None:
-            xlu.write(ws,ri, c, preload.ITEMS[i].grp, XlFmt.f_hr1)
+            xlu.write(ws,ri, c, preload.ITEMS[i].grp, XlFmt.f_hr1_c)
             has_grouping = True
             continue
         xlu.write(ws,ri, c, None, XlFmt.f_hr1)
     elif isinstance(preload.ITEMS[i], preload.Total):
+      prev = "N/A"
       if preload.ITEMS[i].grp is None:
         if has_grouping:
-          total = '="Total "&{prev}'.format(prev=xlu.rowcol_to_cell(ri-1,col_grouping))
-        else:
-          total = '="Total "&"grpid"'
-      else:
-        total = 'Total '+(preload.ITEMS[i].grp if preload.ITEMS[i].grp else ' NONE')
+          prev = '={prev}'.format(prev=xlu.rowcol_to_cell(ri-1,col_grouping))
+      total = '="Total "& IF(IFERROR({f_grouping}{r1},"")="","N/A",IFERROR({f_grouping}{r1},""))'.format(r1=ri, **xl.ref())
       has_grouping = False
+
       xlu.write(ws,ri, 2, total, XlFmt.f_sumline)
-      for c in range(3,coloffs): xlu.write(ws,ri, c, None, XlFmt.f_sumline)
+      for c in range(3,coloffs-1):
+        xlu.write(ws,ri, c, None if c != col_grouping else prev,
+        XlFmt.f_sumline if c != col_grouping else XlFmt.f_sumline_c)
+
       xlu.write(ws, ri, coloffs-1,
           ('=SUMIFS({f_tot_qty}:{f_tot_qty},'         # Column to sum
-           '{f_unit}:{f_unit},"<>"&{ONE_TIME_ITEM},'  # Skip one-time items
-           '{f_grouping}:{f_grouping},"="&MID({f_qty}{r1},7,LEN({f_qty}{r1})-6)' # Pick only the right group
+             '{f_unit}:{f_unit},"<>"&{ONE_TIME_ITEM},'  # Skip one-time items
+             '{f_qty}:{f_qty},"<>Total *",'             # Skip Total lines
+             '{f_grouping}:{f_grouping},"="&{f_grouping}{r1}' # Pick only the right group
            ')').format(r1=ri, **xl.ref()),
           XlFmt.f_sumline_total)
+      # ~ xlu.write(ws, ri, coloffs-1,
+          # ~ ('=SUMIFS({f_tot_qty}:{f_tot_qty},'         # Column to sum
+           # ~ '{f_unit}:{f_unit},"<>"&{ONE_TIME_ITEM},'  # Skip one-time items
+           # ~ '{f_grouping}:{f_grouping},"="&MID({f_qty}{r1},7,LEN({f_qty}{r1})-6)' # Pick only the right group
+           # ~ ')').format(r1=ri, **xl.ref()),
+          # ~ XlFmt.f_sumline_total)
 
       for y in range(0,K.YEAR_MAX+1):
         c = coloffs+y+2
         cn = xlu.col_to_name(c)
         xlu.write(ws,ri,c, 
                 ('=SUMIFS({cn}:{cn},'                       # Column to sum
-                  '{f_grouping}:{f_grouping},"="&MID({f_qty}{r1},7,LEN({f_qty}{r1})-6)' # Pick only the right group
+                 '{f_unit}:{f_unit},"<>"&{ONE_TIME_ITEM},'  # Skip one-time items
+                 '{f_qty}:{f_qty},"<>Total *",'             # Skip Total lines
+                 '{f_grouping}:{f_grouping},"="&{f_grouping}{r1}' # Pick only the right group
                 ')').format(cn=cn,r1=ri,**xl.ref()),
             XlFmt.f_sumline_total)
+        # ~ xlu.write(ws,ri,c, 
+                # ~ ('=SUMIFS({cn}:{cn},'                       # Column to sum
+                  # ~ '{f_grouping}:{f_grouping},"="&MID({f_qty}{r1},7,LEN({f_qty}{r1})-6)' # Pick only the right group
+                # ~ ')').format(cn=cn,r1=ri,**xl.ref()),
+            # ~ XlFmt.f_sumline_total)
 
 
   r += i

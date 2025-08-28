@@ -48,7 +48,17 @@ class XlFmt:
               'text_wrap': False,
               'fill': '89f572',
             }
+  f_hr1_c = {
+              'font': {
+                'bold': True,
+                'color': '000000',
+              },
+              'text_wrap': False,
+              'fill': '89f572',
+              'align': 'center',
+            }
 
+                
   f_percent_c = {
               'border': 'thin',
               'align': 'center',
@@ -101,6 +111,14 @@ class XlFmt:
                   'color': 'FFFFFF',
                 },
                 'fill': 'E20074',
+              }
+  f_sumline_c = {
+                'font': {
+                  'bold': True,
+                  'color': 'FFFFFF',
+                },
+                'fill': 'E20074',
+                'align': 'center',
               }
   f_sumline_total = {
                 'font': {
