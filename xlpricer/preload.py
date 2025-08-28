@@ -2,35 +2,45 @@
 # Pre-loaded items
 #
 from .constants import K
+from typing import Any
+class H:
+  def __init__(self, name:str, grp:str|None = None):
+    self.name = name
+    self.grp = grp
+class Total:
+  def __init__(self, grp:str|None = None):
+    self.grp = grp
+
+DGRP = '={prev}'
 
 ITEMS = [
-  'Base Infrastructure',
-  [ 1, None, K.FAMILY + ': Virtual Private Cloud (VPC)', 'base' ],
-  [ 1, None, K.FAMILY + ': VPC Basic Firewall', 'base' ],
-  [ 1, None, K.FAMILY + ': Anti-DDOS', 'base' ],
-  [ 1, None, 'Network: NAT Gateway extra small', 'base' ],
-  [ 2, None, 'Network: Elastic IP', 'base' ],
-  [ 0, None, 'Security: Cloud WAF Domain 1 [T1] (until 2,000)', 'base' ],
-  [ 0, None, 'Network: Shared Elastic Loadbalancer', 'base' ],
-  [ 0, None, 'Network: Virtual Private Cloud VPN', 'base' ],
-  [ '={DEF_OUTBOUND_TRAFFIC}', None, 'Network: Internet Traffic Outbound [T2] (2 to 1,000)', 'base' ],
-  'Total base',
-  'Compute',
-  [ 1, None, 'Container: CCE VM Cluster small (max 50 nodes)', 'com' ],
-  [ 1, None, K.FAMILY + ': Auto Scaling', 'com' ],
-  [ 1, None, K.FAMILY + ': Software Repository Storage for Containers', 'com' ],
-  [ 1, None, K.FAMILY + ': Image Management Service', 'com' ],
-  [ 1, 'normal', 'Compute: General Purpose s3.xl.2 Windows 4 vcpu 8 GB s3', 'com', None, 50 ],
-  [ 1, 'burst', 'Compute: Flexible purpose x1.xlarge.2 Linux 4 vcpu 8 GB x1', 'com', None, 50 ],
-  'Total com',
-  'Managed Infrastructure',
-  [ 1, None, K.FAMILY + ': Cloud Eye Service', 'mgm'],
-  [ 1, None, K.FAMILY + ': Cloud Trace Service', 'mgm'],
-  [ 0, None, 'Application: LTS Log Storage Data Ingested', 'mgm'],
-  [ 0, None, 'Application: LTS Log index Traffic', 'mgm'],
-  [ 0, None, 'Application: LTS Log read write Traffic', 'mgm'],
-  'Total mgm',
-  'Other',
+  H('Base Infrastructure','base'),
+  [ 1, None, K.FAMILY + ': Virtual Private Cloud (VPC)' ],
+  [ 1, None, K.FAMILY + ': VPC Basic Firewall' ],
+  [ 1, None, K.FAMILY + ': Anti-DDOS' ],
+  [ 1, None, 'Network: NAT Gateway extra small' ],
+  [ 2, None, 'Network: Elastic IP' ],
+  [ 0, None, 'Security: Cloud WAF Domain 1 [T1] (until 2,000)' ],
+  [ 0, None, 'Network: Shared Elastic Loadbalancer' ],
+  [ 0, None, 'Network: Virtual Private Cloud VPN' ],
+  [ '={DEF_OUTBOUND_TRAFFIC}', None, 'Network: Internet Traffic Outbound [T2] (2 to 1,000)' ],
+  Total(),
+  H('Compute','com'),
+  [ 1, None, 'Container: CCE VM Cluster small (max 50 nodes)' ],
+  [ 1, None, K.FAMILY + ': Auto Scaling'],
+  [ 1, None, K.FAMILY + ': Software Repository Storage for Containers'],
+  [ 1, None, K.FAMILY + ': Image Management Service'],
+  [ 1, 'normal', 'Compute: General Purpose s3.xl.2 Windows 4 vcpu 8 GB s3'],
+  [ 1, 'burst', 'Compute: Flexible purpose x1.xlarge.2 Linux 4 vcpu 8 GB x1'],
+  Total(),
+  H('Managed Infrastructure', 'mgm'),
+  [ 1, None, K.FAMILY + ': Cloud Eye Service'],
+  [ 1, None, K.FAMILY + ': Cloud Trace Service'],
+  [ 0, None, 'Application: LTS Log Storage Data Ingested'],
+  [ 0, None, 'Application: LTS Log index Traffic'],
+  [ 0, None, 'Application: LTS Log read write Traffic'],
+  Total(),
+  H('Other','(none)'),
   *([None] * 10),
 ]
 
