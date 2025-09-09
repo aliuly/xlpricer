@@ -193,6 +193,12 @@ class XlFmt:
     'align': 'right',
     'border': 'thin',
   }
+  f_key_hdr = {
+    'font': {
+      'bold': True,
+      'color': '0000FF',
+    },
+  }
   f_val = {
     'align': 'left',
     'border': 'thin',

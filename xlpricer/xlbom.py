@@ -96,7 +96,7 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
     {
       'h': [ 'EVS Class', 16, XlFmt.f_header, 'f_evs_type' ],
       'f': XlFmt.f_text,
-      'c': '={DEF_EVS}',
+      'c': '={WS_DEF_EVS}',
       'validate-list': xl.vlist(K.VL_EVS),
     },
     {
@@ -108,13 +108,13 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
     {
       'h': [ 'Backup Class', 16, XlFmt.f_header, 'f_cbr' ],
       'f': XlFmt.f_text,
-      'c': '={DEF_CBR}',
+      'c': '={WS_DEF_CBR}',
       'validate-list': xl.vlist(K.VL_CBR),
     },
     {
       'h': [ 'Backup Factor', 7, XlFmt.f_header, 'f_bak' ],
       'f': XlFmt.f_float_in,
-      'c': '={BACKUP_FACT}',
+      'c': '={WS_BACKUP_FACT}',
     },
     {
       'h': [ 'Backup (GB)', 7, XlFmt.f_header, 'f_bakvol' ],
@@ -248,6 +248,9 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
   xlu.write(ws,r,coloffs+1,
             'Future Price Forecast (Adjusted for Inflation)',
             XlFmt.f_title)
+  ck = ws_colname(K.CN_REGION,COLUMNS)
+  xlu.write(ws,r,ck,'EVS', XlFmt.f_key_hdr)
+  xlu.write(ws,r,ck+2,'Backup', XlFmt.f_key_hdr)            
 
   r += 1
   RS = r
@@ -256,11 +259,25 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
   xlu.data_validation_list(ws,r,3, xl.vlist(K.VL_REGIONS))
   xl.ref(WS_REGION =  xlu.rowcol_to_cell(r,3,True,True))
 
+  xlu.write(ws,r,ck,'Class:', XlFmt.f_key)
+  xlu.write(ws,r,ck+1,'={DEF_EVS}'.format(**xl.ref()), XlFmt.f_val)
+  xlu.data_validation_list(ws, r,ck+1, xl.vlist(K.VL_EVS))  
+  xl.ref(WS_DEF_EVS =  xlu.rowcol_to_cell(r,ck+1,True,True))
+
+  xlu.write(ws,r,ck+2,'Class:', XlFmt.f_key) 
+  xlu.write(ws,r,ck+3,'={DEF_CBR}'.format(**xl.ref()), XlFmt.f_val)
+  xlu.data_validation_list(ws, r,ck+3, xl.vlist(K.VL_CBR))  
+  xl.ref(WS_DEF_CBR =  xlu.rowcol_to_cell(r,ck+3,True,True))
+
   r += 1
   xlu.write(ws,r, 2,'Pricing:',  XlFmt.f_key)
   xlu.write(ws,r, 3,'={DEF_RXM}'.format(**xl.ref()), XlFmt.f_val)
   xlu.data_validation_list(ws,r,3, xl.vlist(K.VL_RXM))
   xl.ref(WS_RXM =  xlu.rowcol_to_cell(r,3,True,True))
+
+  xlu.write(ws,r,ck+2,'Factor:', XlFmt.f_key) 
+  xlu.write(ws,r,ck+3,'={BACKUP_FACT}'.format(**xl.ref()), XlFmt.f_val)
+  xl.ref(WS_BACKUP_FACT =  xlu.rowcol_to_cell(r,ck+3,True,True))
 
   r += 1
 
