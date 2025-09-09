@@ -158,7 +158,9 @@ def normalize(apidat:dict):
       if rec['productIdParameter'] == 'evs' and rec['productName'].startswith(K.EVS_PREFIX):
         apidat['choices'][K.VL_EVS].add(rec['productName'][len(K.EVS_PREFIX):])
       if rec['productIdParameter'] == 'cbr' and rec['productName'].startswith(K.CBR_PREFIX) and rec['productName'] != 'CBR Cross Region Traffic Outbound':
-        apidat['choices'][K.VL_CBR].add(rec['productName'][len(K.CBR_PREFIX):])
+        t = rec['productName'][len(K.CBR_PREFIX):len(rec['productName'])-len(' Backup')]
+        # ~ ic(rec['productName'],t)
+        apidat['choices'][K.VL_CBR].add(t)
       apidat['choices'][K.VL_REGIONS].add(rec['region'])
 
       # Internally calculated column.  COL_IDG records the result's grouping

@@ -24,7 +24,7 @@ class K:
 
   DEFAULT_REGION = 'eu-de'
   DEFAULT_EVS = 'High I/O'
-  DEFAULT_CBR = 'Server Backup'
+  DEFAULT_CBR = 'Server'
 
   EVS_PREFIX = 'EVS '
   CBR_PREFIX = 'CBR '

@@ -154,7 +154,7 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
     {
       'h': ['CBR Idx', 6, XlFmt.f_syshdr, 'f_cbr_id' ],
       'f': XlFmt.f_num_c,
-      'c': '==IF(OR({#f_desc}="",{#f_cbr}="",{#f_reg}=""),"",MATCH(1,({PRICES_DESCS}="Storage: CBR " & {#f_cbr})*({PRICES_REGION}={#f_reg}),0))',
+      'c': '==IF(OR({#f_desc}="",{#f_cbr}="",{#f_reg}=""),"",MATCH(1,({PRICES_DESCS}="Storage: CBR " & {#f_cbr} & " Backup")*({PRICES_REGION}={#f_reg}),0))',
     },
     {
       'h': ['PayG', 10, XlFmt.f_syshdr, 'f_price' ],
