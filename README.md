@@ -93,29 +93,21 @@ title cell in column `B` should always start with the text `Total`
 as this text is used to filter out the sub-totals from further
 calculations.
 
+If you need to add more rows, rather than inserting them, copy them
+from an existing component, header or footer rows.  That way the
+formulas will be copied together.
 
+The next column after the `Group` is the `Storage` column.  This
+is to add a storage ocmponent to an specific function.  Obviously
+you could add another "component" row for the storage.  This `Storage`
+column has a built-in backup calculation that uses values from the
+assumptions sheet.
 
-
-
-
-### Assumptions tab
-
-The "Assumptions" tab contains values that are used through the
-different cell calculations, such as "H/R", "Region", "EVS Class",
-"Backup Class", "Backup Factor", etc.  However, these can be overriden
-by modifying that individual cell in the relevant row.
-
-It is recommended that instead of modifying those columns in the
-Components tab, create a new row in the Assumptions tab and refer
-to that cell.
-
-"H/R" column you be filled with the number of Hours in a month or
-the strings "R12M" or "R24M".  These strings are for Reserved 12
-month and 24 months prices.  Note if the price you select does
-not have Reserved pricing, the monthly pricing or the hourly pricing
-with 730 hours will be used.
-
-Region will accept "eu-de", "eu-nl".
+The remaining columns are prefilled with default values that come
+from the _Assumptions tab_.  You can override the defaults on a 
+per-row basis, or for the whole tab on the top header rows.  Note,
+the majority of these columns are hidden, but can easily be exposed
+by clicking on the corresponding `+` (plus) button.
 
 In general, the following columns need to be tailored:
 
@@ -124,7 +116,7 @@ In general, the following columns need to be tailored:
 - Storage (GB) : For ECS items, the amount of storage to be attached.
 
 These items are pre-configured to references to the Assumption table
-but can be modified:
+or from the top of the components tab, but can be modified:
 
 - H/R : Number of hours or "R12M or "R24M".
 - Region : From where the component is being consumed.
@@ -135,19 +127,34 @@ but can be modified:
   storage will be reduced to a fraction of the total number of hours.
 - Backup class : CBR class being used.  At the moment all CBR classes
   have the same price.
+- Backup factor : Storage multiplier to calculate the backup volumes.
+
+For multi year calculations, Inflation is computed on the columsn 
+`AR` and onwards look for the title
+"Future Price Forecast (Adjusted for Inflation)".
+These columns are hidden by default, but can be exposed by clicking
+on the corresponding `+` (plus) button.
+
+Inflation is added anually, except for reserved 24 month packages,
+where the inflation is adjusted every two years.
 
 
-For prices that have Tiered volume discounts such as OBS storage, or
-Internet traffic, you can select the Tiered volume item (they are
-label "[T#]") from the prices sheet.  This will not calculate
-discounts automatically.  If you want to calculate the Tiered volume
-discount select the item from the Prices table that does **NOT**
-include the tiers (No "[T#]" in description).  These lines do
-not have prices, so the Sub-total for that line will be zero.
+### Assumptions tab
 
-At the bottom of the sheet, there is a section "Tiered Volume Pricing"
-which will add up all the tiered volume entries and distributed into
-the different price bands.
+The "Assumptions" tab contains values that are used through the
+different cell calculations, such as "H/R", "Region", "EVS Class",
+"Backup Class", "Backup Factor", etc.  However, these can be overriden
+by modifying that individual cell in the relevant row or on the
+header of the components tab.
+
+"H/R" column you be filled with the number of Hours in a month or
+the strings "R12M" or "R24M".  These strings are for Reserved 12
+month and 24 months prices.  Note if the price you select does
+not have Reserved pricing, the monthly pricing or the hourly pricing
+with 730 hours will be used.
+
+Region will accept "eu-de", "eu-nl".
+
 
 ### Prices tab
 
@@ -155,6 +162,15 @@ The normalized table in the "Prices" tab is good for finding
 components if you know what you are looking for.  If you are
 browsing for services, it is better to use the service description
 or other documentation.
+
+### Overview tab
+
+The overview tab has a multi-year view of the deal.  The calculations
+uses the "Header/Footer/Group" settings together with the Inflation
+Adjusted forecast columns.  Set-up costs are only added to the first
+year.
+
+
 
 ## Preparing sheet for sharing
 
