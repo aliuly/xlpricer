@@ -290,6 +290,8 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
             '{f_unit}:{f_unit},"="&{ONE_TIME_ITEM}'       # Select One Time Items
             ')'.format(r1=RS,**xl.ref()),
             XlFmt.f_sumline_total)
+  xl.ref(BOM_TOTAL_SETUP = f'{K.WS_COMPONENT}!{xlu.rowcol_to_cell(RS, 5, True, True)}')
+
   RS += 1
   xlu.write(ws,RS, 4, 'Monthly Total: ',XlFmt.f_key)
   xlu.write(ws,RS, 5, '=SUMIFS({f_tot_qty}:{f_tot_qty},'   # Column to sum
@@ -297,6 +299,7 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
             '{f_qty}:{f_qty},"<>Total *"'                  # Remove totals
             ')'.format(r1=RS,**xl.ref()),
             XlFmt.f_sumline_total)
+  xl.ref(BOM_TOTAL_MONTHLY = f'{K.WS_COMPONENT}!{xlu.rowcol_to_cell(RS, 5, True, True)}')
 
   xlu.write(ws,r,coloffs+1,'Year:',XlFmt.f_header)
   xlu.set_column_width(ws,coloffs+1,6)
@@ -397,6 +400,7 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
   xlu.group_columns(ws, ws_colname('Region',COLUMNS), ws_colname('Backup (GB)', COLUMNS), hide=True)
   xlu.group_columns(ws, ws_colname('vCPU',COLUMNS), ws_colname('RAM (GB)', COLUMNS), hide=False)
   xlu.group_columns(ws, ws_colname('Row Idx',COLUMNS), ws_colname('CBR Price per GB', COLUMNS), hide=True)
+  xlu.group_columns(ws, ws_colname('EVS Price',COLUMNS), ws_colname('Sub-total per unit', COLUMNS), hide=False)
   xlu.group_columns(ws, coloffs+1, coloffs+K.YEAR_MAX+2 , hide=True)
 
 

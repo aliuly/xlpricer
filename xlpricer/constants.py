@@ -2,7 +2,9 @@
 Constant definitions
 '''
 class K:
-  FORMAT_VERSION ='1.3.0'
+  FORMAT_VERSION ='1.3.2'
+  # - 1.3.2 : storage utilization in backup assumptions
+  # - 1.3.1 : Minor tweaks
   # - 1.3.0 : Removed tier calculations, re-implemented totals, new
   #   overview tab.
   # - 1.2.0 : Added grouping and set-up calc columns

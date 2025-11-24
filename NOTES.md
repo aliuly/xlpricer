@@ -18,7 +18,6 @@ To delete tags use:
 
 # TODO
 
-- [x] Add more per sheet defaults:
 - [ ] sphinx docs
 - [ ] Add discount calculator
 
@@ -59,6 +58,4 @@ ic| pkg['response']['columns']: {'R12': 'Reserved (12 months)',
 
 
 ```
-
-
 

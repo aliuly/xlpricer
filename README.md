@@ -196,10 +196,13 @@ significantly.
 # Known issues
 
 - No Science pricing
-- No Oracle Optimized pricing
 
 # Versions
 
+- 1.3.1:
+  - Added some error checking to overview.
+  - Group to hide EVS/CBR columns when not in use.
+  - Tweaked backup factor calculation
 - 1.3.0:
   - On components sheet, default region, pricing model, EVS and CBR classes. 
   - Added overview page

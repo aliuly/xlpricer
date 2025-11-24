@@ -19,9 +19,9 @@ def validate_tier(groupID:str, recID:str, region:str):
   :param recID: Record ID to match
   :param region: region check
   '''
-  if not recID.startswith(groupID): return False
+  if not recID.startswith(groupID) or recID == groupID: return False
   l = len(groupID)
-  if recID[l] != '_': return False
+  if recID != groupID and recID[l] != '_':  return False
   for i in range(l+1,len(recID)):
     if '0' > recID[i] or recID[i] > '9':
       return recID[i:] == ('-'+region)

@@ -36,7 +36,7 @@ def sheet(xl:xlu.XlUtils) -> None:
 
   i += 3
   
-  xlu.write(ws,r,i, 'List Prices', XlFmt.f_sumline)
+  xlu.write(ws,r,i, 'Montnly Prices', XlFmt.f_sumline)
   for i in range(i+1, i+K.YEAR_MAX+2):
     xlu.write(ws,r,i, '', XlFmt.f_sumline)
     
@@ -55,7 +55,8 @@ def sheet(xl:xlu.XlUtils) -> None:
   xlu.write(ws,r, i+1, 'set-up', XlFmt.f_ov_center)
   i += 1
   for y in range(1,K.YEAR_MAX+1):
-    xlu.write(ws,r, i+y, y, XlFmt.f_ov_center)
+    # We force these to be strings so they are not included in sums
+    xlu.write(ws,r, i+y, f'="{y}"', XlFmt.f_ov_center)
 
   r += 1
   month_row = r
@@ -69,20 +70,40 @@ def sheet(xl:xlu.XlUtils) -> None:
                     end = xlu.rowcol_to_cell(r, K.YEAR_MAX+3)),
             XlFmt.f_ov_center)
 
+  i += 3
+  xlu.write(ws,r, i, 'total comp', XlFmt.f_ov_center)
+  xlu.write(ws,r, i+1, '={BOM_TOTAL_SETUP}'.format(**xl.ref()), XlFmt.f_ov_euro)
+  xlu.write(ws,r, i+2, '={BOM_TOTAL_MONTHLY}'.format(**xl.ref()), XlFmt.f_ov_euro)
+
   r += 1
   rampup_row = r
   xlu.write(ws,r,2, 'Ramp-up')
   for i in range(4,K.YEAR_MAX+4):
     xlu.write(ws,r, i, 1, XlFmt.f_ov_percent)
 
-  r += 2
+  i += 5
+  col_title = xlu.col_to_name(i,True)
+  xlu.write(ws,r, i, 'total calc', XlFmt.f_ov_center)
+  col_setup = xlu.col_to_name(i+1)
+  xlu.write(ws,r, i+1, f'=SUMIFS({col_setup}:{col_setup},{col_title}:{col_title},"<>total*")',XlFmt.f_ov_euro)
+  col_mrc = xlu.col_to_name(i+2)
+  xlu.write(ws,r, i+2, f'=SUMIFS({col_mrc}:{col_mrc},{col_title}:{col_title},"<>total*")',XlFmt.f_ov_euro)
+
+  r += 1
+  
+  xlu.write(ws,r, i, 'total diff', XlFmt.f_ov_center)
+  xlu.write(ws,r, i+1, f'={xlu.rowcol_to_cell(r-2,i+1)}-{xlu.rowcol_to_cell(r-1,i+1)}', XlFmt.f_ov_euro)
+  xlu.write(ws,r, i+2, f'={xlu.rowcol_to_cell(r-2,i+2)}-{xlu.rowcol_to_cell(r-1,i+2)}', XlFmt.f_ov_euro)
+  
+  
+  r += 1
   
   xlu.write(ws,r,2, 'Sub-Totals', XlFmt.f_sumline)  
   for i in range(3, K.YEAR_MAX+6):
     xlu.write(ws,r,i, '', XlFmt.f_sumline)
 
   i += 3  
-  xlu.write(ws,r,i, 'Monthly Prices', XlFmt.f_sumline)
+  xlu.write(ws,r,i, 'Per-Group Prices', XlFmt.f_sumline)
   for i in range(i+1, i+K.YEAR_MAX+2):
     xlu.write(ws,r,i, '', XlFmt.f_sumline)
 

@@ -20,7 +20,6 @@ ITEMS = [
   [ 1, None, K.FAMILY + ': Anti-DDOS' ],
   [ 1, None, 'Network: NAT Gateway extra small' ],
   [ 2, None, 'Network: Elastic IP' ],
-  [ 0, None, 'Security: Cloud WAF Domain 1 [T1] (until 2,000)' ],
   [ 0, None, 'Network: Shared Elastic Loadbalancer' ],
   [ 0, None, 'Network: Virtual Private Cloud VPN' ],
   [ '={DEF_OUTBOUND_TRAFFIC}', None, 'Network: Internet Traffic Outbound [T2] (2 to 1,000)' ],
