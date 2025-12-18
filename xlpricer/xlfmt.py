@@ -167,6 +167,10 @@ class XlFmt:
                   'border': 'thin',
                   'num_format': '#,##0.00 €'
                   }
+  f_euro_4d = {
+                  'border': 'thin',
+                  'num_format': '#,##0.0000 €'
+                  }
   f_syshdr = {
                 'font': {
                   'bold': True,

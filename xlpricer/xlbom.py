@@ -53,7 +53,7 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
     },
     SPACER,
     {
-      'h': [ 'Storage (GB)', 7, XlFmt.f_header, 'f_storage' ],
+      'h': [ 'Storage (GB)', 8, XlFmt.f_header, 'f_storage' ],
       'f': XlFmt.f_qty,
     },
     {
@@ -158,7 +158,7 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
     },
     {
       'h': ['PayG', 10, XlFmt.f_syshdr, 'f_price' ],
-      'f': XlFmt.f_euro,
+      'f': XlFmt.f_euro_4d,
       'c': '=IF({#f_sku}="","",'
               'INDEX({PRICES_TABLE},{#f_sku},{cm_priceAmount})'
         ')'
@@ -187,6 +187,16 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
               'INDEX({PRICES_TABLE},{#f_sku},{cm_R24}),'
               '""'
         '))'
+    },
+    { 
+      'h': ['QxH', 10, XlFmt.f_syshdr, 'f_qxh' ],
+      'f': XlFmt.f_num_c,
+      'c': '=IF({#f_sku}="","",'
+              'IF(LEFT({#f_unit},1)="h",'
+                'IF(ISNUMBER({#f_hrs}),{#f_hrs},{DEF_HOURS}),'
+                '1'
+              ')*{#f_qty}'
+           ')'
     },
     {
       'h': ['EVS Price per GB', 8, XlFmt.f_syshdr, 'f_evs_price' ],

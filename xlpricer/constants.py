@@ -2,7 +2,8 @@
 Constant definitions
 '''
 class K:
-  FORMAT_VERSION ='1.3.2'
+  FORMAT_VERSION ='1.4.0'
+  # - 1.4.0: Adding QxH intermediat column
   # - 1.3.2 : storage utilization in backup assumptions
   # - 1.3.1 : Minor tweaks
   # - 1.3.0 : Removed tier calculations, re-implemented totals, new
@@ -16,6 +17,7 @@ class K:
   WS_OVERVIEW = 'Overview'
   WS_COMPONENT = 'Components'
   WS_PRICES = 'Prices'
+  WS_VOLUMES = 'Volumes'
   WS_ASSUMPTIONS = 'Assumptions'
   WS_SERVICES = 'Services'
 
@@ -69,6 +71,7 @@ class K:
   CN_REGION = 'Region'
   CN_GROUPING = 'Group'
   CN_SUBTOTAL_UNIT = 'Sub-total per unit'
+  CN_TIERED_PRICE = 'Tiered Price'
 
   KW_meta = 'meta'
   KW_input = 'input'

@@ -86,6 +86,7 @@ def ws_prices(xl:xlu.XlUtils, apidat:dict) -> None:
     K.RF_PRICES_DESCS: desc,
     K.RF_PRICES_REGION: f'{ws.title}!{xlu.col_to_name(colmap["region"],True)}:{xlu.col_to_name(colmap["region"],True)}',
     K.RF_PRICES_TABLE: f'{ws.title}!{xlu.col_to_name(1,True)}:{xlu.col_to_name(colmap[K.COL_LAST],True)}',
+    'LAST_SKU': r,
   })
   for k in apidat['columns'].keys():
     xl.ref(**{ 'cm_' + k : colmap[k] })

@@ -159,4 +159,20 @@ def fixed_prices(apidat:dict) -> None:
     },    
   ], K.FAMILY, apidat)
   
+  inc_records([
+    {
+      'id': 'FREE_CBR_NO_BACKUP',
+      'productIdParameter': 'cbr',
+      'productName': 'CBR No Backup',
+      'productFamily': "Storage",
+      'unit': 'GB',
+      'region': '*',
+    },    
+    {
+      'id': 'FREE_VOLUME',
+      'productName': 'EVS Shareable volume',
+      'productFamily': "Storage",
+      'unit': 'GB',
+      'region': '*',
+    },  ], "Storage", apidat)
   

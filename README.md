@@ -138,6 +138,36 @@ on the corresponding `+` (plus) button.
 Inflation is added anually, except for reserved 24 month packages,
 where the inflation is adjusted every two years.
 
+### Volume based discounts
+
+Some prices get reductions based on volumes.  For example,
+Object Storage, or Outbound Internet traffic, the more MB you
+consume, the cheaper it gets.  These discounts are calculated
+automatically.  For example, OBS Standard Space, has the
+following entries in the Price list:
+
+- Storage: OBS Standard Space
+- Storage: OBS Standard Space [T1] (until 5)
+- Storage: OBS Standard Space [T2] (6 to 1,000)
+- Storage: OBS Standard Space [T3] (1,001 to 50,000)
+- Storage: OBS Standard Space [T4] (50,001 to 500,000)
+- Storage: OBS Standard Space [T5] (from 500,001)
+
+If you use the entry "Storage: OBS Standard Space", in the components
+tab, the price will be adjusted according to the volume.  If you
+instead use one of the entries with *T1*, *T2*, *T3*, *T4* or *T5*,
+the price will be fixed to that price band and the volume calculation
+will not be used.
+
+This automatic project adjustment due to volume is in the *Volumes*
+tab.  It pulls the volumes from the components tab.  So if you 
+have additional calculations spread across multiple tabs, you must
+make sure to update the *Volumes* tab, so that the total is calculated
+properly.  You can easily do this by Copying and Inserting column
+"C" into column "D" on-wards.  Then use the Find and Replace 
+Excel functionality to replace "Components" with the name of the
+tab.
+
 
 ### Assumptions tab
 
@@ -199,6 +229,10 @@ significantly.
 
 # Versions
 
+- 1.4.0:
+  - Added CBR no backup option
+  - Added a shared EVS volume entry
+  - Adding Tiered Volume pricing calculation
 - 1.3.1:
   - Added some error checking to overview.
   - Group to hide EVS/CBR columns when not in use.

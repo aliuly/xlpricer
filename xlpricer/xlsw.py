@@ -17,6 +17,7 @@ from . import xlprice
 from . import xlover
 from . import xlsrv
 from . import xlu
+from . import xlvol
 from .constants import K
 from .xlfmt import XlFmt
 
@@ -42,9 +43,9 @@ def xlsx_write(xlfile:str, apidat:dict) -> None:
   xl.add_worksheet(K.WS_OVERVIEW)
   xl.add_worksheet(K.WS_COMPONENT)
   xl.add_worksheet(K.WS_PRICES)
+  xl.add_worksheet(K.WS_VOLUMES)
   xl.add_worksheet(K.WS_ASSUMPTIONS)
   if len(apidat['services']): xl.add_worksheet(K.WS_SERVICES)
-  
 
   for lst in [K.VL_EVS, K.VL_CBR, K.VL_REGIONS]:
     xl.add_vlist(lst)
@@ -62,7 +63,7 @@ def xlsx_write(xlfile:str, apidat:dict) -> None:
   # ~ ic(xl.ref())
   xlbom.ws_bom(xl, apidat)
   xlover.sheet(xl)
-  
+  xlvol.sheet(xl, apidat)
 
   xl.close()
 
@@ -72,11 +73,16 @@ def xlsx_refresh(xlfile:str, apidat:dict, xlout:str|None = None) -> None:
   :param apidat: API data read
   '''
   xl = xlu.XlUtils(xlfile)
+
   sys.stderr.write('Nuke prices..')
   xlu.nuke_ws(xl.ws(K.WS_PRICES))
   sys.stderr.write('.OK\n')
   xl.load_fmt(XlFmt)
   xlprice.ws_prices(xl, apidat)
+  sys.stderr.write('Update volume prices..')
+  volpr = xlvol.find_targets(xl)
+  xlvol.ws_update_prices(xl, volpr)
+  sys.stderr.write('.OK\n')
   xl.close(xlout)
 
 def xlsx_sanitize(xlin:str, xlout:str) -> None:
@@ -143,6 +149,8 @@ def xlsx_sanitize(xlin:str, xlout:str) -> None:
 
   sys.stderr.write('Finalizing..')
   ws = xd.ws(K.WS_PRICES)
+  xd.xl.remove(ws)
+  ws = xd.ws(K.WS_VOLUMES)
   xd.xl.remove(ws)
   sys.stderr.write('.OK\n')
 
