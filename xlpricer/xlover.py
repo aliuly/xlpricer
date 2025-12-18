@@ -25,6 +25,11 @@ def sheet(xl:xlu.XlUtils) -> None:
   '''
   ws = xl.ws(K.WS_OVERVIEW)
   year = datetime.datetime.today().strftime('%Y')
+  if int(datetime.datetime.today().strftime('%Y')) > 9:
+    # Last quarter of the year, we just change the overview to next
+    # year!
+    year = str(int(year)+1)
+  
   r = 1
   xlu.write(ws,r,1, 'Yearly Overview', XlFmt.f_title)
   
