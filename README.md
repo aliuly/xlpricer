@@ -233,6 +233,7 @@ significantly.
   - Added CBR no backup option
   - Added a shared EVS volume entry
   - Adding Tiered Volume pricing calculation
+  - Overview tab shows next year (during the last quarter of this year)
 - 1.3.1:
   - Added some error checking to overview.
   - Group to hide EVS/CBR columns when not in use.
