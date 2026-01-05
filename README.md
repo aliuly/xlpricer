@@ -229,6 +229,7 @@ significantly.
 
 # Versions
 
+- 1.4.1: Bugfix
 - 1.4.0:
   - Added CBR no backup option
   - Added a shared EVS volume entry
