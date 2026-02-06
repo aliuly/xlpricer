@@ -22,7 +22,7 @@ ITEMS = [
   [ 2, None, 'Network: Elastic IP' ],
   [ 0, None, 'Network: Shared Elastic Loadbalancer' ],
   [ 0, None, 'Network: Virtual Private Cloud VPN' ],
-  [ '={DEF_OUTBOUND_TRAFFIC}', None, 'Network: Internet Traffic Outbound [T2] (2 to 1,000)' ],
+  [ '={DEF_OUTBOUND_TRAFFIC}', None, 'Network: Internet Traffic Outbound' ],
   Total(),
   H('Compute','com'),
   [ 1, None, 'Container: CCE VM Cluster small (max 50 nodes)' ],

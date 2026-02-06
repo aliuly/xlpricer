@@ -22,7 +22,7 @@ def ws_services(xl:xlu.XlUtils, apidat:dict) -> None:
   ws = xl.ws(K.WS_SERVICES)
   r = 1
 
-  xlu.write(ws, r, 1, 'Open Telekom Cloud services', XlFmt.f_title)
+  xlu.write(ws, r, 1, 'T-Cloud Public services', XlFmt.f_title)
 
   r += 1
   xlu.write(ws, r, 1, 'ID', XlFmt.f_header)

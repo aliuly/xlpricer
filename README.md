@@ -1,6 +1,6 @@
 # xlpricer
 
-Open Telekom Cloud API, offline pricing calculator.
+T-Cloud Public API, offline pricing calculator.
 
 This script uses the API as defined by
 https://docs.otc.t-systems.com/price-calculator/api-ref/
@@ -15,7 +15,7 @@ pricing sheets and update them accordingly.
 ## Graphics User Interface (GUI)
 
 The GUI, can let you generate a sample worksheet, re-price an
-existing worksheet and the 
+existing worksheet and prep a spreadsheet for sharing.
 
 ## Command Line Interface (CLI)
 
@@ -229,6 +229,10 @@ significantly.
 
 # Versions
 
+- 1.5.0:
+  - Adding R36M support
+  - Removing scrapping code (too buggy)
+  - Unprotect volumes column
 - 1.4.1: Bugfix
 - 1.4.0:
   - Added CBR no backup option

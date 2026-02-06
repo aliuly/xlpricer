@@ -59,32 +59,44 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
     {
       'h': [ 'H/R', 5.5, XlFmt.f_header, 'f_hrs' ],
       'f': XlFmt.f_qty,
-      'c': '=IF({WS_RXM}="R24M",'
-         # Default Reserved is R24M
-         'IF({#f_pr24m}<>"","R24M",'
-           # But we don't have r24m pricing...
-           #   so we use R12M if available... otherwise just use {DEF_HOURS} hours
-           'IF({#f_pr12m}<>"","R12M",{DEF_HOURS})'
-         ')'
-        ','
-         'IF({WS_RXM}="R12M",'
-           # Default Reserved is R12M
-           'IF({#f_pr12m}<>"","R12M",{DEF_HOURS})'
-         ','
-          'IF({WS_RXM}="Elastic-FT",'
-           # System operates 24x7
-           '{FT_HOURS}'
-          ','
-           'IF({WS_RXM}="Elastic-Office",'
-            # System operates office hours
-            '{WK_HOURS}'
+      'c': 
+        '=IF({WS_RXM}="R36M",'
+           # Default Reserved is R36M
+           'IF({#f_pr36m}<>"","R36M",'
+             # But we don't have r36m pricing...
+             #   so we use R24M, R12M if available... otherwise just use {DEF_HOURS} hours
+             'IF({#f_pr24m}<>"","R24M",'
+                'IF({#f_pr12m}<>"","R12M",{DEF_HOURS})'
+             ')'
+            ')'
            ','
-            # OK, use the default hours in assumptions
-            '{DEF_HOURS}'
-           ')'
-          ')'
-         ')'
-        ')',
+            'IF({WS_RXM}="R24M",'
+             # Default Reserved is R24M
+             'IF({#f_pr24m}<>"","R24M",'
+               # But we don't have r24m pricing...
+               #   so we use R12M if available... otherwise just use {DEF_HOURS} hours
+               'IF({#f_pr12m}<>"","R12M",{DEF_HOURS})'
+             ')'
+            ','
+             'IF({WS_RXM}="R12M",'
+               # Default Reserved is R12M
+               'IF({#f_pr12m}<>"","R12M",{DEF_HOURS})'
+             ','
+              'IF({WS_RXM}="Elastic-FT",'
+               # System operates 24x7
+               '{FT_HOURS}'
+              ','
+               'IF({WS_RXM}="Elastic-Office",'
+                # System operates office hours
+                '{WK_HOURS}'
+               ','
+                # OK, use the default hours in assumptions
+                '{DEF_HOURS}'
+               ')'
+              ')'
+             ')'
+            ')'
+          ')',
     },
     SPACER,
     {
@@ -188,6 +200,15 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
               '""'
         '))'
     },
+    {
+      'h': ['R36M', 10, XlFmt.f_syshdr, 'f_pr36m' ],
+      'f': XlFmt.f_euro,
+      'c': '=IF({#f_sku}="","",IF('
+              'INDEX({PRICES_TABLE},{#f_sku},{cm_R36})>0,'
+              'INDEX({PRICES_TABLE},{#f_sku},{cm_R36}),'
+              '""'
+        '))'
+    },
     { 
       'h': ['QxH', 10, XlFmt.f_syshdr, 'f_qxh' ],
       'f': XlFmt.f_num_c,
@@ -216,13 +237,15 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
     {
       'h': ['Price', 10, XlFmt.f_refhdr, 'f_pmonth' ],
       'f': XlFmt.f_euro,
-      'c': '=IF({#f_sku}="",0,'
+      'c':
+        '=IF({#f_sku}="",0,'
           'IF(AND({#f_pr12m}<>"",{#f_hrs}="R12M"),{#f_pr12m},'
             'IF(AND({#f_pr24m}<>"",{#f_hrs}="R24M"),{#f_pr24m},'
-              'IF(LEFT({#f_unit},1)="h",'
-                'IF(ISNUMBER({#f_hrs}),{#f_hrs},{DEF_HOURS})*{#f_price},'
-                '{#f_price}'
-        '))))'
+              'IF(AND({#f_pr36m}<>"",{#f_hrs}="R36M"),{#f_pr36m},'
+                'IF(LEFT({#f_unit},1)="h",'
+                  'IF(ISNUMBER({#f_hrs}),{#f_hrs},{DEF_HOURS})*{#f_price},'
+                  '{#f_price}'
+        ')))))'
     },
     {
       'h': ['EVS Price', 12, XlFmt.f_refhdr, 'f_evs_sub' ],
@@ -294,6 +317,7 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
   r += 1
   for c in range(1,coloffs):
     ws_header(xl, r, c, COLUMNS[c-1]['h'])
+    # ~ ic(COLUMNS[c-1])
 
   xlu.write(ws,RS, 4, 'Set-up: ',XlFmt.f_key)
   xlu.write(ws,RS, 5, '=SUMIFS({f_tot_qty}:{f_tot_qty},'  # Column to sum
@@ -445,6 +469,10 @@ def ws_bom_cell(xl:xlu.XlUtils,r:int,c:int, coldef:dict, o:str = None)->None:
     content = content(xl.ref())
   elif isinstance(content,str):
     content = content.format(**xl.ref())
+    # ~ ic(coldef['h'])
+    # ~ if len(coldef['h'])>3 and coldef['h'][3] == 'f_hrs':
+      # ~ ic(content)
+
 
   xlu.write(ws,r,c, content, fmt)
 
@@ -497,14 +525,26 @@ def ws_inflation(xl:xlu.XlUtils,r:int,yrmx:int,year_row:int,COLUMNS:list)->None:
     f = (
         '=IF({#f_unit}={ONE_TIME_ITEM},0,'
           'IF( AND({#f_hrs}="R24M",{#f_pr24m}<>0),'
-              '{#f_qty}*'
-                '(' 
-                  '{#f_pmonth}*(1+{INFLATION})^(FLOOR({year}-1,2))'
-                  '+' 
-                  '({#f_cbr_sub}+{#f_evs_sub})*(1 + {INFLATION})^({year}-1)' 
-                ')' 
+            # 24M reserved pricing calculation
+            '{#f_qty}*'
+              '(' 
+                '{#f_pmonth}*(1+{INFLATION})^(FLOOR({year}-1,2))'
+                '+' 
+                '({#f_cbr_sub}+{#f_evs_sub})*(1 + {INFLATION})^({year}-1)' 
+              ')' 
             ','
-              '{#f_tot_qty}*(1+{INFLATION})^({year}-1)'
+              'IF( AND({#f_hrs}="R36M",{#f_pr36m}<>0),'
+                # 36M reserved pricing calculation
+                '{#f_qty}*'
+                  '(' 
+                    '{#f_pmonth}*(1+{INFLATION})^(FLOOR({year}-1,3))'
+                    '+' 
+                    '({#f_cbr_sub}+{#f_evs_sub})*(1 + {INFLATION})^({year}-1)' 
+                  ')' 
+                ','
+                # Normal calculation
+                '{#f_tot_qty}*(1+{INFLATION})^({year}-1)'
+            ')'
           ')'
         ')').format(year = xlu.rowcol_to_cell(year_row, c,True,False), **xl.ref())
     xlu.write(ws, r,c,f,XlFmt.f_euro)

@@ -18,7 +18,6 @@ import xlpricer.normalize as normalize
 import xlpricer.noswiss as noswiss
 import xlpricer.proxycfg as proxycfg
 import xlpricer.price_api as price_api
-import xlpricer.scrapper as scrapper
 import xlpricer.xlsw as xlsw
 import xlpricer.wiz as wiz
 from xlpricer.constants import K
@@ -88,12 +87,6 @@ def make_parser(defaults:argparse.Namespace):
   sub3 = subs.add_parser('prep', help = 'Prepare file for release')
   sub3.add_argument('input_xlsx', help = 'Input file')
   sub3.add_argument('output_xlsx', help = 'Output file',nargs='?')
-
-  sub4 = subs.add_parser('run',help='Run a scrapper script')
-  sub4.add_argument('-A','--autocfg',help='Use WinReg to configure proxy (default)', action='store_true', default = defaults.proxy_cfg)
-  sub4.add_argument('-a','--no-autocfg',help='Skip proxy autoconfig', action='store_false', dest = 'autocfg')
-  sub4.add_argument('script', help='scrapper script to run')
-  sub4.add_argument('args', help='Script arguments', nargs='*')
 
   return cli
 
@@ -168,10 +161,6 @@ if __name__ == '__main__':
       args.output_xlsx = args.input_xlsx.replace(K.DEF_BUILD_RENAME_TAG,K.DEF_BUILD_RENAME_NEW)
       if args.output_xlsx == args.input_xlsx: args.output_xlsx = f'{K.DEF_BUILD_RENAME_NEW} {args.input_xlsx}'
     xlsw.xlsx_sanitize(args.input_xlsx,args.output_xlsx)
-    sys.exit(0)
-  elif args.command == 'run':
-    if args.autocfg: proxycfg.proxy_cfg(args.debug)
-    scrapper.run(args.script, args.args)
     sys.exit(0)
 
   raise RuntimeError(f'Command {args.command} not implemented')

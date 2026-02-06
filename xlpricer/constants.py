@@ -2,7 +2,8 @@
 Constant definitions
 '''
 class K:
-  FORMAT_VERSION ='1.4.0'
+  FORMAT_VERSION ='1.5.0'
+  # - 1.5.0: Adding support for R36M
   # - 1.4.0: Adding QxH intermediat column
   # - 1.3.2 : storage utilization in backup assumptions
   # - 1.3.1 : Minor tweaks
@@ -62,7 +63,7 @@ class K:
   DEF_API_ENDPOINT = 'https://calculator.otc-service.com/en/open-telekom-price-api/'
   DE_API_ENDPOINT = 'https://calculator.otc-service.com/de/open-telekom-price-api/'
   EN_API_ENDPOINT = 'https://calculator.otc-service.com/en/open-telekom-price-api/'
-  DEF_BUILD_FILENAME = 'INTERNAL-open-telekom-cloud-prices-{date}.xlsx' 
+  DEF_BUILD_FILENAME = 'INTERNAL-t-cloud-public-prices-{date}.xlsx' 
   DEF_BUILD_RENAME_TAG = 'INTERNAL'
   DEF_BUILD_RENAME_NEW = 'PUBLIC'
 

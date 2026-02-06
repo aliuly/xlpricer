@@ -30,7 +30,7 @@ def sheet(xl:xlu.XlUtils, apidat:dict) -> None:
       'f': XlFmt.f_num_c,
     },
     {
-      'h': [ "Componets Tab Volume", 14, XlFmt.f_header, 'f_v_volume', True ],
+      'h': [ "Componets Tab Volume", 14, XlFmt.f_header, 'f_v_volume' ],
       'f': XlFmt.f_num_c,
     },
     {
@@ -187,7 +187,7 @@ def sheet(xl:xlu.XlUtils, apidat:dict) -> None:
 
       
 def ws_update_prices(xl:xlu.XlUtils, targets:list):
-  ic(targets)
+  # ~ ic(targets)
   # Update pricing sheet with target formulas
   ws = xl.ws(K.WS_PRICES)
   last_sku = xl.ref('LAST_SKU')

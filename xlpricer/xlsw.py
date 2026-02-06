@@ -53,7 +53,7 @@ def xlsx_write(xlfile:str, apidat:dict) -> None:
       xl.vlist(lst,item)
   
   xl.add_vlist(K.VL_RXM)
-  for item in ['R24M','R12M','Elastic-FT','Elastic-Office']:
+  for item in ['R24M','R12M','Elastic-FT','Elastic-Office', 'R36M']:
     xl.vlist(K.VL_RXM, item)
 
   xl.load_fmt(XlFmt)
