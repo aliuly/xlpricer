@@ -18,4 +18,27 @@ To delete tags use:
 # TODO
 
 - [ ] sphinx docs
-- [ ] handle RDS backups 
+- [ ] handle RDS backups
+- [ ] Add links to service descriptions in the Overview tab
+  - T Cloud Public
+  - Manage Services
+  - Enterprise Support
+- [ ] Add ESA tables
+  - Calculate total volumes for % selection
+- [ ] Add Replicated storage columns to components.
+- [ ] Fix the tables so that total line always copies from top line.
+- v2.0
+  - turn into a web service
+  - when generating pricing sheet, allow the user to specify additional
+    component tabs (and its names) so they are properly referenced in
+    the Volumes Tab.
+  - edit preloads and additions
+    - [tabulator](https://tabulator.info/)
+    - [handsontable](https://github.com/handsontable/handsontable)
+  - for simplicity, use [bottle](https://github.com/bottlepy/bottle)
+    - [cork - authentication](https://github.com/FedericoCeratto/bottle-cork) ... probably
+      requires beaker
+    - [beaker - sessions](https://github.com/bottlepy/bottle-beaker)
+    - [jwt](https://github.com/agile4you/bottle-jwt/)
+
+
