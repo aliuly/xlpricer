@@ -25,6 +25,9 @@ URLS = [
     "https://www.t-cloud-public.com/en/products-services/managed-services",
     "https://public.t-cloud.com/service-description-managed",
   ),
+]
+
+ESA_URLS = [
   (
     "Enterprise Support",
     "https://www.t-cloud-public.com/_Resources/Persistent/a/c/4/0/ac40e59ad301f60597e327963c463f44b02faec8/open-telekom-cloud-flyer-enterprise-agreement.pdf",
@@ -209,6 +212,23 @@ def sheet(xl:xlu.XlUtils, enable_esa:bool = False) -> None:
                     end = xlu.rowcol_to_cell(tot_end, i+y),
                 ), XlFmt.f_ov_euro)
 
+  r += 2
+  xlu.write(ws,r,1, 'Links for more information', XlFmt.f_title)
+  for text,link,sd in URLS:
+    r += 1
+    cell = ws.cell(r,2)
+    cell.value = text
+    cell.hyperlink = link
+    cell.style = 'Hyperlink'
+    
+    cell = ws.cell(r,4)
+    if 'highspot' in sd:
+      cell.value = 'Highspot'
+    else:
+      cell.value = 'SD'
+    cell.hyperlink = sd
+    cell.style = 'Hyperlink'
+
   #
   # Show ESA calculation
   #
@@ -281,13 +301,8 @@ def sheet(xl:xlu.XlUtils, enable_esa:bool = False) -> None:
                       end = xlu.rowcol_to_cell(r, K.YEAR_MAX+3)),
               XlFmt.f_ov_euro)
 
-    esa_end_row = r
-
-
-
   r += 2
-  xlu.write(ws,r,1, 'Links for more information', XlFmt.f_title)
-  for text,link,sd in URLS:
+  for text,link,sd in ESA_URLS:
     r += 1
     cell = ws.cell(r,2)
     cell.value = text
@@ -301,6 +316,11 @@ def sheet(xl:xlu.XlUtils, enable_esa:bool = False) -> None:
       cell.value = 'SD'
     cell.hyperlink = sd
     cell.style = 'Hyperlink'
+
+    esa_end_row = r
+
+
+
 
   xlu.set_column_width(ws,1,2)
   xlu.set_column_width(ws,2,10)

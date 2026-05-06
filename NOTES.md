@@ -20,6 +20,7 @@ To delete tags use:
 - [ ] sphinx docs
 - [ ] handle RDS backups
 - [ ] Add Replicated storage columns to components.
+- [ ] Transformation: Increase the number of Components tab
 - [x] Add links to service descriptions in the Overview tab
 - [x] Add ESA tables
   - Calculate total volumes for % selection
