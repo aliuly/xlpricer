@@ -16,7 +16,13 @@ import sys
 ERROR_STR = 'unknown'
 
 def whoami():
+  if 'WHOAMI' in os.environ:
+    return argparse.Namespace(username=os.environ['WHOAMI'],
+                              fullname=os.environ['WHOAMI'],
+                              email=os.getenv('MAIL','nobody@nowhere'),
+                              login=os.environ['WHOAMI'])
   login = os.getlogin()
+
   try:
     res = subprocess.run(
         ['whoami'],
