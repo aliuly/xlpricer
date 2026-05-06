@@ -1,5 +1,6 @@
 #!/bin/sh
 
+export WHOAMI='github-bot'
 DATE=$(date +%Y-%m-%d)
 XLSX="prices-${DATE}.xlsx"
 python -m xlpricer build \
