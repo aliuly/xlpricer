@@ -14,22 +14,44 @@ from .constants import K
 from .xlfmt import XlFmt
 from . import preload
 
-def sheet(xl:xlu.XlUtils) -> None:
+URLS = [
+  (
+    "T-Cloud Public",
+    "https://public.t-cloud.com/en",
+    "https://public.t-cloud.com/_Resources/Persistent/b/0/d/f/b0dfef8ef4f2619e75390ffd9cc5ccdebc51faa1/open-telekom-cloud-servicedescription.pdf"
+  ),
+  (
+    "Managed Services",
+    "https://www.t-cloud-public.com/en/products-services/managed-services",
+    "https://public.t-cloud.com/service-description-managed",
+  ),
+  (
+    "Enterprise Support",
+    "https://www.t-cloud-public.com/_Resources/Persistent/a/c/4/0/ac40e59ad301f60597e327963c463f44b02faec8/open-telekom-cloud-flyer-enterprise-agreement.pdf",
+    "https://t-systems.highspot.com/items/62ffac9d51ef65c4e0e9a980",
+  ),
+]
+
+def sheet(xl:xlu.XlUtils, enable_esa:bool = False) -> None:
   '''Write to overview tab
 
   This function creates a template worksheet used for pricing customer's
   solutions.
 
   :param xl: xl utility object
-  :param apidat: dictionary with results from API queries
+  :param enable_esa: Enable ESA support
   '''
   ws = xl.ws(K.WS_OVERVIEW)
   year = datetime.datetime.today().strftime('%Y')
-  if int(datetime.datetime.today().strftime('%m')) > 9:
+  m = int(datetime.datetime.today().strftime('%m'))
+  if m > 9:
     # Last quarter of the year, we just change the overview to next
     # year!
     year = str(int(year)+1)
-  
+    months = 12
+  else:
+    months = 12 - m
+
   r = 1
   xlu.write(ws,r,1, 'Yearly Overview', XlFmt.f_title)
   
@@ -54,6 +76,8 @@ def sheet(xl:xlu.XlUtils) -> None:
                 XlFmt.f_ov_center)
   i += 2
   xlu.write(ws,r, i, 'Total', XlFmt.f_ov_center)
+  year_row = r
+  year_start_ref = xlu.rowcol_to_cell(r,4,True,True)
 
   i += 3
   xlu.write(ws,r, i, 'groups', XlFmt.f_ov_center)
@@ -67,7 +91,10 @@ def sheet(xl:xlu.XlUtils) -> None:
   month_row = r
   xlu.write(ws,r,2, 'Months')
   for i in range(4,K.YEAR_MAX+4):
-    xlu.write(ws,r, i, 12, XlFmt.f_ov_center)
+    if i == 4:
+      xlu.write(ws,r, i, months, XlFmt.f_ov_center)
+    else:
+      xlu.write(ws,r, i, 12, XlFmt.f_ov_center)
   i += 2
   xlu.write(ws,r, i,
             '=SUM({start}:{end})'.format(
@@ -156,7 +183,7 @@ def sheet(xl:xlu.XlUtils) -> None:
     r += 1
   
   r += 1
-
+  total_row = r
   xlu.write(ws,r,2, 'Total')
   for i in range(4,K.YEAR_MAX+4):
     xlu.write(ws,r, i,
@@ -182,7 +209,102 @@ def sheet(xl:xlu.XlUtils) -> None:
                     end = xlu.rowcol_to_cell(tot_end, i+y),
                 ), XlFmt.f_ov_euro)
 
-  xlu.set_column_width(ws,1,2)  
+  #
+  # Show ESA calculation
+  #
+  if enable_esa:
+    r += 2
+    esa_start_row = r
+  
+    xlu.write(ws,r,2, 'Enterprise Support Agreement', XlFmt.f_sumline)  
+    for i in range(3, K.YEAR_MAX+6):
+      xlu.write(ws,r,i, '', XlFmt.f_sumline)
+
+    r += 1
+    uplift_row = r
+    xlu.write(ws,r,2, 'Uplift')
+    for i in range(4,K.YEAR_MAX+4):
+      xlu.write(ws,r, i,'=IF({ESA_ENABLED}="Y",{uplift},0)'.format(
+                            **xl.ref(),
+                            uplift = xl.ref('ESA_UPLIFT').format(revenue = xlu.rowcol_to_cell(total_row, i+K.YEAR_MAX+6)),
+                      ), XlFmt.f_percent_c)
+
+    r += 2
+    xlu.write(ws,r,2, 'Fixed Charge')
+    esa_fixed = r
+    for i in range(4,K.YEAR_MAX+4):
+      xlu.write(ws,r, i,
+        '={ESA_FIXED_PRICE}*{months}*(1+{INFLATION})^({year_this}-{year_start})'.format(**xl.ref(),
+                            year_start = year_start_ref,
+                            year_this = xlu.rowcol_to_cell(year_row,i, True),
+                            months = xlu.rowcol_to_cell(month_row,i, True, False),
+        ),
+      XlFmt.f_ov_euro)
+    i += 2
+    xlu.write(ws,r, i,
+              '=SUM({start}:{end})'.format(
+                      start = xlu.rowcol_to_cell(r, 4),
+                      end = xlu.rowcol_to_cell(r, K.YEAR_MAX+3)),
+              XlFmt.f_ov_euro)
+
+
+
+    r += 1
+    esa_variable = r
+    xlu.write(ws,r,2, 'Variable Charge')
+    for i in range(4,K.YEAR_MAX+4):
+      xlu.write(ws,r, i, '={subtot}*{uplift}'.format(
+                subtot = xlu.rowcol_to_cell(total_row, i),
+                uplift = xlu.rowcol_to_cell(uplift_row,i),
+        ),
+      XlFmt.f_ov_euro)
+    i += 2
+    xlu.write(ws,r, i,
+              '=SUM({start}:{end})'.format(
+                      start = xlu.rowcol_to_cell(r, 4),
+                      end = xlu.rowcol_to_cell(r, K.YEAR_MAX+3)),
+              XlFmt.f_ov_euro)
+
+    r += 2
+    xlu.write(ws,r,2, 'Total ESA')
+    for i in range(4,K.YEAR_MAX+4):
+      xlu.write(ws,r, i,
+                  '=SUM({fixed},{variable})'.format(
+                      fixed = xlu.rowcol_to_cell(esa_fixed, i),
+                      variable = xlu.rowcol_to_cell(esa_variable, i),
+                  ), XlFmt.f_ov_euro)
+
+    i += 2
+    xlu.write(ws,r, i,
+              '=SUM({start}:{end})'.format(
+                      start = xlu.rowcol_to_cell(r, 4),
+                      end = xlu.rowcol_to_cell(r, K.YEAR_MAX+3)),
+              XlFmt.f_ov_euro)
+
+    esa_end_row = r
+
+
+
+  r += 2
+  xlu.write(ws,r,1, 'Links for more information', XlFmt.f_title)
+  for text,link,sd in URLS:
+    r += 1
+    cell = ws.cell(r,2)
+    cell.value = text
+    cell.hyperlink = link
+    cell.style = 'Hyperlink'
+    
+    cell = ws.cell(r,4)
+    if 'highspot' in sd:
+      cell.value = 'Highspot'
+    else:
+      cell.value = 'SD'
+    cell.hyperlink = sd
+    cell.style = 'Hyperlink'
+
+  xlu.set_column_width(ws,1,2)
+  xlu.set_column_width(ws,2,10)
+  xlu.set_column_width(ws,3,10)
   for i in range(4,K.YEAR_MAX+4):
     xlu.set_column_width(ws, i, 14)
   i += 1
@@ -194,4 +316,6 @@ def sheet(xl:xlu.XlUtils) -> None:
   # ~ xlu.write(ws,r+2, i+4+K.YEAR_MAX, 'END', XlFmt.f_ov_center)
 
   xlu.group_columns(ws, i+3, i+4+K.YEAR_MAX, hide=True)
+  if enable_esa:
+    xlu.group_rows(ws, esa_start_row, esa_end_row, hide=True)
   

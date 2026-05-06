@@ -18,8 +18,12 @@ from . import xlover
 from . import xlsrv
 from . import xlu
 from . import xlvol
+from . import xlesa
 from .constants import K
 from .xlfmt import XlFmt
+
+ENABLE_ESA = True
+
 
 def xlsx_write(xlfile:str, apidat:dict) -> None:
   '''Create Pricing template
@@ -44,6 +48,7 @@ def xlsx_write(xlfile:str, apidat:dict) -> None:
   xl.add_worksheet(K.WS_COMPONENT)
   xl.add_worksheet(K.WS_PRICES)
   xl.add_worksheet(K.WS_VOLUMES)
+  if ENABLE_ESA: xl.add_worksheet(K.WS_ESA)
   xl.add_worksheet(K.WS_ASSUMPTIONS)
   if len(apidat['services']): xl.add_worksheet(K.WS_SERVICES)
 
@@ -62,7 +67,8 @@ def xlsx_write(xlfile:str, apidat:dict) -> None:
   xlprice.ws_prices(xl, apidat)
   # ~ ic(xl.ref())
   xlbom.ws_bom(xl, apidat)
-  xlover.sheet(xl)
+  if ENABLE_ESA: xlesa.sheet(xl)
+  xlover.sheet(xl, ENABLE_ESA)
   xlvol.sheet(xl, apidat)
 
   xl.close()

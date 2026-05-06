@@ -229,6 +229,11 @@ significantly.
 
 # Versions
 
+- 1.6.0:
+  - Total row configures from header row. (Breaks less if the user
+    deletes rows from the BOM)
+  - Links for more Information
+  - Added Enterprise Support Agreement calculation
 - 1.5.0:
   - Adding R36M support
   - Removing scrapping code (too buggy)

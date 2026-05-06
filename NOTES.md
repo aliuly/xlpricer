@@ -19,14 +19,12 @@ To delete tags use:
 
 - [ ] sphinx docs
 - [ ] handle RDS backups
-- [ ] Add links to service descriptions in the Overview tab
-  - T Cloud Public
-  - Manage Services
-  - Enterprise Support
-- [ ] Add ESA tables
-  - Calculate total volumes for % selection
 - [ ] Add Replicated storage columns to components.
-- [ ] Fix the tables so that total line always copies from top line.
+- [x] Add links to service descriptions in the Overview tab
+- [x] Add ESA tables
+  - Calculate total volumes for % selection
+- [x] Fix the tables so that total line always copies from top line.
+  This makes the totals break less if user deletes BOM rows.
 - v2.0
   - turn into a web service
   - when generating pricing sheet, allow the user to specify additional

@@ -2,7 +2,8 @@
 Constant definitions
 '''
 class K:
-  FORMAT_VERSION ='1.5.0'
+  FORMAT_VERSION ='1.6.0'
+  # - 1.6.0: Adding ESA functionality
   # - 1.5.0: Adding support for R36M
   # - 1.4.0: Adding QxH intermediat column
   # - 1.3.2 : storage utilization in backup assumptions
@@ -21,6 +22,7 @@ class K:
   WS_VOLUMES = 'Volumes'
   WS_ASSUMPTIONS = 'Assumptions'
   WS_SERVICES = 'Services'
+  WS_ESA = 'ESA'
 
   VL_EVS = 'EVS'
   VL_CBR = 'CBR'

@@ -351,7 +351,7 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
 
   r += 1
   xlu.freeze_panes(ws, r, 6)
-  has_grouping = False
+  has_grouping = None
   col_grouping = ws_colname(K.CN_GROUPING, COLUMNS)
 
   for i in range(0,len(preload.ITEMS)):
@@ -366,9 +366,9 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
         ts = None if (preload.ITEMS[i] is None) or not (0 <= cc and cc < len(preload.ITEMS[i])) else preload.ITEMS[i][cc]
         if c == col_grouping:
           if ts is None:
-            if has_grouping: ts = '={prev}'.format(prev=xlu.rowcol_to_cell(ri-1,c))
+            if has_grouping is not None: ts = '={prev}'.format(prev=xlu.rowcol_to_cell(ri-1,c))
           else:
-            has_grouping = True
+            has_grouping = ri
         ws_bom_cell(xl,ri,c, COLUMNS[c-1],ts)                    
       ws_inflation(xl, ri, K.YEAR_MAX, year_row, COLUMNS)
 
@@ -377,21 +377,22 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
       # Header rows
       #
       xlu.write(ws,ri,2,preload.ITEMS[i].name, XlFmt.f_hr1)
-      has_grouping = False  # Make sure there is a grouping, otherwise hte formula later looks incomplete
+      has_grouping = None  # Make sure there is a grouping, otherwise the formula later looks incomplete
       for c in range(3,coloffs):
         if c == col_grouping:
           if preload.ITEMS[i].grp is not None:
             xlu.write(ws,ri, c, preload.ITEMS[i].grp, XlFmt.f_hr1_c)
-            has_grouping = True
+            has_grouping = ri
             continue
         xlu.write(ws,ri, c, None, XlFmt.f_hr1)
     elif isinstance(preload.ITEMS[i], preload.Total):
       prev = "N/A"
       if preload.ITEMS[i].grp is None:
-        if has_grouping:
-          prev = '={prev}'.format(prev=xlu.rowcol_to_cell(ri-1,col_grouping))
+        if has_grouping is not None:
+          prev = '={prev}'.format(prev=xlu.rowcol_to_cell(has_grouping,col_grouping))
+          # ~ prev = '={prev}'.format(prev=xlu.rowcol_to_cell(ri-1,col_grouping))
       total = '="Total "& IF(IFERROR({f_grouping}{r1},"")="","N/A",IFERROR({f_grouping}{r1},""))'.format(r1=ri, **xl.ref())
-      has_grouping = False
+      has_grouping = None
 
       xlu.write(ws,ri, 2, total, XlFmt.f_sumline)
       for c in range(3,coloffs-1):
