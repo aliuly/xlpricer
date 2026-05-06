@@ -9,7 +9,7 @@ to create a Excel template to be used as a pricing calculator.
 # Usage
 
 The xlpricer has a very simple Graphics Interface and a
-command line interface.  You can use it to create 
+command line interface.  You can use it to create
 pricing sheets and update them accordingly.
 
 ## Graphics User Interface (GUI)
@@ -23,10 +23,16 @@ existing worksheet and prep a spreadsheet for sharing.
 
 The generated spreadsheet has several tabs:
 
-- Overview : a multi-year/category summary
+- Overview : a multi-year/category summary with hyperlinks to service
+  documentation and an optional Enterprise Support Agreement (ESA) section
 - Components : detailed list of components
 - Prices : this is the list prices as queried via the API
+- Volumes : tiered/volume-based pricing adjustments
 - Assumptions : some meta data and assumptions taken by this calculation
+- ESA : Enterprise Support Agreement calculator (optional, generated if
+  ESA is enabled)
+- Services : service descriptions (only generated if service data is
+  available from the API)
 
 ### Components tab
 
@@ -104,7 +110,7 @@ column has a built-in backup calculation that uses values from the
 assumptions sheet.
 
 The remaining columns are prefilled with default values that come
-from the _Assumptions tab_.  You can override the defaults on a 
+from the _Assumptions tab_.  You can override the defaults on a
 per-row basis, or for the whole tab on the top header rows.  Note,
 the majority of these columns are hidden, but can easily be exposed
 by clicking on the corresponding `+` (plus) button.
@@ -118,25 +124,26 @@ In general, the following columns need to be tailored:
 These items are pre-configured to references to the Assumption table
 or from the top of the components tab, but can be modified:
 
-- H/R : Number of hours or "R12M or "R24M".
+- H/R : Number of hours or "R12M", "R24M" or "R36M".
 - Region : From where the component is being consumed.
 - EVS Class: EVS storage class used for storage (for components
   that use Block storage)
 - Persist? : Y or N.  If Y, storage persist even if VMs are off.
   N assumes that storage gets discarded when VMs are off, so the
   storage will be reduced to a fraction of the total number of hours.
-- Backup class : CBR class being used.  At the moment all CBR classes
-  have the same price.
+- Backup? : STD or None. STD uses the standard backup tariff;
+  None excludes backup costs.
 - Backup factor : Storage multiplier to calculate the backup volumes.
 
-For multi year calculations, Inflation is computed on the columsn 
+For multi year calculations, Inflation is computed on the columsn
 `AR` and onwards look for the title
 "Future Price Forecast (Adjusted for Inflation)".
 These columns are hidden by default, but can be exposed by clicking
 on the corresponding `+` (plus) button.
 
-Inflation is added anually, except for reserved 24 month packages,
-where the inflation is adjusted every two years.
+Inflation is added anually.  Reserved 24-month packages have their
+inflation adjusted every two years; reserved 36-month packages are
+adjusted every three years.
 
 ### Volume based discounts
 
@@ -160,11 +167,11 @@ the price will be fixed to that price band and the volume calculation
 will not be used.
 
 This automatic project adjustment due to volume is in the *Volumes*
-tab.  It pulls the volumes from the components tab.  So if you 
+tab.  It pulls the volumes from the components tab.  So if you
 have additional calculations spread across multiple tabs, you must
 make sure to update the *Volumes* tab, so that the total is calculated
 properly.  You can easily do this by Copying and Inserting column
-"C" into column "D" on-wards.  Then use the Find and Replace 
+"C" into column "D" on-wards.  Then use the Find and Replace
 Excel functionality to replace "Components" with the name of the
 tab.
 
@@ -173,17 +180,22 @@ tab.
 
 The "Assumptions" tab contains values that are used through the
 different cell calculations, such as "H/R", "Region", "EVS Class",
-"Backup Class", "Backup Factor", etc.  However, these can be overriden
-by modifying that individual cell in the relevant row or on the
-header of the components tab.
+"Backup Class", "Backup Factor", "Used Storage", etc.  However, these
+can be overriden by modifying that individual cell in the relevant
+row or on the header of the components tab.
 
-"H/R" column you be filled with the number of Hours in a month or
-the strings "R12M" or "R24M".  These strings are for Reserved 12
-month and 24 months prices.  Note if the price you select does
-not have Reserved pricing, the monthly pricing or the hourly pricing
-with 730 hours will be used.
+"H/R" column can be filled with the number of Hours in a month or
+the strings "R12M", "R24M" or "R36M".  These strings are for Reserved
+12 month, 24 month and 36 month prices respectively.  If the selected
+component does not have the requested reserved pricing, the next
+shorter reservation is tried, falling back to hourly or monthly
+pricing.
 
-Region will accept "eu-de", "eu-nl".
+"Region" will accept "eu-de", "eu-nl".
+
+"Used Storage" is a multiplier (default 70 %) that scales the backup
+volume calculation to reflect actual storage utilization rather than
+allocated capacity.
 
 
 ### Prices tab
@@ -196,32 +208,75 @@ or other documentation.
 ### Overview tab
 
 The overview tab has a multi-year view of the deal.  The calculations
-uses the "Header/Footer/Group" settings together with the Inflation
+use the "Header/Footer/Group" settings together with the Inflation
 Adjusted forecast columns.  Set-up costs are only added to the first
 year.
 
+The Overview also includes:
+
+- **Hyperlinks** to T-Cloud Public, Managed Services, and Enterprise
+  Support documentation for quick reference.
+- **Enterprise Support Agreement (ESA) section** (when enabled),
+  showing uplift percentages, fixed and variable charges, and total
+  ESA per year.  This section is collapsed by default.
+
+
+
+### ESA tab
+
+When ESA is enabled, a dedicated **ESA** tab is generated for the
+Enterprise Support Agreement calculation.  It includes:
+
+- **Base Fee** — a mandatory €2,500/month flat fee.
+- **Optional Components** — Service Credits on ECS/EVS/OBS
+  (€1,000/mo), Dedicated Service Delivery Manager (€3,000/mo),
+  and SD Manager on Duty (€6,000/mo).  Each can be toggled Y/N.
+- **Uplift Bands** — a tiered percentage applied to total annual
+  revenue (0–5k: 10 %, 5k–100k: 4 %, 100k–200k: 3 %, 200k–500k:
+  2 %, 500k+: 1 %).  The uplift rate is calculated automatically
+  based on the total spend from the Overview.
+
+The Overview tab pulls the ESA fixed price and uplift formula from
+this sheet and displays the resulting yearly ESA charges alongside
+the regular totals.
 
 
 ## Preparing sheet for sharing
 
 The sub-command `prep` is available to prepare the file for sharing.
 
-The `prep` sub-command will remove the "Prices" tab, and remove
-references to "Prices" in the different formulas.  Make sure that
-the Excel file has been re-calculated before running `prep` as it
-will use the values from this last calculation to replace formulas
-referencing the "Prices" table.
+The `prep` sub-command will remove the "Prices" and "Volumes" tabs,
+and remove references to them in the different formulas.  Make sure
+that the Excel file has been re-calculated before running `prep` as
+it will use the values from this last calculation to replace formulas
+referencing those tables.
 
 You can do this manually too, by copying the columns highligted
 with *RED* column headers and paste them as "Values".  Afterwards, you
-may safely delete the "Prices" tab.  Make sure that there are no
-broken calculations by expanding all groups as some columns/rows are
-hidden by default.
+may safely delete the "Prices" and "Volumes" tabs.  Make sure that
+there are no broken calculations by expanding all groups as some
+columns/rows are hidden by default.
 
 Doing this keeps the pricing information for the relevant items
 and removes all other prices.  But it also keeps most formulas
 in working condition.  Specially, it reduces the file size
 significantly.
+
+# Automated Builds
+
+Price sheets are automatically rebuilt every Monday via a GitHub
+Actions workflow (`.github/workflows/weekly-prices.yml`).  The
+workflow:
+
+1. Checks out the repository and installs dependencies.
+2. Runs `python -m xlpricer build` to generate a fresh workbook.
+3. Preserves the last 12 builds (older ones are pruned).
+4. Deploys the workbook and a `builds.json` manifest to GitHub Pages.
+
+The latest workbook is always available at the project's GitHub Pages
+site.  Previous versions are retained for reference.
+
+You can also trigger a build manually from the Actions tab in GitHub.
 
 # Known issues
 
@@ -229,6 +284,11 @@ significantly.
 
 # Versions
 
+- Next:
+  - Backup selection simplified to STD/None (CRR removed for now)
+  - Added backup product cross-reference columns in Prices tab
+  - Added Replicated Storage columns in Prices tab (EVS mapping)
+  - Normalized "GB/month" and "GB/Month" units to "GB"
 - 1.6.0:
   - Total row configures from header row. (Breaks less if the user
     deletes rows from the BOM)
@@ -249,7 +309,7 @@ significantly.
   - Group to hide EVS/CBR columns when not in use.
   - Tweaked backup factor calculation
 - 1.3.0:
-  - On components sheet, default region, pricing model, EVS and CBR classes. 
+  - On components sheet, default region, pricing model, EVS and CBR classes.
   - Added overview page
   - Re-worked total calculations to include group sub-totals
   - Wording of platform services.
@@ -260,7 +320,7 @@ significantly.
   - Add set-up column to inflation forecast
   - Update proxy settings
   - Change
-- 1.2.2: 
+- 1.2.2:
   - GPU flavors to description
   - Price API module debug code
   - Tweaked language settings

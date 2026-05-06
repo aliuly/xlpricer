@@ -52,10 +52,14 @@ def xlsx_write(xlfile:str, apidat:dict) -> None:
   xl.add_worksheet(K.WS_ASSUMPTIONS)
   if len(apidat['services']): xl.add_worksheet(K.WS_SERVICES)
 
-  for lst in [K.VL_EVS, K.VL_CBR, K.VL_REGIONS]:
+  for lst in [K.VL_EVS, K.VL_REGIONS]:
     xl.add_vlist(lst)
     for item in apidat['choices'][lst]:
       xl.vlist(lst,item)
+  
+  xl.add_vlist(K.VL_BACKUP)
+  for item in ['STD','None']:
+    xl.vlist(K.VL_BACKUP, item)
   
   xl.add_vlist(K.VL_RXM)
   for item in ['R24M','R12M','Elastic-FT','Elastic-Office', 'R36M']:

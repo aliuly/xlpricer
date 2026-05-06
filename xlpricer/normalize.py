@@ -39,7 +39,6 @@ def normalize(apidat:dict):
   apidat['tiers'] = dict()
   apidat['choices'] = {
     K.VL_EVS: set(),
-    K.VL_CBR: set(),
     K.VL_REGIONS: set(),
   }
   # ~ apidat['flatten'] = dict()
@@ -141,6 +140,12 @@ def normalize(apidat:dict):
         
       # Make it easier to identify PayG units...
       #
+      # All prices are monthly, so strip the redundant "/month" suffix.
+      # (only safe for non-hourly units — hourly units keep their 'h' prefix)
+      #
+      if rec['unit'] in ('GB/month', 'GB/Month'):
+        rec['unit'] = 'GB'
+
       # Make sure that prices that require to be multipled by the number
       # of hours always have an "h" at the beginning.  This makes the
       # formulas simpler.
@@ -153,14 +158,9 @@ def normalize(apidat:dict):
 
       # Find items to add to validation lists.
       # - EVS class list
-      # - CBR class list
       # - Region list
       if rec['productIdParameter'] == 'evs' and rec['productName'].startswith(K.EVS_PREFIX):
         apidat['choices'][K.VL_EVS].add(rec['productName'][len(K.EVS_PREFIX):])
-      if rec['productIdParameter'] == 'cbr' and rec['productName'].startswith(K.CBR_PREFIX) and rec['productName'] != 'CBR Cross Region Traffic Outbound':
-        t = rec['productName'][len(K.CBR_PREFIX):len(rec['productName'])-len(' Backup')]
-        # ~ ic(rec['productName'],t)
-        apidat['choices'][K.VL_CBR].add(t)
       apidat['choices'][K.VL_REGIONS].add(rec['region'])
 
       # Internally calculated column.  COL_IDG records the result's grouping

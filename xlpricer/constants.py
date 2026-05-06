@@ -2,7 +2,8 @@
 Constant definitions
 '''
 class K:
-  FORMAT_VERSION ='1.6.0'
+  FORMAT_VERSION ='1.7.0'
+  # - 1.7.0: Better backup calculations
   # - 1.6.0: Adding ESA functionality
   # - 1.5.0: Adding support for R36M
   # - 1.4.0: Adding QxH intermediat column
@@ -25,13 +26,13 @@ class K:
   WS_ESA = 'ESA'
 
   VL_EVS = 'EVS'
-  VL_CBR = 'CBR'
+  VL_BACKUP = 'BACKUP'
   VL_REGIONS = 'REGIONS'
   VL_RXM = 'RXM'
 
   DEFAULT_REGION = 'eu-de'
   DEFAULT_EVS = 'High I/O'
-  DEFAULT_CBR = 'Server'
+  DEFAULT_BACKUP = 'STD'
 
   EVS_PREFIX = 'EVS '
   CBR_PREFIX = 'CBR '
@@ -45,7 +46,7 @@ class K:
   RF_INFLATION = 'INFLATION'
   RF_DEF_REGION = 'DEF_REGION'
   RF_DEF_EVS = 'DEF_EVS'
-  RF_DEF_CBR = 'DEF_CBR'
+  RF_DEF_BACKUP = 'DEF_BACKUP'
   RF_PRICES_DESCS = 'PRICES_DESCS'
   RF_PRICES_REGION = 'PRICES_REGION'
   RF_PRICES_TABLE = 'PRICES_TABLE'
@@ -65,7 +66,7 @@ class K:
   DEF_API_ENDPOINT = 'https://calculator.otc-service.com/en/open-telekom-price-api/'
   DE_API_ENDPOINT = 'https://calculator.otc-service.com/de/open-telekom-price-api/'
   EN_API_ENDPOINT = 'https://calculator.otc-service.com/en/open-telekom-price-api/'
-  DEF_BUILD_FILENAME = 'INTERNAL-t-cloud-public-prices-{date}.xlsx' 
+  DEF_BUILD_FILENAME = 'INTERNAL-t-cloud-public-prices-{date}.xlsx'
   DEF_BUILD_RENAME_TAG = 'INTERNAL'
   DEF_BUILD_RENAME_NEW = 'PUBLIC'
 

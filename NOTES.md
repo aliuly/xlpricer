@@ -18,16 +18,29 @@ To delete tags use:
 # TODO
 
 - [ ] sphinx docs
-- [ ] handle RDS backups
-- [ ] Add Replicated storage columns to components.
-- [ ] Transformation: Increase the number of Components tab
+- [x] handle RDS backups (backup idx columns in Prices tab)
+- [x] Add Replicated storage columns to components (idx columns in Prices tab)
+- [x] Can we normalize Unit column "GB /month" to "GB"
 - [x] Add links to service descriptions in the Overview tab
 - [x] Add ESA tables
   - Calculate total volumes for % selection
 - [x] Fix the tables so that total line always copies from top line.
   This makes the totals break less if user deletes BOM rows.
+- [x] Remove buggy scrapper code
+- [x] R36M reserved pricing support
+- [x] Volume-based tiered pricing (Volumes tab)
+- [x] CBR no-backup option and shared EVS volume
+- [x] Overview shows next year during Q4
+- [x] "Used Storage" assumption in backup calculation
+- [x] Automated weekly builds via CI
+- [x] Public download page (GitHub Pages)
+
+# Upgrade
+
 - v2.0
-  - turn into a web service
+  - [~] turn into a web service
+    - [ ] user-configurable component tabs
+    - [ ] edit preloads and additions via web UI
   - when generating pricing sheet, allow the user to specify additional
     component tabs (and its names) so they are properly referenced in
     the Volumes Tab.
@@ -39,5 +52,14 @@ To delete tags use:
       requires beaker
     - [beaker - sessions](https://github.com/bottlepy/bottle-beaker)
     - [jwt](https://github.com/agile4you/bottle-jwt/)
+  - [ ] Transformation: Increase the number of Components tab
+
+# Decisions
+
+* Backup options only STD or None.  CRR was removed as it would to
+  know what is the replication region storage tariff.  (Not difficult
+  for now, but if another region is added, it will become complicated).
+* Replicated storage was not implemented because it is not that
+  commonly used.
 
 

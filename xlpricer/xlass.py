@@ -106,7 +106,7 @@ def ws_ass(xl:xlu.XlUtils, apidat:dict) -> None:
     [ 'Annual inflation rate', K.AS_ANNUAL_INFLATION, XlFmt.f_percent_c, K.RF_INFLATION, None ],
     [ 'Default Region', xlu.pick_default(xl.vlist(K.VL_REGIONS), K.DEFAULT_REGION), XlFmt.f_text_c, K.RF_DEF_REGION, xl.vlist(K.VL_REGIONS)  ],
     [ 'Default EVS', xlu.pick_default(xl.vlist(K.VL_EVS),K.DEFAULT_EVS), XlFmt.f_text_c, K.RF_DEF_EVS,  xl.vlist(K.VL_EVS) ],
-    [ 'Default CBR', xlu.pick_default(xl.vlist(K.VL_CBR),K.DEFAULT_CBR), XlFmt.f_text_c, K.RF_DEF_CBR, xl.vlist(K.VL_CBR) ],
+    [ 'Default Backup', xlu.pick_default(xl.vlist(K.VL_BACKUP),K.DEFAULT_BACKUP), XlFmt.f_text_c, K.RF_DEF_BACKUP, xl.vlist(K.VL_BACKUP) ],
     'Backups',
     ['Used Storage', 0.70, XlFmt.f_percent_c, None, None ],
     ['Daily change rate', K.AS_DAILY_CHANGE_RATE, XlFmt.f_percent_c, None, None ],

@@ -59,7 +59,7 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
     {
       'h': [ 'H/R', 5.5, XlFmt.f_header, 'f_hrs' ],
       'f': XlFmt.f_qty,
-      'c': 
+      'c':
         '=IF({WS_RXM}="R36M",'
            # Default Reserved is R36M
            'IF({#f_pr36m}<>"","R36M",'
@@ -118,10 +118,10 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
       'validate-list': ['Y','N'],
     },
     {
-      'h': [ 'Backup Class', 16, XlFmt.f_header, 'f_cbr' ],
+      'h': [ 'Backup?', 6, XlFmt.f_header, 'f_backup' ],
       'f': XlFmt.f_text,
-      'c': '={WS_DEF_CBR}',
-      'validate-list': xl.vlist(K.VL_CBR),
+      'c': '={WS_DEF_BACKUP}',
+      'validate-list': xl.vlist(K.VL_BACKUP),
     },
     {
       'h': [ 'Backup Factor', 7, XlFmt.f_header, 'f_bak' ],
@@ -164,9 +164,9 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
       'c': '==IF(OR({#f_desc}="",{#f_evs_type}="",{#f_reg}=""),"",MATCH(1,({PRICES_DESCS}="Storage: EVS " & {#f_evs_type})*({PRICES_REGION}={#f_reg}),0))',
     },
     {
-      'h': ['CBR Idx', 6, XlFmt.f_syshdr, 'f_cbr_id' ],
+      'h': ['Backup Idx', 6, XlFmt.f_syshdr, 'f_backup_idx' ],
       'f': XlFmt.f_num_c,
-      'c': '==IF(OR({#f_desc}="",{#f_cbr}="",{#f_reg}=""),"",MATCH(1,({PRICES_DESCS}="Storage: CBR " & {#f_cbr} & " Backup")*({PRICES_REGION}={#f_reg}),0))',
+      'c': '=IF({#f_backup}="STD",IF(OR({#f_desc}="",{#f_reg}=""),"",INDEX({PRICES_TABLE},{#f_sku},{cm_backup_idx})),"")',
     },
     {
       'h': ['PayG', 10, XlFmt.f_syshdr, 'f_price' ],
@@ -209,7 +209,7 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
               '""'
         '))'
     },
-    { 
+    {
       'h': ['QxH', 10, XlFmt.f_syshdr, 'f_qxh' ],
       'f': XlFmt.f_num_c,
       'c': '=IF({#f_sku}="","",'
@@ -227,10 +227,10 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
         ')'
     },
     {
-      'h': ['CBR Price per GB', 8, XlFmt.f_syshdr, 'f_cbr_price' ],
+      'h': ['Backup Price per GB', 8, XlFmt.f_syshdr, 'f_backup_price' ],
       'f': XlFmt.f_euro,
-      'c': '=IF({#f_cbr_id}="","",'
-              'INDEX({PRICES_TABLE},{#f_cbr_id},{cm_priceAmount})'
+      'c': '=IF({#f_backup_idx}="","",'
+              'INDEX({PRICES_TABLE},{#f_backup_idx},{cm_priceAmount})'
         ')'
     },
     SPACER,
@@ -258,14 +258,14 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
         ')),0)',
     },
     {
-      'h': ['CBR Price', 10, XlFmt.f_refhdr, 'f_cbr_sub' ],
+      'h': ['Backup Price', 10, XlFmt.f_refhdr, 'f_backup_sub' ],
       'f': XlFmt.f_euro,
-      'c': '=IFERROR(IF({#f_bakvol}="",0,{#f_bakvol}*{#f_cbr_price}),0)',
+      'c': '=IFERROR(IF({#f_bakvol}="",0,{#f_bakvol}*{#f_backup_price}),0)',
     },
     {
       'h': [K.CN_SUBTOTAL_UNIT, 12, XlFmt.f_refhdr, 'f_tot_1', True ],
       'f': XlFmt.f_euro,
-      'c': '=IFERROR({#f_pmonth}+{#f_evs_sub}+{#f_cbr_sub},0)',
+      'c': '=IFERROR({#f_pmonth}+{#f_evs_sub}+{#f_backup_sub},0)',
     },
     {
       'h': ['Sub-total', 15, XlFmt.f_refhdr, 'f_tot_qty' ],
@@ -283,7 +283,7 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
             XlFmt.f_title)
   ck = ws_colname(K.CN_REGION,COLUMNS)
   xlu.write(ws,r,ck,'EVS', XlFmt.f_key_hdr)
-  xlu.write(ws,r,ck+2,'Backup', XlFmt.f_key_hdr)            
+  xlu.write(ws,r,ck+2,'Backup:', XlFmt.f_key_hdr)
 
   r += 1
   RS = r
@@ -294,13 +294,13 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
 
   xlu.write(ws,r,ck,'Class:', XlFmt.f_key)
   xlu.write(ws,r,ck+1,'={DEF_EVS}'.format(**xl.ref()), XlFmt.f_val)
-  xlu.data_validation_list(ws, r,ck+1, xl.vlist(K.VL_EVS))  
+  xlu.data_validation_list(ws, r,ck+1, xl.vlist(K.VL_EVS))
   xl.ref(WS_DEF_EVS =  xlu.rowcol_to_cell(r,ck+1,True,True))
 
-  xlu.write(ws,r,ck+2,'Class:', XlFmt.f_key) 
-  xlu.write(ws,r,ck+3,'={DEF_CBR}'.format(**xl.ref()), XlFmt.f_val)
-  xlu.data_validation_list(ws, r,ck+3, xl.vlist(K.VL_CBR))  
-  xl.ref(WS_DEF_CBR =  xlu.rowcol_to_cell(r,ck+3,True,True))
+  xlu.write(ws,r,ck+2,'Type:', XlFmt.f_key)
+  xlu.write(ws,r,ck+3,'={DEF_BACKUP}'.format(**xl.ref()), XlFmt.f_val)
+  xlu.data_validation_list(ws, r,ck+3, xl.vlist(K.VL_BACKUP))
+  xl.ref(WS_DEF_BACKUP =  xlu.rowcol_to_cell(r,ck+3,True,True))
 
   r += 1
   xlu.write(ws,r, 2,'Pricing:',  XlFmt.f_key)
@@ -308,7 +308,7 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
   xlu.data_validation_list(ws,r,3, xl.vlist(K.VL_RXM))
   xl.ref(WS_RXM =  xlu.rowcol_to_cell(r,3,True,True))
 
-  xlu.write(ws,r,ck+2,'Factor:', XlFmt.f_key) 
+  xlu.write(ws,r,ck+2,'Factor:', XlFmt.f_key)
   xlu.write(ws,r,ck+3,'={BACKUP_FACT}'.format(**xl.ref()), XlFmt.f_val)
   xl.ref(WS_BACKUP_FACT =  xlu.rowcol_to_cell(r,ck+3,True,True))
 
@@ -369,7 +369,7 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
             if has_grouping is not None: ts = '={prev}'.format(prev=xlu.rowcol_to_cell(ri-1,c))
           else:
             has_grouping = ri
-        ws_bom_cell(xl,ri,c, COLUMNS[c-1],ts)                    
+        ws_bom_cell(xl,ri,c, COLUMNS[c-1],ts)
       ws_inflation(xl, ri, K.YEAR_MAX, year_row, COLUMNS)
 
     elif isinstance(preload.ITEMS[i], preload.H):
@@ -416,14 +416,14 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
       for y in range(0,K.YEAR_MAX+1):
         c = coloffs+y+2
         cn = xlu.col_to_name(c)
-        xlu.write(ws,ri,c, 
+        xlu.write(ws,ri,c,
                 ('=SUMIFS({cn}:{cn},'                       # Column to sum
                  '{f_unit}:{f_unit},"<>"&{ONE_TIME_ITEM},'  # Skip one-time items
                  '{f_qty}:{f_qty},"<>Total *",'             # Skip Total lines
                  '{f_grouping}:{f_grouping},"="&{f_grouping}{r1}' # Pick only the right group
                 ')').format(cn=cn,r1=ri,**xl.ref()),
             XlFmt.f_sumline_total)
-        # ~ xlu.write(ws,ri,c, 
+        # ~ xlu.write(ws,ri,c,
                 # ~ ('=SUMIFS({cn}:{cn},'                       # Column to sum
                   # ~ '{f_grouping}:{f_grouping},"="&MID({f_qty}{r1},7,LEN({f_qty}{r1})-6)' # Pick only the right group
                 # ~ ')').format(cn=cn,r1=ri,**xl.ref()),
@@ -434,7 +434,7 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
 
   xlu.group_columns(ws, ws_colname('Region',COLUMNS), ws_colname('Backup (GB)', COLUMNS), hide=True)
   xlu.group_columns(ws, ws_colname('vCPU',COLUMNS), ws_colname('RAM (GB)', COLUMNS), hide=False)
-  xlu.group_columns(ws, ws_colname('Row Idx',COLUMNS), ws_colname('CBR Price per GB', COLUMNS), hide=True)
+  xlu.group_columns(ws, ws_colname('Row Idx',COLUMNS), ws_colname('Backup Price per GB', COLUMNS), hide=True)
   xlu.group_columns(ws, ws_colname('EVS Price',COLUMNS), ws_colname('Sub-total per unit', COLUMNS), hide=False)
   xlu.group_columns(ws, coloffs+1, coloffs+K.YEAR_MAX+2 , hide=True)
 
@@ -516,32 +516,32 @@ def ws_inflation(xl:xlu.XlUtils,r:int,yrmx:int,year_row:int,COLUMNS:list)->None:
   coloffs = len(COLUMNS)
 
   xlu.write(ws,r,coloffs+3,
-        ('=IF({#f_unit}={ONE_TIME_ITEM},' 
+        ('=IF({#f_unit}={ONE_TIME_ITEM},'
             '{#f_tot_qty},'
             '0)').format(r1=r,**xl.ref()),
         XlFmt.f_euro)
 
   for y in range(0,yrmx):
-    c = coloffs+y+4      
+    c = coloffs+y+4
     f = (
         '=IF({#f_unit}={ONE_TIME_ITEM},0,'
           'IF( AND({#f_hrs}="R24M",{#f_pr24m}<>0),'
             # 24M reserved pricing calculation
             '{#f_qty}*'
-              '(' 
+              '('
                 '{#f_pmonth}*(1+{INFLATION})^(FLOOR({year}-1,2))'
-                '+' 
-                '({#f_cbr_sub}+{#f_evs_sub})*(1 + {INFLATION})^({year}-1)' 
-              ')' 
+                '+'
+                '({#f_backup_sub}+{#f_evs_sub})*(1 + {INFLATION})^({year}-1)'
+              ')'
             ','
               'IF( AND({#f_hrs}="R36M",{#f_pr36m}<>0),'
                 # 36M reserved pricing calculation
                 '{#f_qty}*'
-                  '(' 
+                  '('
                     '{#f_pmonth}*(1+{INFLATION})^(FLOOR({year}-1,3))'
-                    '+' 
-                    '({#f_cbr_sub}+{#f_evs_sub})*(1 + {INFLATION})^({year}-1)' 
-                  ')' 
+                    '+'
+                    '({#f_backup_sub}+{#f_evs_sub})*(1 + {INFLATION})^({year}-1)'
+                  ')'
                 ','
                 # Normal calculation
                 '{#f_tot_qty}*(1+{INFLATION})^({year}-1)'
