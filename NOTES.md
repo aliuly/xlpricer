@@ -59,7 +59,8 @@ To delete tags use:
 * Backup options only STD or None.  CRR was removed as it would to
   know what is the replication region storage tariff.  (Not difficult
   for now, but if another region is added, it will become complicated).
-* Replicated storage was not implemented because it is not that
+  Also, this is only available for ECS at the moment (No SFS or Volume)
+* Replicated storage (SDRS) was not implemented because it is not that
   commonly used.
 
 
