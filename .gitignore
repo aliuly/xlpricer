@@ -175,6 +175,7 @@ cython_debug/
 
 ###### addedd
 *.json
+!pages/*.json
 *.pdf 
 *.yaml 
 *.xlsx 

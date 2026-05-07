@@ -54,7 +54,11 @@ done
 
 # Build the new XLSX.
 python -m xlpricer -V
-python -m xlpricer build --lang-en "${XLSX}"
+python -m xlpricer build \
+        --include pages/dctemp.json \
+        --include pages/oracle.json \
+        --lang-en \
+        "${XLSX}"
 
 SIZE=$(stat --format=%s "${XLSX}")
 
