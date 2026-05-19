@@ -88,6 +88,11 @@ def make_parser(defaults:argparse.Namespace):
   sub3.add_argument('input_xlsx', help = 'Input file')
   sub3.add_argument('output_xlsx', help = 'Output file',nargs='?')
 
+  sub4 = subs.add_parser('server', help='Start REST API server')
+  sub4.add_argument('--host', default='127.0.0.1', type=str, help='Host to bind to (default: %(default)s)')
+  sub4.add_argument('--port', default=8000, type=int, help='Port to listen on (default: %(default)s)')
+  sub4.add_argument('--reload', action='store_true', default=False, help='Enable auto-reload for development')
+
   return cli
 
 
@@ -161,6 +166,15 @@ if __name__ == '__main__':
       args.output_xlsx = args.input_xlsx.replace(K.DEF_BUILD_RENAME_TAG,K.DEF_BUILD_RENAME_NEW)
       if args.output_xlsx == args.input_xlsx: args.output_xlsx = f'{K.DEF_BUILD_RENAME_NEW} {args.input_xlsx}'
     xlsw.xlsx_sanitize(args.input_xlsx,args.output_xlsx)
+    sys.exit(0)
+  elif args.command == 'server':
+    import uvicorn
+    uvicorn.run(
+        'xlpricer.api_server:app',
+        host=args.host,
+        port=args.port,
+        reload=args.reload,
+    )
     sys.exit(0)
 
   raise RuntimeError(f'Command {args.command} not implemented')

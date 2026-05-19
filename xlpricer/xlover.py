@@ -17,13 +17,13 @@ from . import preload
 URLS = [
   (
     "T-Cloud Public",
-    "https://public.t-cloud.com/en",
-    "https://public.t-cloud.com/_Resources/Persistent/b/0/d/f/b0dfef8ef4f2619e75390ffd9cc5ccdebc51faa1/open-telekom-cloud-servicedescription.pdf"
+    "https://www.t-cloud-public.com/en",
+    "https://www.t-cloud-public.com/_Resources/Persistent/b/0/d/f/b0dfef8ef4f2619e75390ffd9cc5ccdebc51faa1/open-telekom-cloud-servicedescription.pdf"
   ),
   (
     "Managed Services",
     "https://www.t-cloud-public.com/en/products-services/managed-services",
-    "https://public.t-cloud.com/service-description-managed",
+    "https://www.t-cloud-public.com/service-description-managed",
   ),
 ]
 
@@ -57,19 +57,19 @@ def sheet(xl:xlu.XlUtils, enable_esa:bool = False) -> None:
 
   r = 1
   xlu.write(ws,r,1, 'Yearly Overview', XlFmt.f_title)
-  
+
   r += 1
 
-  xlu.write(ws,r,2, 'Yearly Prices', XlFmt.f_sumline)  
+  xlu.write(ws,r,2, 'Yearly Prices', XlFmt.f_sumline)
   for i in range(3, K.YEAR_MAX+6):
     xlu.write(ws,r,i, '', XlFmt.f_sumline)
 
   i += 3
-  
+
   xlu.write(ws,r,i, 'Montnly Prices', XlFmt.f_sumline)
   for i in range(i+1, i+K.YEAR_MAX+2):
     xlu.write(ws,r,i, '', XlFmt.f_sumline)
-    
+
   r += 2
   xlu.write(ws,r,2, 'Year')
   xlu.write(ws,r, 4, year, XlFmt.f_ov_center)
@@ -125,29 +125,29 @@ def sheet(xl:xlu.XlUtils, enable_esa:bool = False) -> None:
   xlu.write(ws,r, i+2, f'=SUMIFS({col_mrc}:{col_mrc},{col_title}:{col_title},"<>total*")',XlFmt.f_ov_euro)
 
   r += 1
-  
+
   xlu.write(ws,r, i, 'total diff', XlFmt.f_ov_center)
   xlu.write(ws,r, i+1, f'={xlu.rowcol_to_cell(r-2,i+1)}-{xlu.rowcol_to_cell(r-1,i+1)}', XlFmt.f_ov_euro)
   xlu.write(ws,r, i+2, f'={xlu.rowcol_to_cell(r-2,i+2)}-{xlu.rowcol_to_cell(r-1,i+2)}', XlFmt.f_ov_euro)
-  
-  
+
+
   r += 1
-  
-  xlu.write(ws,r,2, 'Sub-Totals', XlFmt.f_sumline)  
+
+  xlu.write(ws,r,2, 'Sub-Totals', XlFmt.f_sumline)
   for i in range(3, K.YEAR_MAX+6):
     xlu.write(ws,r,i, '', XlFmt.f_sumline)
 
-  i += 3  
+  i += 3
   xlu.write(ws,r,i, 'Per-Group Prices', XlFmt.f_sumline)
   for i in range(i+1, i+K.YEAR_MAX+2):
     xlu.write(ws,r,i, '', XlFmt.f_sumline)
 
   r += 2
   tot_start = r
-  
+
   for grouping, desc in preload.GROUPS:
     xlu.write(ws,r,2, desc)
-    
+
     i =4
     for y in range(0,K.YEAR_MAX):
       c = i + y
@@ -184,7 +184,7 @@ def sheet(xl:xlu.XlUtils, enable_esa:bool = False) -> None:
               ), XlFmt.f_ov_euro)
     tot_end =r
     r += 1
-  
+
   r += 1
   total_row = r
   xlu.write(ws,r,2, 'Total')
@@ -201,7 +201,7 @@ def sheet(xl:xlu.XlUtils, enable_esa:bool = False) -> None:
                     start = xlu.rowcol_to_cell(r, 4),
                     end = xlu.rowcol_to_cell(r, K.YEAR_MAX+3)),
             XlFmt.f_ov_euro)
-    
+
   i += 3
   xlu.write(ws,r, i, 'total', XlFmt.f_ov_center)
   i += 1
@@ -220,7 +220,7 @@ def sheet(xl:xlu.XlUtils, enable_esa:bool = False) -> None:
     cell.value = text
     cell.hyperlink = link
     cell.style = 'Hyperlink'
-    
+
     cell = ws.cell(r,4)
     if 'highspot' in sd:
       cell.value = 'Highspot'
@@ -235,8 +235,8 @@ def sheet(xl:xlu.XlUtils, enable_esa:bool = False) -> None:
   if enable_esa:
     r += 2
     esa_start_row = r
-  
-    xlu.write(ws,r,2, 'Enterprise Support Agreement', XlFmt.f_sumline)  
+
+    xlu.write(ws,r,2, 'Enterprise Support Agreement', XlFmt.f_sumline)
     for i in range(3, K.YEAR_MAX+6):
       xlu.write(ws,r,i, '', XlFmt.f_sumline)
 
@@ -308,7 +308,7 @@ def sheet(xl:xlu.XlUtils, enable_esa:bool = False) -> None:
     cell.value = text
     cell.hyperlink = link
     cell.style = 'Hyperlink'
-    
+
     cell = ws.cell(r,4)
     if 'highspot' in sd:
       cell.value = 'Highspot'
@@ -328,7 +328,7 @@ def sheet(xl:xlu.XlUtils, enable_esa:bool = False) -> None:
   for i in range(4,K.YEAR_MAX+4):
     xlu.set_column_width(ws, i, 14)
   i += 1
-  xlu.set_column_width(ws, i, 2)  
+  xlu.set_column_width(ws, i, 2)
   i += 1
   xlu.set_column_width(ws, i, 14)
 
@@ -338,4 +338,4 @@ def sheet(xl:xlu.XlUtils, enable_esa:bool = False) -> None:
   xlu.group_columns(ws, i+3, i+4+K.YEAR_MAX, hide=True)
   if enable_esa:
     xlu.group_rows(ws, esa_start_row, esa_end_row, hide=True)
-  
+

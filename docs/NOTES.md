@@ -35,24 +35,30 @@ To delete tags use:
 - [x] Automated weekly builds via CI
 - [x] Public download page (GitHub Pages)
 
-# Upgrade
+# Ideas for SPA
 
-- v2.0
-  - [~] turn into a web service
-    - [ ] user-configurable component tabs
-    - [ ] edit preloads and additions via web UI
-  - when generating pricing sheet, allow the user to specify additional
-    component tabs (and its names) so they are properly referenced in
-    the Volumes Tab.
-  - edit preloads and additions
-    - [tabulator](https://tabulator.info/)
-    - [handsontable](https://github.com/handsontable/handsontable)
-  - for simplicity, use [bottle](https://github.com/bottlepy/bottle)
-    - [cork - authentication](https://github.com/FedericoCeratto/bottle-cork) ... probably
-      requires beaker
-    - [beaker - sessions](https://github.com/bottlepy/bottle-beaker)
-    - [jwt](https://github.com/agile4you/bottle-jwt/)
-  - [ ] Transformation: Increase the number of Components tab
+* Pre-loads
+  - New tab on SPA
+  - User can select other pre-load profiles
+  - User can edit pre-load profiles
+- Component tabs
+  - Build screen lets you specify additional component tabs
+  - Add a Button to add component tabs
+- Additional pricing files
+  - edit current pricing files
+  - add more pricing files
+- authentication
+
+Libraries:
+
+- edit preloads and additions
+  - [tabulator](https://tabulator.info/)
+  - [handsontable](https://github.com/handsontable/handsontable)
+- for simplicity, use [bottle](https://github.com/bottlepy/bottle)
+  - [cork - authentication](https://github.com/FedericoCeratto/bottle-cork) ... probably
+    requires beaker
+  - [beaker - sessions](https://github.com/bottlepy/bottle-beaker)
+  - [jwt](https://github.com/agile4you/bottle-jwt/)
 
 # Decisions
 
@@ -60,6 +66,7 @@ To delete tags use:
   know what is the replication region storage tariff.  (Not difficult
   for now, but if another region is added, it will become complicated).
   Also, this is only available for ECS at the moment (No SFS or Volume)
+  Lastly, it is not clear how to configure CRR.
 * Replicated storage (SDRS) was not implemented because it is not that
   commonly used.
 

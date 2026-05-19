@@ -2,3 +2,6 @@
 openpyxl
 pyyaml
 requests
+fastapi
+uvicorn[standard]
+python-multipart

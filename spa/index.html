@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>xlpricer · Pricing Workbook Wizard</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+    background: #fdf0f6; color: #1a1a2e; line-height: 1.5;
+    min-height: 100vh; display: flex; flex-direction: column;
+  }
+
+  /* ── Header ───────────────────────────────────────────── */
+  header {
+    background: linear-gradient(135deg, #2d1b3d, #6b2fa0, #a62c6b);
+    color: #fff; padding: 1rem 1.5rem; display: flex;
+    align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .5rem;
+  }
+  header h1 { font-size: 1.2rem; font-weight: 600; }
+  header span { font-size: .8rem; opacity: .7; }
+
+  /* ── Main panel (replaces the LabelFrame) ─────────────── */
+  .panel {
+    max-width: 600px; margin: 2rem auto; width: 100%; padding: 0 1rem;
+    flex: 1;
+  }
+  .panel-frame {
+    background: #fff; border-radius: 10px; box-shadow: 0 1px 4px rgba(181, 50, 120, 0.1);
+    padding: 1.5rem;
+  }
+  .panel-frame h2 {
+    font-size: 1rem; font-weight: 600; color: #6b2f54; text-transform: uppercase;
+    letter-spacing: .04em; margin-bottom: 1.25rem; padding-bottom: .5rem;
+    border-bottom: 1px solid #f0c4da;
+  }
+
+  /* ── Form rows ────────────────────────────────────────── */
+  .row { display: flex; align-items: center; gap: .75rem; margin-bottom: .75rem; }
+  .row label { min-width: 5rem; font-size: .88rem; font-weight: 500; color: #6b2f54; }
+  .row .fill { flex: 1; }
+
+  /* ── Buttons ──────────────────────────────────────────── */
+  button, .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: .4rem;
+    padding: .55rem 1.2rem; font-size: .88rem; font-weight: 600;
+    border-radius: 7px; border: 1px solid transparent; cursor: pointer;
+    transition: background .12s, box-shadow .12s;
+  }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+
+  .btn-primary { background: #d63384; color: #fff; border-color: #d63384; }
+  .btn-primary:hover:not(:disabled) { background: #c02a72; }
+
+  .btn-secondary { background: #fdf0f6; color: #4a2639; border-color: #e6b3cc; }
+  .btn-secondary:hover:not(:disabled) { background: #f8dceb; }
+
+  .btn-danger { background: #c9357c; color: #fff; border-color: #c9357c; }
+  .btn-danger:hover:not(:disabled) { background: #b02b68; }
+
+  .btn-ghost { background: transparent; color: #b33a8a; border-color: transparent; }
+  .btn-ghost:hover:not(:disabled) { text-decoration: underline; }
+
+  .btn-sm { padding: .35rem .85rem; font-size: .82rem; }
+
+  /* ── Menu buttons ─────────────────────────────────────── */
+  .menu { display: flex; flex-direction: column; gap: .75rem; margin-top: .5rem; }
+  .menu button { width: 100%; padding: 1rem; font-size: 1rem; justify-content: flex-start; }
+  .menu .icon { font-size: 1.3rem; width: 2rem; text-align: center; }
+  .menu .desc { font-weight: 400; font-size: .82rem; opacity: .75; margin-left: .25rem; }
+  .menu .icon { filter: drop-shadow(0 0 2px rgba(214,51,132,.3)); }
+
+  /* ── File input (styled like a button) ────────────────── */
+  .file-wrap { position: relative; overflow: hidden; display: inline-flex; }
+  .file-wrap input[type=file] {
+    position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+    opacity: 0; cursor: pointer;
+  }
+
+  /* ── Text input / readonly entry ──────────────────────── */
+  input[type=text], .entry {
+    padding: .45rem .65rem; font-size: .88rem; border: 1px solid #e6b3cc;
+    border-radius: 6px; background: #fff; width: 100%;
+  }
+  input[type=text]:focus { outline: none; border-color: #d63384; box-shadow: 0 0 0 2px rgba(214,51,132,.2); }
+  .entry-readonly { background: #fdf0f6; color: #6b2f54; }
+
+  /* ── Checkbox ─────────────────────────────────────────── */
+  .check-row { display: flex; align-items: center; gap: .5rem; margin-bottom: .4rem; }
+  .check-row input[type=checkbox] { width: 1rem; height: 1rem; }
+  .check-row label { font-size: .88rem; color: #6b2f54; }
+
+  /* ── Log / status screen ──────────────────────────────── */
+  .log-box {
+    background: #1c1124; color: #e6d0e0; font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: .8rem; padding: .75rem; border-radius: 6px; height: 320px;
+    overflow-y: auto; white-space: pre-wrap; word-break: break-all;
+    line-height: 1.55; margin-bottom: 1rem;
+  }
+  .log-box::-webkit-scrollbar { width: 8px; }
+  .log-box::-webkit-scrollbar-track { background: #1c1124; }
+  .log-box::-webkit-scrollbar-thumb { background: #6b2fa0; border-radius: 4px; }
+  .log-box::-webkit-scrollbar-thumb:hover { background: #a62c6b; }
+  .log-box .ts { color: #9b7e94; }
+  .log-box .ok  { color: #b3e0a2; }
+  .log-box .err { color: #f27a8d; }
+  .log-box .info { color: #d49ae8; }
+
+  /* ── Footer bar ───────────────────────────────────────── */
+  .bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-top: 1rem; border-top: 1px solid #f0c4da; flex-wrap: wrap; gap: .5rem;
+  }
+  .bar-left { display: flex; gap: .5rem; }
+  .bar-right { display: flex; gap: .5rem; }
+
+  /* ── Misc ─────────────────────────────────────────────── */
+  .hidden { display: none !important; }
+  .mt-1 { margin-top: .75rem; }
+  .mb-1 { margin-bottom: .75rem; }
+  .note { font-size: .82rem; color: #a65a82; margin-bottom: .75rem; }
+
+  footer { text-align: center; padding: 1rem; font-size: .8rem; color: #a65a82; }
+  footer a { color: #b33a8a; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📊 xlpricer · Pricing Workbook Wizard</h1>
+  <span id="version-badge">v—</span>
+</header>
+
+<div class="panel" id="app">
+  <div class="panel-frame" id="screen">
+    <!-- Dynamically rendered -->
+  </div>
+</div>
+
+<footer>
+  Powered by <a href="https://github.com/aliuly/xlpricer">xlpricer</a>
+  &middot; <a href="https://docs.otc.t-systems.com/price-calculator/api-ref/">OTC Price API</a>
+  &middot; <a href="https://www.t-cloud-public.com/en">T Cloud Public</a>
+</footer>
+
+<script>
+// ────────────────────────────────────────────────────────────────────────────
+// Configuration
+// ────────────────────────────────────────────────────────────────────────────
+const API = 'http://localhost:8000/api/v1';          // Adjust if server is on a different origin
+
+// ────────────────────────────────────────────────────────────────────────────
+// State
+// ────────────────────────────────────────────────────────────────────────────
+let screenEl  = document.getElementById('screen');
+let versionEl = document.getElementById('version-badge');
+
+// Re-usable state for each screen (mirrors the Namespace pattern in wiz.py)
+let state = {
+  screen: null,          // 'menu' | 'build' | 'reprice' | 'prep' | 'log'
+  build: {
+    filename: '',
+    useCache: true,
+  },
+  reprice: {
+    inputFile: null,     // File object
+    inputName: '',
+    outputName: '',
+    useCache: true,
+  },
+  prep: {
+    inputFile: null,
+    inputName: '',
+    outputName: '',
+  },
+  // Log screen state
+  log: {
+    title: '',
+    lines: [],
+    done: false,
+    downloadName: '',
+    downloadBlob: null,
+  },
+};
+
+// ────────────────────────────────────────────────────────────────────────────
+// Helpers
+// ────────────────────────────────────────────────────────────────────────────
+
+function $(sel, parent = document) { return parent.querySelector(sel); }
+
+function el(tag, attrs = {}, children = []) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === 'className') e.className = v;
+    else if (k === 'onclick') e.addEventListener('click', v);
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else if (k === 'style' && typeof v === 'object') Object.assign(e.style, v);
+    else e.setAttribute(k, v);
+  }
+  for (const c of children) {
+    if (typeof c === 'string') e.appendChild(document.createTextNode(c));
+    else e.appendChild(c);
+  }
+  return e;
+}
+
+function fmtSize(bytes) {
+  return bytes >= 1e6 ? (bytes / 1e6).toFixed(1) + ' MB'
+       : bytes >= 1e3 ? (bytes / 1e3).toFixed(1) + ' KB'
+       : bytes + ' B';
+}
+
+function ts() {
+  const d = new Date();
+  return d.toLocaleTimeString('de-DE', { hour12: false }) + '.' +
+         String(d.getMilliseconds()).padStart(3, '0');
+}
+
+// Download a blob in the browser
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// API calls
+// ────────────────────────────────────────────────────────────────────────────
+
+async function api(method, path, opts = {}) {
+  const url = `${API}${path}`;
+  const res = await fetch(url, { method, ...opts });
+  if (!res.ok) {
+    let detail = `${res.status} ${res.statusText}`;
+    try { const j = await res.json(); detail = j.detail || detail; } catch {}
+    throw new Error(detail);
+  }
+  const ct = res.headers.get('content-type') || '';
+  if (ct.includes('json')) return res.json();
+  return res.blob();
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Screen renderers
+// ────────────────────────────────────────────────────────────────────────────
+
+function renderScreen(html) {
+  screenEl.innerHTML = html;
+}
+
+// ── Main Menu ──────────────────────────────────────────────────────────────
+
+function showMenu() {
+  state.screen = 'menu';
+  renderScreen(`
+    <h2>Select an operation</h2>
+    <div class="menu">
+      <button class="btn-primary" id="menu-build">
+        <span class="icon">🆕</span> Build
+        <span class="desc">— create a new pricing workbook from scratch</span>
+      </button>
+      <button class="btn-primary" id="menu-reprice">
+        <span class="icon">🔄</span> Reprice
+        <span class="desc">— update an existing workbook with fresh prices</span>
+      </button>
+      <button class="btn-primary" id="menu-prep">
+        <span class="icon">🧹</span> Prep
+        <span class="desc">— sanitise a workbook for public release</span>
+      </button>
+    </div>
+  `);
+  document.getElementById('menu-build').onclick   = () => showBuild();
+  document.getElementById('menu-reprice').onclick  = () => showReprice();
+  document.getElementById('menu-prep').onclick     = () => showPrep();
+}
+
+// ── Build screen ────────────────────────────────────────────────────────────
+
+function showBuild() {
+  state.screen = 'build';
+  if (!state.build.filename) {
+    const d = new Date().toISOString().slice(0, 10);
+    state.build.filename = `INTERNAL-t-cloud-public-prices-${d}.xlsx`;
+  }
+  renderScreen(`
+    <h2>🆕 Build Workbook</h2>
+
+    <div class="row">
+      <label>Output</label>
+      <input type="text" class="fill" id="build-filename"
+             value="${escHtml(state.build.filename)}"
+             placeholder="INTERNAL-t-cloud-public-prices-YYYY-MM-DD.xlsx" />
+    </div>
+
+    <div class="check-row">
+      <input type="checkbox" id="build-cache" ${state.build.useCache ? 'checked' : ''} />
+      <label for="build-cache">Use cached pricing data when available</label>
+    </div>
+
+    <div class="bar">
+      <div class="bar-left">
+        <button class="btn-secondary" onclick="showMenu()">← Back</button>
+      </div>
+      <div class="bar-right">
+        <button class="btn-primary" id="build-run">Run…</button>
+      </div>
+    </div>
+  `);
+
+  const fnInput = document.getElementById('build-filename');
+  const cacheChk = document.getElementById('build-cache');
+
+  fnInput.addEventListener('change', () => { state.build.filename = fnInput.value; });
+  cacheChk.addEventListener('change', () => { state.build.useCache = cacheChk.checked; });
+
+  document.getElementById('build-run').onclick = () => {
+    state.build.filename = fnInput.value;
+    state.build.useCache = cacheChk.checked;
+    runBuild();
+  };
+}
+
+async function runBuild() {
+  const fn = state.build.filename || `t-cloud-prices-${new Date().toISOString().slice(0, 10)}.xlsx`;
+  const body = JSON.stringify({
+    output_file: fn,
+    use_cache:   state.build.useCache,
+  });
+
+  showLog('Building workbook…', fn);
+  appendLog('info', `Output: ${fn}`);
+  appendLog('info', `Use cache: ${state.build.useCache}`);
+  appendLog('info', 'POST /api/v1/build …');
+
+  try {
+    const blob = await api('POST', '/build', {
+      headers: { 'Content-Type': 'application/json' },
+      body,
+    });
+    appendLog('ok', `Done — ${fmtSize(blob.size)} received`);
+    finishLog(blob, fn);
+  } catch (err) {
+    appendLog('err', `Error: ${err.message}`);
+    failLog();
+  }
+}
+
+// ── Reprice screen ──────────────────────────────────────────────────────────
+
+function showReprice() {
+  state.screen = 'reprice';
+  renderScreen(`
+    <h2>🔄 Reprice Workbook</h2>
+
+    <p class="note">Upload an existing xlpricer workbook and download an updated version.</p>
+
+    <div class="row">
+      <label>Input</label>
+      <span class="fill" style="display:flex;gap:.5rem">
+        <button class="btn-secondary file-wrap btn-sm">
+          📂 Browse…
+          <input type="file" id="reprice-input" accept=".xlsx" />
+        </button>
+        <span class="entry entry-readonly fill" id="reprice-input-name">
+          ${state.reprice.inputName || 'No file selected'}
+        </span>
+      </span>
+    </div>
+
+    <div class="row">
+      <label>Output</label>
+      <input type="text" class="fill" id="reprice-output"
+             value="${escHtml(state.reprice.outputName)}"
+             placeholder="repriced-output.xlsx" />
+    </div>
+
+    <div class="check-row">
+      <input type="checkbox" id="reprice-cache" ${state.reprice.useCache ? 'checked' : ''} />
+      <label for="reprice-cache">Use cached pricing data when available</label>
+    </div>
+
+    <div class="bar">
+      <div class="bar-left">
+        <button class="btn-secondary" onclick="showMenu()">← Back</button>
+      </div>
+      <div class="bar-right">
+        <button class="btn-primary" id="reprice-run" disabled>Run…</button>
+      </div>
+    </div>
+  `);
+
+  const inputFile = document.getElementById('reprice-input');
+  const inputDisp = document.getElementById('reprice-input-name');
+  const outInput  = document.getElementById('reprice-output');
+  const cacheChk  = document.getElementById('reprice-cache');
+  const runBtn    = document.getElementById('reprice-run');
+
+  inputFile.addEventListener('change', () => {
+    const f = inputFile.files[0];
+    if (f) {
+      state.reprice.inputFile = f;
+      state.reprice.inputName = f.name;
+      inputDisp.textContent = f.name;
+      runBtn.disabled = false;
+    }
+  });
+  outInput.addEventListener('change', () => { state.reprice.outputName = outInput.value; });
+  cacheChk.addEventListener('change', () => { state.reprice.useCache = cacheChk.checked; });
+
+  runBtn.onclick = () => {
+    state.reprice.outputName = outInput.value;
+    state.reprice.useCache   = cacheChk.checked;
+    runReprice();
+  };
+}
+
+async function runReprice() {
+  const file = state.reprice.inputFile;
+  if (!file) { showReprice(); return; }
+
+  const outName = state.reprice.outputName ||
+                  `repriced-${file.name.replace(/\.xlsx$/i, '')}-${new Date().toISOString().slice(0, 10)}.xlsx`;
+
+  const fd = new FormData();
+  fd.append('file', file);
+
+  showLog('Repricing workbook…', outName);
+  appendLog('info', `Input:  ${file.name} (${fmtSize(file.size)})`);
+  appendLog('info', `Output: ${outName}`);
+  appendLog('info', 'POST /api/v1/reprice (multipart) …');
+
+  try {
+    const blob = await fetch(`${API}/reprice`, { method: 'POST', body: fd })
+      .then(r => { if (!r.ok) return r.json().then(j => { throw new Error(j.detail); }); return r.blob(); });
+    appendLog('ok', `Done — ${fmtSize(blob.size)} received`);
+    finishLog(blob, outName);
+  } catch (err) {
+    appendLog('err', `Error: ${err.message}`);
+    failLog();
+  }
+}
+
+// ── Prep screen ─────────────────────────────────────────────────────────────
+
+function showPrep() {
+  state.screen = 'prep';
+  renderScreen(`
+    <h2>🧹 Prep Workbook</h2>
+
+    <p class="note">Make sure you have re-calculated the input spreadsheet before prepping.</p>
+
+    <div class="row">
+      <label>Input</label>
+      <span class="fill" style="display:flex;gap:.5rem">
+        <button class="btn-secondary file-wrap btn-sm">
+          📂 Browse…
+          <input type="file" id="prep-input" accept=".xlsx" />
+        </button>
+        <span class="entry entry-readonly fill" id="prep-input-name">
+          ${state.prep.inputName || 'No file selected'}
+        </span>
+      </span>
+    </div>
+
+    <div class="row">
+      <label>Output</label>
+      <input type="text" class="fill" id="prep-output"
+             value="${escHtml(state.prep.outputName)}"
+             placeholder="PUBLIC-…-workbook.xlsx" />
+    </div>
+
+    <div class="bar">
+      <div class="bar-left">
+        <button class="btn-secondary" onclick="showMenu()">← Back</button>
+      </div>
+      <div class="bar-right">
+        <button class="btn-primary" id="prep-run" disabled>Run…</button>
+      </div>
+    </div>
+  `);
+
+  const inputFile = document.getElementById('prep-input');
+  const inputDisp = document.getElementById('prep-input-name');
+  const outInput  = document.getElementById('prep-output');
+  const runBtn    = document.getElementById('prep-run');
+
+  inputFile.addEventListener('change', () => {
+    const f = inputFile.files[0];
+    if (f) {
+      state.prep.inputFile = f;
+      state.prep.inputName = f.name;
+      inputDisp.textContent = f.name;
+
+      // Default output: replace INTERNAL → PUBLIC
+      const defOut = f.name.replace(/^INTERNAL-/i, 'PUBLIC-');
+      if (defOut !== f.name) {
+        state.prep.outputName = defOut;
+        outInput.value = defOut;
+      }
+      runBtn.disabled = false;
+    }
+  });
+  outInput.addEventListener('change', () => { state.prep.outputName = outInput.value; });
+
+  runBtn.onclick = () => {
+    state.prep.outputName = outInput.value;
+    runPrep();
+  };
+}
+
+async function runPrep() {
+  const file = state.prep.inputFile;
+  if (!file) { showPrep(); return; }
+
+  const outName = state.prep.outputName ||
+                  `PUBLIC-${file.name.replace(/^INTERNAL-/i, '') || file.name}`;
+
+  const fd = new FormData();
+  fd.append('file', file);
+
+  showLog('Sanitising workbook…', outName);
+  appendLog('info', `Input:  ${file.name} (${fmtSize(file.size)})`);
+  appendLog('info', `Output: ${outName}`);
+  appendLog('info', 'POST /api/v1/prep …');
+
+  try {
+    const blob = await fetch(`${API}/prep`, { method: 'POST', body: fd })
+      .then(r => { if (!r.ok) return r.json().then(j => { throw new Error(j.detail); }); return r.blob(); });
+    appendLog('ok', `Done — ${fmtSize(blob.size)} received`);
+    finishLog(blob, outName);
+  } catch (err) {
+    appendLog('err', `Error: ${err.message}`);
+    failLog();
+  }
+}
+
+// ── Log / status screen ─────────────────────────────────────────────────────
+
+function showLog(title, downloadName) {
+  state.screen = 'log';
+  state.log.title = title;
+  state.log.lines = [];
+  state.log.done = false;
+  state.log.downloadName = downloadName;
+  state.log.downloadBlob = null;
+
+  renderScreen(`
+    <h2>${escHtml(title)}</h2>
+    <div class="log-box" id="log-box"></div>
+    <div class="bar" id="log-bar">
+      <div class="bar-left">
+        <button class="btn-secondary" id="log-cancel" onclick="showMenu()">Cancel</button>
+      </div>
+      <div class="bar-right">
+        <button class="btn-primary hidden" id="log-open">📥 Download…</button>
+      </div>
+    </div>
+  `);
+}
+
+function appendLog(cls, msg) {
+  const box = document.getElementById('log-box');
+  if (!box) return;
+  const line = document.createElement('div');
+  line.innerHTML = `<span class="ts">[${ts()}]</span> <span class="${cls}">${escHtml(msg)}</span>`;
+  box.appendChild(line);
+  box.scrollTop = box.scrollHeight;
+}
+
+function finishLog(blob, filename) {
+  state.log.done = true;
+  state.log.downloadBlob = blob;
+  state.log.downloadName = filename;
+
+  const openBtn = document.getElementById('log-open');
+  const cancelBtn = document.getElementById('log-cancel');
+  if (openBtn) {
+    openBtn.classList.remove('hidden');
+    openBtn.onclick = () => {
+      downloadBlob(blob, filename);
+      // After download, return to menu (like the Tkinter version exits after open)
+      setTimeout(() => showMenu(), 500);
+    };
+  }
+  if (cancelBtn) cancelBtn.textContent = 'Close';
+}
+
+function failLog() {
+  const cancelBtn = document.getElementById('log-cancel');
+  if (cancelBtn) cancelBtn.textContent = 'Back';
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Utilities
+// ────────────────────────────────────────────────────────────────────────────
+
+function escHtml(s) {
+  if (s == null) return '';
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Bootstrap
+// ────────────────────────────────────────────────────────────────────────────
+
+async function boot() {
+  // Fetch version from the API
+  try {
+    const info = await api('GET', '/version');
+    versionEl.textContent = `v${info.version}`;
+  } catch {
+    versionEl.textContent = 'v— (offline)';
+  }
+  showMenu();
+}
+
+boot();
+</script>
+</body>
+</html>
