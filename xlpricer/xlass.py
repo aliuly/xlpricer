@@ -119,6 +119,11 @@ def ws_ass(xl:xlu.XlUtils, apidat:dict) -> None:
     ['Full Time (24x7)',K.AS_FT_HOURS, XlFmt.f_num_c, 'FT_HOURS', None ],
     ['Working Hours (10x5)', K.AS_WK_HOURS, XlFmt.f_num_c, 'WK_HOURS', None ],
     ['Default Hours per Month', '={Full Time (24x7)}', XlFmt.f_num_c, 'DEF_HOURS', None ],
+    'Units',
+    ['GB', '=10^9', XlFmt.f_num_c, 'GB_AMOUNT',  None ],
+    ['GiB', '=2^30', XlFmt.f_num_c, 'GIB_AMOUNT',  None ],
+    ['GB to GiB', '={GB}/{GiB}', XlFmt.f_float_c, 'GB_TO_GiB',  None ],
+    ['GiB to GB', '={GiB}/{GB}', XlFmt.f_float_c, 'GiB_TO_GB',  None ],
     '',
     ['Default Pricing', xlu.pick_default(xl.vlist(K.VL_RXM,), 'R24M'), XlFmt.f_text_c, 'DEF_RXM',  xl.vlist(K.VL_RXM) ],
     ['Outbound Internet traffic', 100, XlFmt.f_num_c, 'DEF_OUTBOUND_TRAFFIC',  None ],
@@ -130,3 +135,5 @@ def ws_ass(xl:xlu.XlUtils, apidat:dict) -> None:
   ]:
     write_row(xl, r:=r+1, row, vx)
 
+  for xln in ['GB_TO_GiB', 'GiB_TO_GB']:
+    xl.define_name(xln, xl.ref(xln))

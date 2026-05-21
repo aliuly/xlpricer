@@ -219,4 +219,43 @@ The Overview tab pulls the ESA fixed price and uplift formula from
 this sheet and displays the resulting yearly ESA charges alongside
 the regular totals.
 
+# GB and GiB
 
+T-Cloud Public uses GiB instead of GB for its standard unit of
+measure where applicable.
+
+## **1. GiB (Gibibyte)**
+- **Definition**: GiB stands for **Gibibyte**, which is based on
+  binary measurement (base-2).
+- **1 GiB** = ( 2^{30} ) bytes = **1,073,741,824 bytes**.
+- GiB is part of the **IEC binary standard** and is commonly used in
+  computing applications where data is measured in powers of 2, such
+  as memory sizes.
+- Prefix: Gi (Gibi-) means binary-based, e.g., Kibibyte (KiB),
+  Mebibyte (MiB), Gibibyte (GiB), etc.
+## **2. GB (Gigabyte)**
+- **Definition**: GB stands for **Gigabyte**, which is based on
+  decimal measurement (base-10).
+- **1 GB** = ( 10^9 ) bytes = **1,000,000,000 bytes**.
+- GB is commonly used in the marketing of storage devices like hard
+  drives, SSDs, and USB drives, as manufacturers use the base-10
+  definition to advertise larger capacities.
+
+As a convenience, the spreadsheet defines two names:
+
+* `GB_TO_GiB`
+* `GiB_TO_GB`
+
+Use these to convert units from one to the other.  For example:
+
+Converting from GB to GiB you can have in your formula:
+
+```text
+= 2000 * GB_TO_GiB
+```
+
+And viceversa, going from GiB to GB you can have a formula:
+
+```text
+= 4000 * GiB_TO_GB
+```

@@ -31,7 +31,7 @@ ESA_URLS = [
   (
     "Enterprise Support",
     "https://www.t-cloud-public.com/_Resources/Persistent/a/c/4/0/ac40e59ad301f60597e327963c463f44b02faec8/open-telekom-cloud-flyer-enterprise-agreement.pdf",
-    "https://t-systems.highspot.com/items/62ffac9d51ef65c4e0e9a980",
+    "https://view-su1.highspot.com/viewer/5c20c71c254d2602c8c415089158cd76",
   ),
 ]
 
@@ -310,16 +310,11 @@ def sheet(xl:xlu.XlUtils, enable_esa:bool = False) -> None:
     cell.style = 'Hyperlink'
 
     cell = ws.cell(r,4)
-    if 'highspot' in sd:
-      cell.value = 'Highspot'
-    else:
-      cell.value = 'SD'
+    cell.value = 'SD'
     cell.hyperlink = sd
     cell.style = 'Hyperlink'
 
     esa_end_row = r
-
-
 
 
   xlu.set_column_width(ws,1,2)

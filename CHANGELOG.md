@@ -1,10 +1,12 @@
 # Versions
 
-- Next:
+- 1.7.0:
   - Backup selection simplified to STD/None (CRR removed for now)
   - Added backup product cross-reference columns in Prices tab
   - Added Replicated Storage columns in Prices tab (EVS mapping)
-  - Normalized "GB/month" and "GB/Month" units to "GB"
+  - Normalized "GB/month" and "GB/Month" units to "GiB", also
+    all text that mentions GB transformed to GiB.
+  - Added factors to convert GB to/from GiB.
 - 1.6.0:
   - Total row configures from header row. (Breaks less if the user
     deletes rows from the BOM)

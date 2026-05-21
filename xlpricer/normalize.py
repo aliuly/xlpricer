@@ -46,6 +46,12 @@ def normalize(apidat:dict):
 
   for rid,rlst in apidat['records'].items():
     for rec in rlst:
+      # Mass replace GB to GiB and TB to TiB
+      for k in rec:
+        if not isinstance(rec[k],str): continue
+        i = (' '+rec[k]+' ').replace(' GB ',' GiB ').replace(' GB/',' GiB/').replace(' TB ',' TiB ').strip()
+        if i != rec[k]: rec[k] = i
+      
       # Some fixups...
       if rec['productName'] == 'Enterprise Dashboard Small':
         # For some reason, the productFamily is empty here
@@ -89,7 +95,7 @@ def normalize(apidat:dict):
         if rec['productSection'] == 'eip' or rec['productIdParameter'] == 'drs':
           # This seems duplicate.
           continue
-        if rec['productIdParameter'] == 'elb' and rec['unit'] == 'GB':
+        if rec['productIdParameter'] == 'elb' and rec['unit'] == 'GiB':
           # Dedicated load balancer have GB as unit, but it should be 'h'.
           rec['unit'] = 'h'
         
@@ -108,7 +114,7 @@ def normalize(apidat:dict):
           # columns.  We change them to "" so the spreadsheet formulas
           # can detect them more easily.
           v = ''
-        if isinstance(v,str):
+        if isinstance(v,str) and k != 'productName':
           if v.endswith(' GiB'):
             # If the value ends with " GiB", we turn it into
             # a proper number. This makes number formatting and
@@ -143,8 +149,8 @@ def normalize(apidat:dict):
       # All prices are monthly, so strip the redundant "/month" suffix.
       # (only safe for non-hourly units — hourly units keep their 'h' prefix)
       #
-      if rec['unit'] in ('GB/month', 'GB/Month'):
-        rec['unit'] = 'GB'
+      if rec['unit'] in ('GiB/month', 'GiB/Month'):
+        rec['unit'] = 'GiB'
 
       # Make sure that prices that require to be multipled by the number
       # of hours always have an "h" at the beginning.  This makes the
@@ -239,7 +245,7 @@ def normalize(apidat:dict):
       # flavor is appended.  So you can type for example "1 vcpu 1 GB s3"
       # and Excel will quickly find the right S3 flavor.
       if rec['vCpu'] and rec['vCpu'] != '0': rec[K.COL_XLTITLE] += f' {rec["vCpu"]} vcpu'
-      if rec['ram'] and rec['ram'] != '0': rec[K.COL_XLTITLE] += f' {rec["ram"]} GB'
+      if rec['ram'] and rec['ram'] != '0': rec[K.COL_XLTITLE] += f' {rec["ram"]} GiB'
       if (rec['vCpu'] and rec['vCpu'] != '0') and (rec['ram'] and rec['ram'] != '0') and rec['opiFlavour'] != '' and rec['serviceType'] != 'CSS':
         if mv := RE_OPIFLAVOR.search(rec['opiFlavour']):
           rec[K.COL_XLTITLE] += f' {mv.group(1)}'
