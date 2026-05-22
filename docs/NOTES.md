@@ -18,22 +18,6 @@ To delete tags use:
 # TODO
 
 - [ ] sphinx docs
-- [x] handle RDS backups (backup idx columns in Prices tab)
-- [x] Add Replicated storage columns to components (idx columns in Prices tab)
-- [x] Can we normalize Unit column "GB /month" to "GB"
-- [x] Add links to service descriptions in the Overview tab
-- [x] Add ESA tables
-  - Calculate total volumes for % selection
-- [x] Fix the tables so that total line always copies from top line.
-  This makes the totals break less if user deletes BOM rows.
-- [x] Remove buggy scrapper code
-- [x] R36M reserved pricing support
-- [x] Volume-based tiered pricing (Volumes tab)
-- [x] CBR no-backup option and shared EVS volume
-- [x] Overview shows next year during Q4
-- [x] "Used Storage" assumption in backup calculation
-- [x] Automated weekly builds via CI
-- [x] Public download page (GitHub Pages)
 
 # Ideas for SPA
 
@@ -41,13 +25,13 @@ To delete tags use:
   - New tab on SPA
   - User can select other pre-load profiles
   - User can edit pre-load profiles
-- Component tabs
+* Component tabs
   - Build screen lets you specify additional component tabs
   - Add a Button to add component tabs
-- Additional pricing files
+* Additional pricing files
   - edit current pricing files
   - add more pricing files
-- authentication
+* authentication
 
 Libraries:
 

@@ -47,13 +47,9 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
       'f': XlFmt.f_desc,
       'validate-list': K.XLN_PRICES_DESCS,
     },
-    {
-      'h': [K.CN_GROUPING, 12, XlFmt.f_header, 'f_grouping', True ],
-      'f': XlFmt.f_info,
-    },
     SPACER,
     {
-      'h': [ 'Storage (GiB)', 8, XlFmt.f_header, 'f_storage' ],
+      'h': [ 'Storage (GiB)', 16, XlFmt.f_header, 'f_storage' ],
       'f': XlFmt.f_qty,
     },
     {
@@ -97,6 +93,11 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
              ')'
             ')'
           ')',
+    },
+    SPACER,
+    {
+      'h': [K.CN_GROUPING, 12, XlFmt.f_header, 'f_grouping', True ],
+      'f': XlFmt.f_info,
     },
     SPACER,
     {
@@ -320,20 +321,20 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
     # ~ ic(COLUMNS[c-1])
 
   xlu.write(ws,RS, 4, 'Set-up: ',XlFmt.f_key)
-  xlu.write(ws,RS, 5, '=SUMIFS({f_tot_qty}:{f_tot_qty},'  # Column to sum
+  xlu.write(ws,RS, 6, '=SUMIFS({f_tot_qty}:{f_tot_qty},'  # Column to sum
             '{f_unit}:{f_unit},"="&{ONE_TIME_ITEM}'       # Select One Time Items
             ')'.format(r1=RS,**xl.ref()),
             XlFmt.f_sumline_total)
-  xl.ref(BOM_TOTAL_SETUP = f'{K.WS_COMPONENT}!{xlu.rowcol_to_cell(RS, 5, True, True)}')
+  xl.ref(BOM_TOTAL_SETUP = f'{K.WS_COMPONENT}!{xlu.rowcol_to_cell(RS, 6, True, True)}')
 
   RS += 1
   xlu.write(ws,RS, 4, 'Monthly Total: ',XlFmt.f_key)
-  xlu.write(ws,RS, 5, '=SUMIFS({f_tot_qty}:{f_tot_qty},'   # Column to sum
+  xlu.write(ws,RS, 6, '=SUMIFS({f_tot_qty}:{f_tot_qty},'   # Column to sum
             '{f_unit}:{f_unit},"<>"&{ONE_TIME_ITEM},'      # Remove One Time Items
             '{f_qty}:{f_qty},"<>Total *"'                  # Remove totals
             ')'.format(r1=RS,**xl.ref()),
             XlFmt.f_sumline_total)
-  xl.ref(BOM_TOTAL_MONTHLY = f'{K.WS_COMPONENT}!{xlu.rowcol_to_cell(RS, 5, True, True)}')
+  xl.ref(BOM_TOTAL_MONTHLY = f'{K.WS_COMPONENT}!{xlu.rowcol_to_cell(RS, 6, True, True)}')
 
   xlu.write(ws,r,coloffs+1,'Year:',XlFmt.f_header)
   xlu.set_column_width(ws,coloffs+1,6)
@@ -351,7 +352,7 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
                 XlFmt.f_header)
 
   r += 1
-  xlu.freeze_panes(ws, r, 6)
+  xlu.freeze_panes(ws, r, 7)
   has_grouping = None
   col_grouping = ws_colname(K.CN_GROUPING, COLUMNS)
 

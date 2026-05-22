@@ -2,20 +2,21 @@
 Constant definitions
 '''
 class K:
-  FORMAT_VERSION ='1.7.0'
+  FORMAT_VERSION ='1.8.0'
+  # - 1.8.0: Re-arranged columns
   # - 1.7.0: Better backup calculations
   # - 1.6.0: Adding ESA functionality
   # - 1.5.0: Adding support for R36M
   # - 1.4.0: Adding QxH intermediat column
-  # - 1.3.2 : storage utilization in backup assumptions
-  # - 1.3.1 : Minor tweaks
-  # - 1.3.0 : Removed tier calculations, re-implemented totals, new
+  # - 1.3.2: storage utilization in backup assumptions
+  # - 1.3.1: Minor tweaks
+  # - 1.3.0: Removed tier calculations, re-implemented totals, new
   #   overview tab.
-  # - 1.2.0 : Added grouping and set-up calc columns
-  # - 1.1.1 : Added GPU type to title
-  # - 1.1.0 : Introduces defined name PriceListNames to workaround an
+  # - 1.2.0: Added grouping and set-up calc columns
+  # - 1.1.1: Added GPU type to title
+  # - 1.1.0: Introduces defined name PriceListNames to workaround an
   #   unsupported feature in OpenPyxl w.r.t data validation.
-  # - 1.0.2 : First "complete" version
+  # - 1.0.2: First "complete" version
 
   WS_OVERVIEW = 'Overview'
   WS_COMPONENT = 'Components'

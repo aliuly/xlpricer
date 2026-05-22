@@ -3,6 +3,7 @@
 - Next:
   - Added a temp fix for wrong m9 productName's
   - tweak the headings on overview tab inflation tables
+  - re-order columns
 - 1.7.1:
   - Finishing GB to GiB transition
   - Added preload file configuration
