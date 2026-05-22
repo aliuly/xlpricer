@@ -1,4 +1,6 @@
-# Release procedure
+# NOTES
+
+## Release procedure
 
 Create a branch "prerel" or "prerel-number" to test pre-releases.
 Just push to create artifacts that can be downloaded, or tag with
@@ -15,11 +17,11 @@ To delete tags use:
 - `git tag -d tagname` : deletes locally
 - `git push origin --delete tagname` : deletes remotely
 
-# TODO
+## TODO
 
-- [ ] sphinx docs
+- [x] sphinx docs
 
-# Ideas for SPA
+## Ideas for SPA
 
 * Pre-loads
   - New tab on SPA
@@ -44,7 +46,7 @@ Libraries:
   - [beaker - sessions](https://github.com/bottlepy/bottle-beaker)
   - [jwt](https://github.com/agile4you/bottle-jwt/)
 
-# Decisions
+## Decisions
 
 * Backup options only STD or None.  CRR was removed as it would to
   know what is the replication region storage tariff.  (Not difficult

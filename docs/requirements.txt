@@ -1,0 +1,16 @@
+#
+# doc generation Requirements
+#
+docutils
+sphinx
+myst-parser
+sphinx-autodoc2
+sphinx-argparse
+
+# --only-binary=cryptography
+openpyxl
+pyyaml
+requests
+fastapi
+uvicorn[standard]
+python-multipart

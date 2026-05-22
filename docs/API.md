@@ -96,16 +96,16 @@ Response (abbreviated):
 
 ```json
 {
-  "columns": { ... },
-  "services": { ... },
+  "columns": { "..." },
+  "services": { "..." },
   "count": 1427,
-  "records": { ... },
-  "tiers": { ... },
+  "records": { "..." },
+  "tiers": { "..." },
   "choices": {
     "EVS": ["Common I/O", "High I/O", "Ultra-High I/O"],
     "REGIONS": ["eu-de", "eu-nl"]
   },
-  "flatten": [ ... ]
+  "flatten": [ "..." ]
 }
 ```
 
@@ -137,9 +137,9 @@ Response:
     "productFamily": "AI",
     "unit": "h",
     "price": 2.45,
-    ...
+    "..."
   },
-  ...
+  "..."
 ]
 ```
 
@@ -162,7 +162,7 @@ Response:
     "title": "Compute",
     "description": "Elastic Cloud Server (ECS) ..."
   },
-  ...
+  "..."
 }
 ```
 

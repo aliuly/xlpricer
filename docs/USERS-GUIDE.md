@@ -13,7 +13,7 @@ The generated spreadsheet has several tabs:
 - Services : service descriptions (only generated if service data is
   available from the API)
 
-### Components tab
+## Components tab
 
 This is where most of the action takes place.  The generated
 spreadsheet will be prepopulated with components suitable for a
@@ -124,7 +124,7 @@ Inflation is added annually.  Reserved 24-month packages have their
 inflation adjusted every two years; reserved 36-month packages are
 adjusted every three years.
 
-### Volume based discounts
+## Volume based discounts
 
 Some prices get reductions based on volumes.  For example,
 Object Storage, or Outbound Internet traffic, the more MB you
@@ -155,7 +155,7 @@ Excel functionality to replace "Components" with the name of the
 tab.
 
 
-### Assumptions tab
+## Assumptions tab
 
 The "Assumptions" tab contains values that are used through the
 different cell calculations, such as "H/R", "Region", "EVS Class",
@@ -177,14 +177,14 @@ volume calculation to reflect actual storage utilization rather than
 allocated capacity.
 
 
-### Prices tab
+## Prices tab
 
 The normalized table in the "Prices" tab is good for finding
 components if you know what you are looking for.  If you are
 browsing for services, it is better to use the service description
 or other documentation.
 
-### Overview tab
+## Overview tab
 
 The overview tab has a multi-year view of the deal.  The calculations
 use the "Header/Footer/Group" settings together with the Inflation
@@ -201,7 +201,7 @@ The Overview also includes:
 
 
 
-### ESA tab
+## ESA tab
 
 When ESA is enabled, a dedicated **ESA** tab is generated for the
 Enterprise Support Agreement calculation.  It includes:
@@ -219,12 +219,12 @@ The Overview tab pulls the ESA fixed price and uplift formula from
 this sheet and displays the resulting yearly ESA charges alongside
 the regular totals.
 
-# GB and GiB
+## GB and GiB
 
 T-Cloud Public uses GiB instead of GB for its standard unit of
 measure where applicable.
 
-## **1. GiB (Gibibyte)**
+### **1. GiB (Gibibyte)**
 - **Definition**: GiB stands for **Gibibyte**, which is based on
   binary measurement (base-2).
 - **1 GiB** = ( 2^{30} ) bytes = **1,073,741,824 bytes**.
@@ -233,7 +233,7 @@ measure where applicable.
   as memory sizes.
 - Prefix: Gi (Gibi-) means binary-based, e.g., Kibibyte (KiB),
   Mebibyte (MiB), Gibibyte (GiB), etc.
-## **2. GB (Gigabyte)**
+### **2. GB (Gigabyte)**
 - **Definition**: GB stands for **Gigabyte**, which is based on
   decimal measurement (base-10).
 - **1 GB** = ( 10^9 ) bytes = **1,000,000,000 bytes**.
