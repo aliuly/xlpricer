@@ -12,7 +12,6 @@ import datetime
 from . import xlu
 from .constants import K
 from .xlfmt import XlFmt
-from . import preload
 
 ENABLE_ESA = True
 

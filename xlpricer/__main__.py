@@ -20,9 +20,13 @@ import xlpricer.proxycfg as proxycfg
 import xlpricer.price_api as price_api
 import xlpricer.xlsw as xlsw
 import xlpricer.wiz as wiz
+import xlpricer.preload as preload
+
 from xlpricer.constants import K
 from xlpricer.version import VERSION
 from xlpricer.xlu import today
+
+
 
 def load_defaults() -> argparse.Namespace:
   '''Load defaults from a possible configuration file'''
@@ -80,6 +84,11 @@ def make_parser(defaults:argparse.Namespace):
     pp.add_argument('--save',help='Save the results of the API queries to a file', type=str, default =None)
     pp.add_argument('--swiss',help='Keep eu-ch2 entries', default=defaults.swiss,action='store_true')
     pp.add_argument('-I','--include',help='Include additional pricing data',default=None,action='append')
+
+  sub1.add_argument('--preload',
+                    help = 'pre-load data',
+                    type = str,
+                    default = None)
 
   sub1.add_argument('xlsx', help = 'File to create',nargs='?')
   sub2.add_argument('xlsx', help = 'File to modify')
@@ -156,6 +165,8 @@ if __name__ == '__main__':
     sys.stderr.write('Done!\n')
 
     if args.command == 'build':
+      if args.preload is not None:
+        preload.load_items(args.preload)
       xlsw.xlsx_write(K.DEF_BUILD_FILENAME.format(date=today()) if args.xlsx is None else args.xlsx, res)
       sys.exit(0)
     elif args.command == 'reprice':

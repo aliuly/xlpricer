@@ -31,13 +31,13 @@ DEFAULTS = {
 
 def inc_records(records:list, recgrp:str ,apidat:dict) -> None:
   '''Merge records into the results
-  
+
   :param records: records to merge
   :param recgrp: record grouip ID to merge to
   :param apidat: results of API queries
   '''
   if not recgrp in apidat['records']: apidat['records'][recgrp] = list()
-  for rec in records:    
+  for rec in records:
     if not '_idGroup' in rec: rec['_idGroup'] = recgrp
     for c in apidat['columns']:
       if not c in rec:
@@ -51,13 +51,13 @@ def inc_records(records:list, recgrp:str ,apidat:dict) -> None:
 
 def json_prices(include:str, apidat:dict) -> None:
   '''Include prices from file
-  
+
   :param include: JSON file to read
   :param apidat: result set to modify
   '''
   sys.stderr.write(f'Including {include}..')
   with open(include) as fp:
-    jsdat = json.load(fp)  
+    jsdat = json.load(fp)
   if not isinstance(jsdat,list): raise TypeError(f'{include} must contain a list\n')
   recgrp = os.path.basename(include)
   if recgrp.lower().endswith('.json'): recgrp = recgrp[:-5]
@@ -68,10 +68,10 @@ def json_prices(include:str, apidat:dict) -> None:
 
 def fixed_prices(apidat:dict) -> None:
   '''Add fixed prices
-  
+
   :param apidat: result set to modify
   '''
-  
+
   inc_records([
     { # Anti DDOS
       'id': 'FREE_ANTI_DDOS',
@@ -142,30 +142,30 @@ def fixed_prices(apidat:dict) -> None:
       'productFamily': K.FAMILY,
       'unit': 'item',
       'region': '*',
-    },    
+    },
     {
       'id': 'FREE_AS',
       'productName': 'Auto Scaling',
       'productFamily': K.FAMILY,
       'unit': 'item',
       'region': '*',
-    },    
+    },
     {
       'id': 'FREE_IMS',
       'productName': 'Image Management Service',
       'productFamily': K.FAMILY,
       'unit': 'item',
       'region': '*',
-    },    
+    },
   ], K.FAMILY, apidat)
-  
+
   inc_records([
     {
       'id': 'FREE_VOLUME',
       'productName': 'EVS Shareable volume',
       'productFamily': "Storage",
-      'unit': 'GB',
+      'unit': 'item',
       'region': '*',
     },
   ], "Storage", apidat)
-  
+

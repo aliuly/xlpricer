@@ -53,7 +53,7 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
     },
     SPACER,
     {
-      'h': [ 'Storage (GB)', 8, XlFmt.f_header, 'f_storage' ],
+      'h': [ 'Storage (GiB)', 8, XlFmt.f_header, 'f_storage' ],
       'f': XlFmt.f_qty,
     },
     {
@@ -129,7 +129,7 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
       'c': '={WS_BACKUP_FACT}',
     },
     {
-      'h': [ 'Backup (GB)', 7, XlFmt.f_header, 'f_bakvol' ],
+      'h': [ 'Backup (GiB)', 7, XlFmt.f_header, 'f_bakvol' ],
       'f': XlFmt.f_num_in,
       'c': '=IF(AND({#f_evs_perm}="Y",{#f_storage}>0),{#f_storage}*{#f_bak},"")',
     },
@@ -144,7 +144,7 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
         '))'
     },
     {
-      'h': [ 'RAM (GB)', 6, XlFmt.f_syshdr ],
+      'h': [ 'RAM (GiB)', 6, XlFmt.f_syshdr ],
       'f': XlFmt.f_num_c,
       'c': '=IF({#f_sku}="","",IF('
               'INDEX({PRICES_TABLE},{#f_sku},{cm_ram})>0,'
@@ -220,14 +220,14 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
            ')'
     },
     {
-      'h': ['EVS Price per GB', 8, XlFmt.f_syshdr, 'f_evs_price' ],
+      'h': ['EVS Price per GiB', 8, XlFmt.f_syshdr, 'f_evs_price' ],
       'f': XlFmt.f_euro,
       'c': '=IF({#f_evs_id}="","",'
               'INDEX({PRICES_TABLE},{#f_evs_id},{cm_priceAmount})'
         ')'
     },
     {
-      'h': ['Backup Price per GB', 8, XlFmt.f_syshdr, 'f_backup_price' ],
+      'h': ['Backup Price per GiB', 8, XlFmt.f_syshdr, 'f_backup_price' ],
       'f': XlFmt.f_euro,
       'c': '=IF({#f_backup_idx}="","",'
               'INDEX({PRICES_TABLE},{#f_backup_idx},{cm_priceAmount})'
@@ -354,6 +354,14 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
   has_grouping = None
   col_grouping = ws_colname(K.CN_GROUPING, COLUMNS)
 
+  # Map column position (1-indexed) to preload item index, skipping spacers and grouping
+  preload_col_map = {}
+  _idx = 0
+  for _j, _col in enumerate(COLUMNS):
+    if 'h' in _col and _col['h'][0] is not None and _col['h'][0] != K.CN_GROUPING:
+      preload_col_map[_j + 1] = _idx
+      _idx += 1
+
   for i in range(0,len(preload.ITEMS)):
     ri = r+i
     xl.rowrefs(ri)
@@ -362,8 +370,8 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
       # Preloaded or template rows.
       #
       for c in range(1,len(COLUMNS)+1):
-        cc = c -2
-        ts = None if (preload.ITEMS[i] is None) or not (0 <= cc and cc < len(preload.ITEMS[i])) else preload.ITEMS[i][cc]
+        cc = preload_col_map.get(c, -1)
+        ts = None if cc < 0 or preload.ITEMS[i] is None or cc >= len(preload.ITEMS[i]) else preload.ITEMS[i][cc]
         if c == col_grouping:
           if ts is None:
             if has_grouping is not None: ts = '={prev}'.format(prev=xlu.rowcol_to_cell(ri-1,c))
@@ -432,9 +440,9 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
 
   r += i
 
-  xlu.group_columns(ws, ws_colname('Region',COLUMNS), ws_colname('Backup (GB)', COLUMNS), hide=True)
-  xlu.group_columns(ws, ws_colname('vCPU',COLUMNS), ws_colname('RAM (GB)', COLUMNS), hide=False)
-  xlu.group_columns(ws, ws_colname('Row Idx',COLUMNS), ws_colname('Backup Price per GB', COLUMNS), hide=True)
+  xlu.group_columns(ws, ws_colname('Region',COLUMNS), ws_colname('Backup (GiB)', COLUMNS), hide=True)
+  xlu.group_columns(ws, ws_colname('vCPU',COLUMNS), ws_colname('RAM (GiB)', COLUMNS), hide=False)
+  xlu.group_columns(ws, ws_colname('Row Idx',COLUMNS), ws_colname('Backup Price per GiB', COLUMNS), hide=True)
   xlu.group_columns(ws, ws_colname('EVS Price',COLUMNS), ws_colname('Sub-total per unit', COLUMNS), hide=False)
   xlu.group_columns(ws, coloffs+1, coloffs+K.YEAR_MAX+2 , hide=True)
 

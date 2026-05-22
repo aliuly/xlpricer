@@ -1,5 +1,8 @@
 # Versions
 
+- 1.7.1:
+  - Finishing GB to GiB transition
+  - Added preload file configuration
 - 1.7.0:
   - Backup selection simplified to STD/None (CRR removed for now)
   - Added backup product cross-reference columns in Prices tab

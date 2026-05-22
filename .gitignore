@@ -181,3 +181,4 @@ cython_debug/
 *.xlsx 
 .venv
 xlpricer.py
+CLAUDE.md
