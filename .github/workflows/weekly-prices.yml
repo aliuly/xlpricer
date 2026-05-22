@@ -42,6 +42,11 @@ jobs:
           cp pages/index.html _site/
           cp prices-*.xlsx builds.json _site/
 
+      - name: Generate sphinx docs
+        run: |
+          docs=docs
+          make -C $docs html && cp -av $docs/_build/html _site/docs || :
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
 

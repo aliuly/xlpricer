@@ -129,7 +129,7 @@ Command-line flags override settings from this file.
 
 ## Generated Spreadsheet
 
-See **[docs/USERS-GUIDE.md](docs/USERS-GUIDE.md)** for a detailed walkthrough
+See **[USERS-GUIDE.md](USERS-GUIDE.md)** for a detailed walkthrough
 of each tab: Overview, Components, Prices, Volumes, Assumptions,
 ESA, and Services.
 

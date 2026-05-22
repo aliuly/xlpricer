@@ -56,13 +56,19 @@ def load_defaults() -> argparse.Namespace:
       includes = select('include',[]),
     )
 
-def make_parser(defaults:argparse.Namespace):
+def make_parser(defaults:argparse.Namespace|None = None, color:bool = False):
   ''' Command Line Interface argument parser '''
+  color = { 'color': color } if sys.version_info >= (3,14) else dict()
+  if defaults is None:
+    defaults = load_defaults()
+
   name = sys.argv[0]
   if os.path.basename(name) == '__main__.py':
     name = os.path.basename(os.path.dirname(name))
+  if name.endswith('sphinx-build'): name = 'XLPRICER'
 
-  cli = argparse.ArgumentParser(prog=name,description="Offline pricing calculator builder")
+
+  cli = argparse.ArgumentParser(prog=name,description="Offline pricing calculator builder", **color)
   cli.add_argument('-d', '--debug', help='Turn on debugging options', action='store_true', default = False)
   cli.add_argument('-V','--version', action='version', version='%(prog)s '+ VERSION)
 
@@ -108,7 +114,7 @@ def make_parser(defaults:argparse.Namespace):
 if __name__ == '__main__':
   defaults = load_defaults()
   ic(defaults)
-  cli = make_parser(defaults)
+  cli = make_parser(defaults, True)
   args = cli.parse_args()
   ic(args)
   if args.command is None:
