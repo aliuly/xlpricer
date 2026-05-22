@@ -88,7 +88,13 @@ def sheet(xl:xlu.XlUtils, enable_esa:bool = False) -> None:
   i += 1
   for y in range(1,K.YEAR_MAX+1):
     # We force these to be strings so they are not included in sums
-    xlu.write(ws,r, i+y, f'="{y}"', XlFmt.f_ov_center)
+    # ~ xlu.write(ws,r, i+y, f'="{y}"', XlFmt.f_ov_center)
+    xlu.write(ws,r, i+y,
+              '=text({bom_sheet}!{bom_col}${HDRROW},"@")'.format(
+                  bom_sheet = K.WS_COMPONENT,
+                  bom_col = xlu.col_to_name(xl.ref('IDXTAB')+y),
+                  **xl.ref(),
+              ), XlFmt.f_ov_center)
 
   r += 1
   month_row = r

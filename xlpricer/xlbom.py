@@ -341,6 +341,7 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
   xlu.write(ws,r,coloffs+2,'Set-up',XlFmt.f_header)
   xlu.set_column_width(ws,coloffs+2,6)
   xl.ref(IDXTAB = coloffs+2)
+  xl.ref(HDRROW = r)
 
   xlu.write(ws,r,coloffs+3,1,XlFmt.f_header)
   year_row = r
