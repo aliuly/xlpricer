@@ -118,6 +118,7 @@ def ws_ass(xl:xlu.XlUtils, apidat:dict) -> None:
     'Hours',
     ['Full Time (24x7)',K.AS_FT_HOURS, XlFmt.f_num_c, 'FT_HOURS', None ],
     ['Working Hours (10x5)', K.AS_WK_HOURS, XlFmt.f_num_c, 'WK_HOURS', None ],
+    ['Working Hours Percentage', '={Working Hours (10x5)}/{Full Time (24x7)}', XlFmt.f_percent_c, None, None ],
     ['Default Hours per Month', '={Full Time (24x7)}', XlFmt.f_num_c, 'DEF_HOURS', None ],
     'Units',
     ['GB', '=10^9', XlFmt.f_num_c, 'GB_AMOUNT',  None ],
