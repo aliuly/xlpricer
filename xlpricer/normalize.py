@@ -52,20 +52,20 @@ def normalize(apidat:dict):
         i = (' '+rec[k]+' ').replace(' GB ',' GiB ').replace(' GB/',' GiB/').replace(' TB ',' TiB ').strip()
         if i != rec[k]: rec[k] = i
 
-      ##############################################################
-      # FIXING WRONG M9 Data -- GIGO
-      ##############################################################
-      if 'm9.l.8 Linux' in rec['productName']:
-        if rec['osUnit'] == 'Open Linux':
-          os = 'Linux'
-        elif rec['osUnit'] == 'SUSE for SAP':
-          os = 'SUSE/SAP'
-        else:
-          os = rec['osUnit'].split()[0]
-        rec['productName'] = f'Memory-optim. {rec["opiFlavour"]} {os}'
-      ##############################################################
-      # END OF GIGO FIX!
-      ##############################################################
+      # ~ ##############################################################
+      # ~ # FIXING WRONG M9 Data -- GIGO
+      # ~ ##############################################################
+      # ~ if 'm9.l.8 Linux' in rec['productName']:
+        # ~ if rec['osUnit'] == 'Open Linux':
+          # ~ os = 'Linux'
+        # ~ elif rec['osUnit'] == 'SUSE for SAP':
+          # ~ os = 'SUSE/SAP'
+        # ~ else:
+          # ~ os = rec['osUnit'].split()[0]
+        # ~ rec['productName'] = f'Memory-optim. {rec["opiFlavour"]} {os}'
+      # ~ ##############################################################
+      # ~ # END OF GIGO FIX!
+      # ~ ##############################################################
 
 
       
