@@ -157,6 +157,42 @@ def fixed_prices(apidat:dict) -> None:
       'unit': 'item',
       'region': '*',
     },
+    {
+      'id': 'FREE_CONFIG',
+      'productName': 'Config',
+      'productFamily': K.FAMILY,
+      'unit': 'item',
+      'region': '*',
+    },
+    {
+      'id': 'FREE_CLOUD_CREATE',
+      'productName': 'Cloud Create',
+      'productFamily': K.FAMILY,
+      'unit': 'item',
+      'region': '*',
+    },
+    {
+      'id': 'FREE_EPS',
+      'productName': 'Enterprise Project Service',
+      'productFamily': K.FAMILY,
+      'unit': 'item',
+      'region': '*',
+    },
+    {
+      'id': 'FREE_RFS',
+      'productName': 'Resource Formation Service',
+      'productFamily': K.FAMILY,
+      'unit': 'item',
+      'region': '*',
+    },
+    {
+      'id': 'FREE_TMS',
+      'productName': 'Tag Management Service',
+      'productFamily': K.FAMILY,
+      'unit': 'item',
+      'region': '*',
+    },
+
   ], K.FAMILY, apidat)
 
   inc_records([
