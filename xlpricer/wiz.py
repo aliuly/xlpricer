@@ -21,6 +21,7 @@ import xlpricer.noswiss as noswiss
 import xlpricer.proxycfg as proxycfg
 import xlpricer.price_api as price_api
 import xlpricer.xlsw as xlsw
+import xlpricer.patching as patching
 
 from xlpricer.constants import K
 from xlpricer.xlu import today
@@ -118,6 +119,7 @@ class RepriceScr:
       includes.json_prices(inc, apidat)
 
     if not self.parent.defaults.swiss: noswiss.filter(apidat)
+    patching.apply(apidat)
     normalize.normalize(apidat)
 
     try:
@@ -249,6 +251,7 @@ class BuildScr:
       includes.json_prices(inc, apidat)
 
     if not self.parent.defaults.swiss: noswiss.filter(apidat)
+    patching.apply(apidat)
     normalize.normalize(apidat)
 
     try:

@@ -27,6 +27,7 @@ from . import cache as cache_mod
 from . import includes as includes_mod
 from . import normalize as normalize_mod
 from . import noswiss as noswiss_mod
+from . import patching
 from . import price_api
 from . import proxycfg as proxycfg_mod
 from . import xlsw
@@ -107,6 +108,7 @@ def _load_or_fetch(
 
     if not swiss:
         noswiss_mod.filter(apidat)
+    patching.apply(apidat)
 
     normalize_mod.normalize(apidat)
 
@@ -266,6 +268,7 @@ async def build_xlsx(req: BuildRequest):
 
     if not req.swiss:
         noswiss_mod.filter(apidat)
+    patching.apply(apidat)
 
     normalize_mod.normalize(apidat)
 
@@ -319,6 +322,7 @@ async def reprice_xlsx(
 
     if not swiss:
         noswiss_mod.filter(apidat)
+    patching.apply(apidat)
 
     normalize_mod.normalize(apidat)
 

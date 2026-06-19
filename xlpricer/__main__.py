@@ -21,6 +21,7 @@ import xlpricer.price_api as price_api
 import xlpricer.xlsw as xlsw
 import xlpricer.wiz as wiz
 import xlpricer.preload as preload
+import xlpricer.patching as patching
 
 from xlpricer.constants import K
 from xlpricer.version import VERSION
@@ -145,6 +146,7 @@ if __name__ == '__main__':
     if not args.swiss:
       # Filter swiss entries...
       noswiss.filter(res)
+    patching.apply(res)
 
     sys.stderr.write('Normalizing prices..')
     normalize.normalize(res)

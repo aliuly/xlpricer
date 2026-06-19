@@ -10,6 +10,7 @@ import openpyxl
 
 from . import whoami
 from . import xlu
+from . import patching
 from .constants import K
 from .xlfmt import XlFmt
 from .version import VERSION
@@ -17,7 +18,7 @@ from .version import VERSION
 def write_row(xl:xlu.XlUtils, r:int, row:list|str, vx:dict) -> None:
   '''Write one row in the assumptions
   :param xl: xl utility object
-  :param row: in spreadsheet
+  :param r: in spreadsheet
   :param row: row definition to write
   :param vx: variable state
   '''
@@ -100,6 +101,10 @@ def ws_ass(xl:xlu.XlUtils, apidat:dict) -> None:
       grp, fpath, mtime = s
       write_row(xl, r:=r+1, [grp, xlu.datestr(mtime), XlFmt.f_date_c, None, None ], vx)
       xlu.write(ws,r,7, fpath, XlFmt.f_def_data)
+
+  for row in patching.annotate():
+    ic(row)
+    write_row(xl, r:=r+1, row, vx)
 
   for row in [
     'General',
