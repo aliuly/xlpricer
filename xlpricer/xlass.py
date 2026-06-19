@@ -103,7 +103,6 @@ def ws_ass(xl:xlu.XlUtils, apidat:dict) -> None:
       xlu.write(ws,r,7, fpath, XlFmt.f_def_data)
 
   for row in patching.annotate():
-    ic(row)
     write_row(xl, r:=r+1, row, vx)
 
   for row in [

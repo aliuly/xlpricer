@@ -12,13 +12,16 @@ except ImportError:  # Graceful fallback if IceCream isn't installed.
 import sys
 from .xlfmt import XlFmt
 
+NOTES = list()
+
 def annotate() -> list[list|str]:
   '''Create an annotation to include in the assumptions tab
   '''
-  return [
-    'Patches',
-    [ 'm9.l8 Linux data', None, XlFmt.f_num_c, None, None ],
-  ]
+  if not NOTES: return []
+  res = [ 'Patches' ]
+  for x,y in NOTES:
+    res.append([x, y, XlFmt.f_num_c, None, None])
+  return res
 
 def apply(apidat:dict) -> None:
   '''Patches data
@@ -26,6 +29,9 @@ def apply(apidat:dict) -> None:
   :param apidat: API data
   '''
   count = 0
+  fixes = {
+    'm9': 0,
+  }
   for idg in apidat['records']:
     for rec in apidat['records'][idg]:
       ##############################################################
@@ -33,6 +39,7 @@ def apply(apidat:dict) -> None:
       ##############################################################
       if 'm9.l.8 Linux' in rec['productName']:
         count += 1
+        fixes['m9'] += 1
         was = rec['productName']
         if rec['osUnit'] == 'Open Linux':
           os = 'Linux'
@@ -46,7 +53,12 @@ def apply(apidat:dict) -> None:
       ##############################################################
       # END OF GIGO FIX!
       ##############################################################
-  if count == 1:
-    sys.stderr.write('One record patched\n')
-  elif count > 1:
-    sys.stderr.write(f'{count} records patched\n')
+  if count:
+    if count == 1:
+      sys.stderr.write('One record patched\n')
+    else:
+      sys.stderr.write(f'{count} records patched\n')
+    if fixes['m9']:
+      ic(XlFmt.f_num_c)
+      NOTES.append([ 'm9.l8 Linux data -- Applied Fixes', fixes['m9'] ])
+
