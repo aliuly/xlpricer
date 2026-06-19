@@ -59,6 +59,5 @@ def apply(apidat:dict) -> None:
     else:
       sys.stderr.write(f'{count} records patched\n')
     if fixes['m9']:
-      ic(XlFmt.f_num_c)
       NOTES.append([ 'm9.l8 Linux data -- Applied Fixes', fixes['m9'] ])
 
