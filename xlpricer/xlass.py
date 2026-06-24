@@ -130,7 +130,7 @@ def ws_ass(xl:xlu.XlUtils, apidat:dict) -> None:
     ['GB to GiB', '={GB}/{GiB}', XlFmt.f_float_c, 'GB_TO_GiB',  None ],
     ['GiB to GB', '={GiB}/{GB}', XlFmt.f_float_c, 'GiB_TO_GB',  None ],
     '',
-    ['Default Pricing', xlu.pick_default(xl.vlist(K.VL_RXM,), 'R24M'), XlFmt.f_text_c, 'DEF_RXM',  xl.vlist(K.VL_RXM) ],
+    ['Default Pricing', xlu.pick_default(xl.vlist(K.VL_RXM,), 'R36M'), XlFmt.f_text_c, 'DEF_RXM',  xl.vlist(K.VL_RXM) ],
     ['Outbound Internet traffic', 100, XlFmt.f_num_c, 'DEF_OUTBOUND_TRAFFIC',  None ],
     '',
     ['', '', XlFmt.f_def_data, None, None],
