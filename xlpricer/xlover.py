@@ -104,6 +104,7 @@ def sheet(xl:xlu.XlUtils, enable_esa:bool = False) -> None:
       xlu.write(ws,r, i, months, XlFmt.f_ov_center)
     else:
       xlu.write(ws,r, i, 12, XlFmt.f_ov_center)
+  year1_months = xlu.rowcol_to_cell(r,4,True,True)
   i += 2
   xlu.write(ws,r, i,
             '=SUM({start}:{end})'.format(
@@ -157,13 +158,40 @@ def sheet(xl:xlu.XlUtils, enable_esa:bool = False) -> None:
     i =4
     for y in range(0,K.YEAR_MAX):
       c = i + y
-      xlu.write(ws,r, c,
-                '={setup}+({monthly}*{m}*{r})'.format(
+      # ~ xlu.write(ws,r, c,
+                # ~ '={setup}+({monthly}*{m}*{r})'.format(
+                    # ~ monthly = xlu.rowcol_to_cell(r, c+K.YEAR_MAX+6),
+                    # ~ setup = 0 if y else xlu.rowcol_to_cell(r, c+K.YEAR_MAX+5),
+                    # ~ m = xlu.rowcol_to_cell(month_row,c, True, False),
+                    # ~ r = xlu.rowcol_to_cell(rampup_row,c, True, False),
+                # ~ ), XlFmt.f_ov_euro)
+      formula = ('='
+                  'IF({Start_Year}={year},'
+                    # Calculation for Year 1 (includes setup)
+                    '{setup}+{monthly}*{m}*{r},'
+                    # Calculation for Year 1+N (handles partial first year)
+                    'IF({y1_months}>{m},'
+                      # next year months is less than first month, use previous year pricing only
+                      '{m}*{monthly_n1}*{r},'
+                      # mix the prev year with this year
+                      '({m}-{y1_months})*{monthly_n1}*{r}+'
+                      '({y1_months})*{monthly}*{r}'
+                    ')'
+                  ')'
+                ).format(
+                    **xl.ref(),
+                    Start_Year = year_start_ref,
+                    y1_months = year1_months,
+                    year = xlu.rowcol_to_cell(year_row, c, True, False),
+                    setup = xlu.rowcol_to_cell(r, c+K.YEAR_MAX+5),
                     monthly = xlu.rowcol_to_cell(r, c+K.YEAR_MAX+6),
-                    setup = 0 if y else xlu.rowcol_to_cell(r, c+K.YEAR_MAX+5),
                     m = xlu.rowcol_to_cell(month_row,c, True, False),
                     r = xlu.rowcol_to_cell(rampup_row,c, True, False),
-                ), XlFmt.f_ov_euro)
+                    monthly_n1 = xlu.rowcol_to_cell(r, c+K.YEAR_MAX+6-1),
+                    m_n1 = xlu.rowcol_to_cell(month_row,c-1, True, False),
+                )
+      # ~ ic(formula)
+      xlu.write(ws,r, c, formula, XlFmt.f_ov_euro)
 
     i += 1+K.YEAR_MAX
     xlu.write(ws,r, i,
@@ -340,3 +368,4 @@ def sheet(xl:xlu.XlUtils, enable_esa:bool = False) -> None:
   if enable_esa:
     xlu.group_rows(ws, esa_start_row, esa_end_row, hide=True)
 
+  r += 1

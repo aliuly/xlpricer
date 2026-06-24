@@ -5,6 +5,7 @@
   - tweak the headings on overview tab inflation tables
   - re-order columns
   - Added a percentage calculation from FT to Office hours
+  - Better handle partial year calculation.
 - 1.7.1:
   - Finishing GB to GiB transition
   - Added preload file configuration

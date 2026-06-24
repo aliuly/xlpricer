@@ -20,6 +20,8 @@ To delete tags use:
 ## TODO
 
 - [x] sphinx docs
+- [x] handle partial starting years.
+
 
 ## Ideas for SPA
 
