@@ -48,6 +48,49 @@ Libraries:
   - [beaker - sessions](https://github.com/bottlepy/bottle-beaker)
   - [jwt](https://github.com/agile4you/bottle-jwt/)
 
+## Run everything from the brwoser
+
+* Pre-requisites
+  * ExcelJS testing
+* price_api
+  * query API **MVP1**
+  * cache it **MVP2**
+* calculation
+  * includes
+    * **MVP2** stubbed
+    * pre-defined files on server
+    * input tables UI
+    * Import CSV
+  * patching
+  * normalize **MVP1**
+  * preload
+    * **MVP2** stubbed
+    * pre-defined files on server
+    * input tables UI
+    * Import CSV
+* wiz UI
+* XLS generation
+  * Support
+    * xlfmt
+    * xlu
+  * xlprice **MVP1**
+  * xlass **MVP2**
+    * pre-defined files on server
+    * input tables UI
+  * xlbom **MVP2**
+    * use preload data
+  * xlesa **MVP5**
+  * xlover **MVP4**
+  * xlvol **MVP3**
+  * ~~xlsrv~~
+
+boostrap
+
+* Vite + TypeScript + React Framework
+* xlpricer - pricer_api
+* In-browser cache
+* Browse using tabulator
+
 ## Decisions
 
 * Backup options only STD or None.  CRR was removed as it would to
