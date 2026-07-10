@@ -1,5 +1,8 @@
 # Versions
 
+- Next:
+  - Fixed a bug where random prices were being pulled in for items
+    without backup items.
 - 1.8.0:
   - Added a temp fix for wrong m9 productName's
   - tweak the headings on overview tab inflation tables
