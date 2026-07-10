@@ -2,7 +2,8 @@
 Constant definitions
 '''
 class K:
-  FORMAT_VERSION ='1.8.0'
+  FORMAT_VERSION ='1.8.1'
+  # - 1.8.1: Fixed backup price lookup formula
   # - 1.8.0: Re-arranged columns
   # - 1.7.0: Better backup calculations
   # - 1.6.0: Adding ESA functionality
