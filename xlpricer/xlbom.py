@@ -230,7 +230,7 @@ def ws_bom(xl:xlu.XlUtils, apidat:dict) -> None:
     {
       'h': ['Backup Price per GiB', 8, XlFmt.f_syshdr, 'f_backup_price' ],
       'f': XlFmt.f_euro,
-      'c': '=IF({#f_backup_idx}="","",'
+      'c': '=IF(OR({#f_backup_idx}="",#f_backup_idx}=0),"",'
               'INDEX({PRICES_TABLE},{#f_backup_idx},{cm_priceAmount})'
         ')'
     },
