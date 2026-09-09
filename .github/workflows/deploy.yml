@@ -1,0 +1,105 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: "0 1 * * 1" # weekly price sheet refresh (Mondays)
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    #~ permissions:
+      #~ contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Restore last-commit timestamps on includes
+        run: |
+          for f in v2/public/includes/*; do
+            [ -f "$f" ] || continue
+            ts=$(git log -1 --format=%ct -- "$f")
+            touch -d "@$ts" "$f"
+          done
+
+      - uses: actions/setup-node@v4
+        with:
+          cache: 'npm'
+          cache-dependency-path: v2/package-lock.json
+
+      - name: Install npm dependencies
+        run: make -C v2 ci
+
+      - name: Run tests
+        run: make -C v2 lint && make -C v2 test
+
+      - name: Build
+        run: |
+          make -C v2 build BASE=./
+
+      - name: Generate an Excel right away...
+        run:  make -C v2 xlsx XLSX_OUTPUT=dist/prices.xlsx
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install v1 dependencies
+        run: pip install -r v1/requirements.txt
+
+      - name: Build v1 weekly price sheet
+        working-directory: v1
+        run: pages/builder.sh
+
+      - name: Build v1 docs
+        working-directory: v1
+        run: make -C docs html || true
+
+      - name: Prepare deploy directory
+        run: |
+          rm -rf deploy
+          mkdir -p deploy/v1 deploy/v2
+          cp index.html deploy/index.html
+          # v1 price sheet download page (what the old weekly workflow published)
+          cp v1/pages/index.html deploy/v1/index.html
+          cp v1/builds.json deploy/v1/builds.json
+          cp v1/prices-*.xlsx deploy/v1/ || true
+          # v1 docs (linked as "Project Docs" from the download page)
+          if [ -d v1/docs/_build/html ]; then cp -a v1/docs/_build/html deploy/v1/docs; fi
+          # v2 SPA
+          cp -a v2/dist/. deploy/v2/
+          # Keep prices.xlsx at the site root for backwards-compatible links.
+          if [ -f v2/dist/prices.xlsx ]; then cp v2/dist/prices.xlsx deploy/prices.xlsx; fi
+          touch deploy/.nojekyll
+
+      - name: Upload Pages artifact
+        id: deployment
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: deploy/
+
+      # Deployment job
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+    permissions:
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+

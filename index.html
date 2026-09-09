@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>XLpricer</title>
+<meta name="description" content="T-Cloud Public pricing spreadsheet generator. Choose the current app or the legacy version.">
+<style>
+  :root {
+    --bg: #fdf0f6;
+    --ink: #1a1a2e;
+    --muted: #a65a82;
+    --card: #ffffff;
+    --accent: #d63384;
+    --accent-hover: #c02a72;
+    --border: #f0c4da;
+    --shadow: 0 1px 4px rgba(181, 50, 120, 0.12);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #17121c;
+      --ink: #f3eaf5;
+      --muted: #c6a0ba;
+      --card: #241b2c;
+      --accent: #e0529a;
+      --accent-hover: #f26bb0;
+      --border: #3b2a46;
+      --shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+    }
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: linear-gradient(135deg, #2d1b3d, #6b2fa0, #a62c6b);
+    color: #fff;
+    padding: 2.5rem 1rem;
+    text-align: center;
+  }
+  header h1 { font-size: 1.9rem; font-weight: 600; letter-spacing: 0.01em; }
+  header p { font-size: 0.95rem; opacity: 0.85; margin-top: 0.35rem; }
+  main {
+    flex: 1;
+    max-width: 860px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 2.5rem 1rem;
+  }
+  main > h2 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin-bottom: 1.25rem;
+  }
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .card .top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+  .card h3 { font-size: 1.25rem; font-weight: 600; }
+  .badge {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(214, 51, 132, 0.12);
+    color: var(--accent);
+    border: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .card p { color: var(--muted); font-size: 0.92rem; flex: 1; }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    padding: 0.75rem 1.25rem;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .btn:hover { background: var(--accent-hover); }
+  .btn.secondary {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+  }
+  .btn.secondary:hover { background: rgba(214, 51, 132, 0.08); }
+  footer {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<header>
+  <h1>&#x1F4CA; XLpricer</h1>
+  <p>T-Cloud Public pricing spreadsheet generator</p>
+</header>
+
+<main>
+  <h2>Choose a version</h2>
+  <div class="cards">
+    <div class="card">
+      <div class="top">
+        <h3>XLpricer V2</h3>
+        <span class="badge">Testing...</span>
+      </div>
+      <p>Interactive single-page app. Edit assumptions and components, manage
+        pricing includes, and export a formatted Excel workbook.</p>
+      <a class="btn" href="./v2/">Open V2 &#8594;</a>
+    </div>
+    <div class="card">
+      <div class="top">
+        <h3>XLpricer V1</h3>
+        <span class="badge">Current</span>
+      </div>
+      <p>The original weekly price sheet site: downloadable workbooks with
+        build history and project docs.</p>
+      <a class="btn secondary" href="./v1/">Open V1 &#8594;</a>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <a href="https://github.com/aliuly/xlpricer">aliuly/xlpricer</a>
+</footer>
+</body>
+</html>

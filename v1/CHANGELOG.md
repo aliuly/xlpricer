@@ -1,16 +1,8 @@
 # Versions
 
-
-- 2.0.0: Rewrite to TypeScript
-  - refactor application into Single Page App.
-  - spin off REST API query and caching to another project: https://github.com/aliuly/pipeline
-  - Apply naming convention rules
-  - Reorganised repository: the SPA now lives in `v2/` and the GitHub Pages
-    root serves a version picker linking to the current app (`/v2/`) and the
-    legacy v1 wizard (`/v1/`).
-  - Folded the v1 weekly price sheet build into the deploy workflow; the
-    download page, build history, and docs are published under `/v1/`.
-***
+- Next:
+  - Fixed a bug where random prices were being pulled in for items
+    without backup items.
 - 1.8.0:
   - Added a temp fix for wrong m9 productName's
   - tweak the headings on overview tab inflation tables

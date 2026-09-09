@@ -22,6 +22,9 @@ else
     BASE_URL="."
 fi
 
+# Price sheets are published under this subpath on the site.
+BASE_URL="${BASE_URL}/${PAGES_SUBDIR:-v1}"
+
 # Download previous builds.json from the published site (if it exists).
 PREV_BUILDS='[]'
 if curl -sfL "${BASE_URL}/builds.json" -o /tmp/prev_builds_raw.json 2>/dev/null; then

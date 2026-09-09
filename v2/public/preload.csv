@@ -1,0 +1,29 @@
+qty,  function, description, storage, hr
+base, Base Infrastructure
+1,    ,         Essentials: Virtual Private Cloud (VPC)
+1,    ,         Essentials: VPC Basic Firewall
+1,    ,         Essentials: Anti-DDOS
+1,    ,         Network: NAT Gateway extra small
+2,    ,         Network: Elastic IP
+0,    ,         Network: Shared Elastic Loadbalancer
+0,    ,         Network: Virtual Private Cloud VPN
+={DEF_OUTBOUND_INTERNET},,Network: Internet Traffic Outbound (GiB)
+com,  Compute
+1,    ,         Container: CCE VM Cluster small (max 50 nodes)
+1,    ,         Essentials: Auto Scaling
+1,    ,         Essentials: Software Repository Storage for Containers
+1,    ,         Essentials: Image Management Service
+3,    baseline, Compute: General Purpose s3.xl.2 Windows 4 vcpu 8 GiB s3, 140
+3,    burst,    Compute: Flexible purpose x1.xlarge.2 Linux 4 vcpu 8 GiB x1, 140, ={WK_HOURS}
+mi,   Management Infrastructure
+1,    ,         Essentials: Cloud Eye Service
+1,    ,         Essentials: Cloud Trace Service
+0,    ,         Application: LTS Log Storage Data Ingested
+0,    ,         Application: LTS Log index Traffic
+0,    ,         Application: LTS Log read write Traffic
+(none),other
+,,,
+,,,
+,,,
+,,,
+,,,

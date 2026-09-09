@@ -1,0 +1,19 @@
+id,productName,productFamily,unit,region
+FREE_ANTI_DDOS,Anti-DDOS,Essentials,item,*
+FREE_CES,Cloud Eye Service,Essentials,item,*
+FREE_CTS,Cloud Trace Service,Essentials,item,*
+FREE_IAM,Identity and Access Management,Essentials,item,*
+OTC_SWR_TRAFFIC,Software Repository Traffic for Containers,Essentials,item,*
+OTC_SWR_SIZE,Software Repository Storage for Containers,Essentials,item,*
+FREE_VPC_PEER,VPC peering,Essentials,item,*
+FREE_VPC,Virtual Private Cloud (VPC),Essentials,item,*
+FREE_VPCFW,VPC Basic Firewall,Essentials,item,*
+FREE_ASM,Application Service Mesh (ASM),Essentials,item,*
+FREE_AS,Auto Scaling,Essentials,item,*
+FREE_IMS,Image Management Service,Essentials,item,*
+FREE_CONFIG,Config,Essentials,item,*
+FREE_CLOUD_CREATE,Cloud Create,Essentials,item,*
+FREE_EPS,Enterprise Project Service,Essentials,item,*
+FREE_RFS,Resource Formation Service,Essentials,item,*
+FREE_TMS,Tag Management Service,Essentials,item,*
+FREE_VOLUME,EVS Shareable volume,Storage,item,*

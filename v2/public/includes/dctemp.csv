@@ -1,0 +1,5 @@
+id,productId,productName,currency,priceAmount,unit,description,additionalText,serviceType,productIdParameter,productType,productFamily,productCategory,region,_idGroup
+OTC_DC_PORT,Direct Connect,Direct Connect Port 1 Gbit/s (interim),EUR,1.650000 EUR,h,Direct Connect,dcaas,Direct Connect,dc,OTC,Network,Connectivity,*,OTC_DC_PORT
+OTC_DC_PORT10,Direct Connect,Direct Connect Port 10 Gbit/s (interim),EUR,6.890000 EUR,h,Direct Connect,dcaas,Direct Connect,dc,OTC,Network,Connectivity,*,OTC_DC_PORT10
+OTC_DC_PORT100,Direct Connect,Direct Connect Port 100 Gbit/s (interim),EUR,28.900000 EUR,h,Direct Connect,dcaas,Direct Connect,dc,OTC,Network,Connectivity,*,OTC_DC_PORT100
+OTC_DC_S_NL,Direct Connect Setup,Direct Connect Setup (interim),EUR,"1,000.000000 EUR",Item/ot,Direct Connect Installation,,,dcsetup,OTC,Network,Connectivity,*,OTC_DC_S
