@@ -20,7 +20,7 @@ const GREEN = '89f572';
 const RED = 'FF0000';
 const BLUE = '0000FF';
 const GREY = '808080';
-const LIGHT_GREY = 'C0C0C0';
+const LIGHT_GREY = 'E0E0F0';
 const LIGHT_BLUE = 'ADD8E6'
 
 /** Convert a 6‑hex‑digit colour to an ExcelJS argb object. */
@@ -288,6 +288,19 @@ const FORMAT_PRICES: Record<string, StyleDef|Record<string, StyleDef>> = {
     'num': FMT_NUM,
   },
 };
+const FORMAT_FINDER: Record<string, StyleDef|Record<string, StyleDef>> = {
+  'title': FMT_TITLE,
+  'label': { font: { bold: true } },
+  'input': FMT_DD_DEF,
+  'count': { font: { bold: true, size: 12, color: argb(MAGENTA) } },
+  'header': FMT_HDR,
+  'data': {
+    'text': FMT_DEF_DATA,
+    'num': FMT_NUM,
+    'price_sm': FMT_PRICE_5,
+    'price_lg': FMT_PRICE_2,
+  },
+};
 const FORMAT_ASS: Record<string, StyleDef|Record<string, StyleDef>> = {
   "title": FMT_TITLE,
   "header": {
@@ -371,6 +384,7 @@ const FORMAT: Record<string, Record<string, StyleDef|Record<string, StyleDef>>> 
   'vol': FORMAT_VOL,
   'bom': FORMAT_BOM,
   'prices': FORMAT_PRICES,
+  'finder': FORMAT_FINDER,
   "assumptions": FORMAT_ASS,
   "meta": FORMAT_META,
   "overview": FORMAT_OVERVIEW,

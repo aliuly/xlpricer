@@ -6,6 +6,7 @@ import Papa from 'papaparse'
 
 import { generatePricingXlsx } from './writer.ts'
 import type { AppMeta, PricingData } from './writer.ts'
+import { mergeIntoMacroWorkbook } from './vba.ts'
 import { processPricingData } from '../prices/index.ts'
 import type { PricesData, PipelineOptions } from '../prices/types.ts'
 import { classifyAssumptions, classifyComponents } from '../editorTab/classify.ts'
@@ -31,6 +32,7 @@ interface ParsedArgs {
   assumptionsFile: string | null
   componentFiles: string[]
   enableEsa: boolean
+  xlsmFile: string | null
   posArgs: string[]
 }
 
@@ -40,10 +42,30 @@ function parseArgs(argv: string[]): ParsedArgs {
   const verbose = args.includes('--verbose') || args.includes('-v')
 
   // --output / -o
-  let outputFile = 'pricing.xlsx'
   const outputIdx = args.findIndex(a => a === '--output' || a === '-o')
-  if (outputIdx !== -1 && outputIdx + 1 < args.length) {
+  const outputExplicit = outputIdx !== -1 && outputIdx + 1 < args.length
+  let outputFile = 'pricing.xlsx'
+  if (outputExplicit) {
     outputFile = args[outputIdx + 1]
+  }
+
+  // --xlsm (macro-enabled template to merge the generated content into)
+  let xlsmFile: string | null = null
+  const xlsmIdx = args.findIndex(a => a === '--xlsm')
+  if (xlsmIdx !== -1 && xlsmIdx + 1 < args.length) {
+    xlsmFile = args[xlsmIdx + 1]
+  }
+
+  // Merging into a macro template makes the output macro-enabled;
+  // the extension must match.
+  if (xlsmFile) {
+    if (!outputExplicit) {
+      outputFile = 'pricing.xlsm'
+    } else if (outputFile.toLowerCase().endsWith('.xlsx')) {
+      const fixed = outputFile.replace(/\.xlsx$/i, '.xlsm')
+      console.error(`Warning: macro-enabled output must use .xlsm; writing to ${fixed}`)
+      outputFile = fixed
+    }
   }
 
   // --version
@@ -85,7 +107,7 @@ function parseArgs(argv: string[]): ParsedArgs {
 
   // Indices consumed by option values
   const consumed = new Set<number>()
-  for (const idx of [outputIdx, verIdx, spaIdx, assIdx]) {
+  for (const idx of [outputIdx, verIdx, spaIdx, assIdx, xlsmIdx]) {
     if (idx !== -1) { consumed.add(idx); consumed.add(idx + 1) }
   }
   for (let i = 0; i < args.length; i++) {
@@ -104,7 +126,7 @@ function parseArgs(argv: string[]): ParsedArgs {
     return true
   })
 
-  return { verbose, outputFile, version, spaUrl, assumptionsFile, componentFiles, enableEsa, posArgs }
+  return { verbose, outputFile, version, spaUrl, assumptionsFile, componentFiles, enableEsa, xlsmFile, posArgs }
 }
 
 /* ── Main ──────────────────────────────────── */
@@ -116,7 +138,8 @@ async function main(): Promise<void> {
     console.error('Usage: npx tsx src/xlsx/cli.ts <url> [include.csv ...] [options]')
     console.error('')
     console.error('  Fetches pricing data from the given URL, applies include CSV files,')
-    console.error('  and generates an XLSX workbook.')
+    console.error('  and generates an XLSX workbook (or XLSM when merged into a macro')
+    console.error('  template).')
     console.error('')
     console.error('  Positional:')
     console.error('    <url>                   URL of the pricing JSON data')
@@ -124,7 +147,10 @@ async function main(): Promise<void> {
     console.error('')
     console.error('  Options:')
     console.error('    -v, --verbose           Log progress to stderr')
-    console.error('    -o, --output <file>     Write XLSX to <file> (default: pricing.xlsx)')
+    console.error('    -o, --output <file>     Write workbook to <file>')
+    console.error('                            (default: pricing.xlsx, or pricing.xlsm with --xlsm)')
+    console.error('    --xlsm <file>           Merge the generated workbook into this')
+    console.error('                            macro-enabled template (.xlsm)')
     console.error('    --version <ver>         App version for the meta sheet')
     console.error(`                            (default: git describe, currently "${opts.version}")`)
     console.error(`    --spa-url <url>          SPA URL for the meta sheet (default: ${DEFAULT_SPA_URL})`)
@@ -136,7 +162,8 @@ async function main(): Promise<void> {
     console.error('  Example:')
     console.error('    npx tsx src/xlsx/cli.ts https://example.com/prices-latest.json \\')
     console.error('      data/oracle.csv \\')
-    console.error('      -o pricing.xlsx \\')
+    console.error('      -o pricing.xlsm \\')
+    console.error('      --xlsm public/vba/template.xlsm \\')
     console.error('      --assumptions public/assumptions.csv \\')
     console.error('      --components "My Cloud=public/preload.csv"')
     process.exit(1)
@@ -225,13 +252,23 @@ async function main(): Promise<void> {
       console.error(`Generating XLSX → ${opts.outputFile}`)
     }
 
-    const buffer = await generatePricingXlsx(xlsxInput)
+    let buffer = await generatePricingXlsx(xlsxInput, {
+      vbaTemplate: Boolean(opts.xlsmFile),
+    })
+
+    /* ── Merge into the macro template, if requested ── */
+    if (opts.xlsmFile) {
+      if (opts.verbose) console.error(`Merging into macro template: ${opts.xlsmFile}`)
+      buffer = await mergeIntoMacroWorkbook(new Uint8Array(readFileSync(opts.xlsmFile)), buffer)
+    }
+
     writeFileSync(opts.outputFile, Buffer.from(buffer))
 
     const elapsed = (performance.now() - start).toFixed(0)
     console.log(JSON.stringify({
       status: 'ok',
       output: opts.outputFile,
+      vba: Boolean(opts.xlsmFile),
       url,
       includes: includeFiles.length,
       records: pricingData.count ?? pricingData.records[0]?.length ?? 0,

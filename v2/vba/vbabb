@@ -1,0 +1,396 @@
+#!/usr/bin/env python3
+'''vba2xlsm.py -- build a macro-enabled workbook from VBA source files.
+
+Uses pyOpenVBA to author a brand-new ``.xlsm`` workbook and inject one or
+more VBA source files into it.
+
+Examples:
+    ./pys.sh vba2xlsm.py demo.vba
+    ./pys.sh vba2xlsm.py demo.vba -o DemoWorkbook.xlsm
+    ./pys.sh vba2xlsm.py --module ThisWorkbook demo.vba
+    ./pys.sh vba2xlsm.py --module ModA --module ModB a.vba b.bas
+    ./pys.sh vba2xlsm.py --kind class helper.cls
+
+Module placement (per file, first match wins):
+
+1. An explicit ``--module`` value (paired with files in order).
+2. A file stem that matches an existing module (``ThisWorkbook``,
+   ``Sheet1``, ``Module1``, ...).
+3. An ``Attribute VB_Name = "..."`` header that matches an existing
+   module (covers ``.bas``/``.cls`` files exported from the VBE).
+4. A file containing ``Private Sub Workbook_*`` / ``Worksheet_*`` event
+   handlers goes into ``ThisWorkbook`` / ``Sheet1`` respectively.
+5. Otherwise the file becomes a new module named after its
+   ``Attribute VB_Name`` header, falling back to the sanitized file
+   stem.
+
+Kind detection (only used for brand-new modules):
+    ``.cls`` files, or sources starting with ``VERSION 1.0 CLASS``, become
+    class modules; everything else becomes a standard module.
+'''
+
+from __future__ import annotations
+
+import argparse
+import os
+import re
+import sys
+import tempfile
+from pathlib import Path
+
+from pyopenvba.excel import ExcelFile
+from pyopenvba.vba import VBAModuleKind
+
+SUPPORTED_OUT_SUFFIXES = frozenset({'.xlsm', '.xlsb', '.xlam'})
+
+VB_NAME_RE = re.compile(r'(?im)^\s*Attribute\s+VB_Name\s*=\s*"([^"]+)"\s*$')
+CLASS_PREAMBLE_RE = re.compile(r'^\s*VERSION\s+1\.0\s+CLASS\b', re.IGNORECASE)
+EVENT_RE = re.compile(
+    r'(?im)^\s*(?:Private|Public|Friend)\s+Sub\s+(Workbook|Worksheet)_\w+\s*\('
+)
+IDENT_RE = re.compile(r'[^0-9A-Za-z_]')
+
+
+class Vba2XlsmError(Exception):
+  '''Fatal, user-facing error raised for expected failure modes.'''
+
+
+def read_source(path: Path, encoding: str) -> str:
+  '''Read a VBA source file as text.
+
+  Tries the requested encoding first, then ``utf-8-sig``, ``cp1252`` and
+  ``latin-1`` so VBE exports (which are typically Windows-1252) load
+  without extra flags.
+
+  :param path: Path to the source file.
+  :param encoding: Preferred encoding name.
+  :returns: Decoded source text.
+  :raises Vba2XlsmError: If no known encoding can decode the file.
+  '''
+  data = path.read_bytes()
+  candidates: list[str] = []
+  for enc in (encoding, 'utf-8-sig', 'cp1252', 'latin-1'):
+    if enc not in candidates:
+      candidates.append(enc)
+  for enc in candidates:
+    try:
+      return data.decode(enc)
+    except (UnicodeDecodeError, LookupError):
+      continue
+  raise Vba2XlsmError(f'could not decode {path!s} with any known encoding')
+
+
+def normalize_line_endings(text: str) -> str:
+  '''Normalize source line endings to CRLF, matching what the VBE writes.
+
+  :param text: Raw source text.
+  :returns: Source with all line endings converted to ``\\r\\n``.
+  '''
+  return text.replace('\r\n', '\n').replace('\r', '\n').replace('\n', '\r\n')
+
+
+def sanitize_module_name(name: str) -> str:
+  '''Turn an arbitrary file stem into a valid VBA module name.
+
+  VBA module names start with a letter, contain only letters, digits and
+  underscores, and are at most 31 characters long.
+
+  :param name: Candidate name (e.g. a file stem).
+  :returns: Sanitized module name.
+  '''
+  clean = IDENT_RE.sub('_', name)
+  clean = re.sub(r'^_+', '', clean)
+  if not clean:
+    clean = 'Module'
+  if clean[0].isdigit():
+    clean = 'M' + clean
+  return clean[:31]
+
+
+def module_name_from_header(source: str) -> str | None:
+  '''Extract the ``Attribute VB_Name`` value from an exported module header.
+
+  :param source: Full VBA source text.
+  :returns: Module name, or ``None`` when the header is absent.
+  '''
+  m = VB_NAME_RE.search(source)
+  return m.group(1) if m else None
+
+
+def looks_like_class(source: str) -> bool:
+  '''Return whether the source starts with a ``VERSION 1.0 CLASS`` preamble.
+
+  :param source: Full VBA source text.
+  :returns: ``True`` when the source is a class-module export.
+  '''
+  return bool(CLASS_PREAMBLE_RE.match(source))
+
+
+def document_module_for_events(source: str) -> str | None:
+  '''Map VBA event handlers to the document module that hosts them.
+
+  ``Workbook_*`` handlers belong in ``ThisWorkbook``; ``Worksheet_*``
+  handlers belong in a worksheet module (``Sheet1`` in a fresh workbook).
+
+  :param source: Full VBA source text.
+  :returns: ``ThisWorkbook`` or ``Sheet1``, or ``None`` when the source
+      holds no event handlers.
+  '''
+  kinds = [m.group(1).lower() for m in EVENT_RE.finditer(source)]
+  if not kinds:
+    return None
+  return 'ThisWorkbook' if 'workbook' in kinds else 'Sheet1'
+
+
+def resolve_module_name(name: str, existing: list[str]) -> tuple[str, bool]:
+  '''Resolve a candidate module name against the existing modules.
+
+  Existing names match case-insensitively; otherwise the candidate is
+  sanitized into a legal VBA identifier and checked once more.
+
+  :param name: Candidate module name.
+  :param existing: Names of modules already present in the project.
+  :returns: ``(module_name, is_new)``.
+  '''
+  for module_name in existing:
+    if module_name.casefold() == name.casefold():
+      return module_name, False
+  clean = sanitize_module_name(name)
+  for module_name in existing:
+    if module_name.casefold() == clean.casefold():
+      return module_name, False
+  return clean, True
+
+
+def plan_module(
+    path: Path,
+    source: str,
+    explicit_module: str | None,
+    existing: list[str],
+) -> tuple[str, bool, str]:
+  '''Decide where one source file goes.
+
+  :param path: Source file path.
+  :param source: Source text (CRLF-normalized).
+  :param explicit_module: ``--module`` value for this file, if any.
+  :param existing: Names of modules already present in the project.
+  :returns: ``(module_name, is_new, reason)``.
+  '''
+  stem = path.stem
+  header_name = module_name_from_header(source)
+
+  if explicit_module is not None:
+    name, is_new = resolve_module_name(explicit_module, existing)
+    reason = (
+        f'--module {explicit_module!r} -> existing module {name!r}'
+        if not is_new
+        else f'--module {explicit_module!r} -> new module {name!r}'
+    )
+    return name, is_new, reason
+
+  if stem:
+    name, is_new = resolve_module_name(stem, existing)
+    if not is_new:
+      return name, False, f'file stem {stem!r} matches existing module'
+
+  if header_name:
+    name, is_new = resolve_module_name(header_name, existing)
+    if not is_new:
+      return (
+          name,
+          False,
+          f'Attribute VB_Name {header_name!r} matches existing module',
+      )
+
+  doc_module = document_module_for_events(source)
+  if doc_module is not None:
+    name, _ = resolve_module_name(doc_module, existing)
+    return name, False, f'{doc_module} event handlers found'
+
+  if header_name:
+    name, is_new = resolve_module_name(header_name, existing)
+    return name, is_new, f'Attribute VB_Name {header_name!r} -> module {name!r}'
+
+  name, is_new = resolve_module_name(stem, existing)
+  return name, is_new, f'file stem {stem!r} -> module {name!r}'
+
+
+def determine_kind(path: Path, source: str, kind_flag: str) -> VBAModuleKind:
+  '''Choose the module kind for a brand-new module.
+
+  :param path: Source file path.
+  :param source: Source text.
+  :param kind_flag: ``auto``, ``standard`` or ``class`` from the CLI.
+  :returns: The pyOpenVBA module kind.
+  '''
+  if kind_flag == 'standard':
+    return VBAModuleKind.standard
+  if kind_flag == 'class':
+    return VBAModuleKind.other
+  if path.suffix.lower() == '.cls' or looks_like_class(source):
+    return VBAModuleKind.other
+  return VBAModuleKind.standard
+
+
+def resolve_output(output_arg: str | None, first_input: Path) -> Path:
+  '''Resolve and validate the output workbook path.
+
+  :param output_arg: ``-o`` value, or ``None`` for the default.
+  :param first_input: First source file; its stem seeds the default name.
+  :returns: Absolute or relative output path.
+  :raises Vba2XlsmError: If the output extension is unsupported.
+  '''
+  if output_arg is None:
+    return Path(first_input.stem + '.xlsm')
+  out = Path(output_arg)
+  if out.suffix == '':
+    out = out.with_suffix('.xlsm')
+  if out.suffix.lower() not in SUPPORTED_OUT_SUFFIXES:
+    raise Vba2XlsmError(
+        f'unsupported output extension {out.suffix!r}; '
+        f'expected one of {", ".join(sorted(SUPPORTED_OUT_SUFFIXES))}'
+    )
+  return out
+
+
+def parse_args(argv: list[str] | None) -> argparse.Namespace:
+  '''Parse command-line arguments.
+
+  :param argv: Argument vector, or ``None`` to use ``sys.argv``.
+  :returns: Parsed arguments namespace.
+  '''
+  parser = argparse.ArgumentParser(
+      prog='vba2xlsm.py',
+      description='Create a macro-enabled workbook from VBA source files.',
+      epilog=(
+          'Module placement rules are described in the script docstring '
+          '(see the source, or use --help).'
+      ),
+  )
+  parser.add_argument(
+      'files',
+      nargs='+',
+      metavar='FILE',
+      help='VBA source file (.vba, .bas, .cls, ...)',
+  )
+  parser.add_argument(
+      '-o',
+      '--output',
+      metavar='PATH',
+      help=(
+          'output workbook path (default: first input stem with .xlsm '
+          'appended, in the current directory)'
+      ),
+  )
+  parser.add_argument(
+      '--module',
+      action='append',
+      default=[],
+      metavar='NAME',
+      help=(
+          'target module name; repeat to pair with files in order '
+          '(e.g. --module ThisWorkbook demo.vba)'
+      ),
+  )
+  parser.add_argument(
+      '--kind',
+      choices=('auto', 'standard', 'class'),
+      default='auto',
+      help='module kind for new modules (default: auto)',
+  )
+  parser.add_argument(
+      '--encoding',
+      default='utf-8-sig',
+      metavar='ENC',
+      help=(
+          'preferred source encoding (default: utf-8-sig; falls back to '
+          'cp1252/latin-1 on failure)'
+      ),
+  )
+  args = parser.parse_args(argv)
+
+  if len(args.module) > len(args.files):
+    parser.error('more --module values than input files')
+  return args
+
+
+def main(argv: list[str] | None = None) -> int:
+  '''Run the conversion.
+
+  :param argv: Argument vector, or ``None`` to use ``sys.argv``.
+  :returns: Process exit code (``0`` on success).
+  '''
+  args = parse_args(argv)
+
+  files = [Path(f) for f in args.files]
+  missing = [str(f) for f in files if not f.is_file()]
+  if missing:
+    raise Vba2XlsmError('input file(s) not found: ' + ', '.join(missing))
+
+  out = resolve_output(args.output, files[0])
+  if out.exists():
+    print(f'vba2xlsm: {out} already exists and will be replaced', file=sys.stderr)
+
+  # Build into a temporary sibling and only move it into place once the
+  # saved workbook passes validation, so failures never leave a partial
+  # .xlsm behind (or clobber an existing file).
+  fd, tmp_name = tempfile.mkstemp(
+      prefix=f'.{out.name}.', suffix=out.suffix, dir=out.parent or Path('.')
+  )
+  os.close(fd)
+  tmp = Path(tmp_name)
+  umask = os.umask(0)
+  os.umask(umask)
+  os.chmod(tmp, 0o666 & ~umask)
+
+  module_count = 0
+  try:
+    with ExcelFile.create_new(tmp) as wb:
+      existing = list(wb.module_names())
+      for index, path in enumerate(files):
+        source = read_source(path, args.encoding)
+        source = normalize_line_endings(source)
+        explicit = args.module[index] if index < len(args.module) else None
+
+        name, is_new, reason = plan_module(path, source, explicit, existing)
+        kind = determine_kind(path, source, args.kind)
+
+        if is_new:
+          wb.vba_project().add_module(name, source, kind=kind)
+          verb = 'added   '
+          existing.append(name)
+        else:
+          wb.set_module(name, source)
+          verb = 'updated '
+        print(f'{verb} {path.name:30s} -> {name}  ({reason})')
+
+      wb.save()
+
+    # Post-save sanity check on the finished workbook.
+    with ExcelFile(tmp) as wb:
+      problems = wb.validate()
+      module_count = len(wb.module_names())
+    if problems:
+      print('vba2xlsm: workbook validation reported problems:', file=sys.stderr)
+      for problem in problems:
+        print(f'  - {problem}', file=sys.stderr)
+      raise Vba2XlsmError('refusing to keep the invalid workbook')
+
+    tmp.replace(out)
+  finally:
+    if tmp.exists():
+      tmp.unlink(missing_ok=True)
+
+  print(f'wrote {out} ({module_count} VBA modules)')
+  return 0
+
+
+if __name__ == '__main__':
+  try:
+    sys.exit(main())
+  except Vba2XlsmError as exc:
+    print(f'vba2xlsm: error: {exc}', file=sys.stderr)
+    sys.exit(1)
+  except (KeyError, ValueError, OSError) as exc:
+    print(f'vba2xlsm: error: {exc}', file=sys.stderr)
+    sys.exit(1)

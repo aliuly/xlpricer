@@ -6,7 +6,7 @@ base, Base Infrastructure
 1,    ,         Network: NAT Gateway extra small
 2,    ,         Network: Elastic IP
 0,    ,         Network: Shared Elastic Loadbalancer
-0,    ,         Network: Virtual Private Cloud VPN
+0,    ,         Network: Enterprise VPN Basic
 ={DEF_OUTBOUND_INTERNET},,Network: Internet Traffic Outbound (GiB)
 com,  Compute
 1,    ,         Container: CCE VM Cluster small (max 50 nodes)

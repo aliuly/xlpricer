@@ -17,7 +17,7 @@ export interface PricesData {
   keys: string[];
   /** Human-readable column labels (null for internal/unnamed columns). */
   columns: (string | null)[];
-  /** Column-oriented data: `records[colIdx][rowIdx]`. */
+  /** Row-oriented data: `records[rowIdx][colIdx]`, indexed by `keys`. */
   records: unknown[][];
   /** Total number of rows (may differ from `records[0].length`). */
   count?: number;

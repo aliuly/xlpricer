@@ -1,5 +1,38 @@
 Short answer: **ExcelJS doesn't support macros natively.** There's a long-standing open issue for it (`exceljs/exceljs#605`, opened in 2018) that's a request to embed a VBA script into a workbook so it runs on open, and there's still no built-in API for it.
 
+## Update (2026-09): do NOT transplant vbaProject.bin — merge content INTO the macro workbook
+
+The transplant recipe below was implemented and tested against real Excel
+and failed. Excel does not adopt a transplanted project's document modules:
+symptoms are duplicate `ThisWorkbook` modules (`ThisWorkbook` +
+`ThisWorkbook1`), `Workbook_Open` never firing, and error 429 ("ActiveX
+component can't create object") on `Worksheets.Add` — adding a sheet creates
+a document module, a project-hosted operation that fails in a non-native
+project. Every real VBA project contains document modules (`ThisWorkbook`,
+one per sheet) bound to the workbook they were authored in; the blob
+transplant only ever works for plain standard modules.
+
+**Working approach** (implemented in `v2/src/xlsx/vba.ts` as
+`mergeIntoMacroWorkbook`):
+
+1. `vbabb`/pyOpenVBA authors the VBA project into its own Excel-authored
+   workbook (`v2/vba/project.xlsm`); `v2/vba/strip_doc_sheets.py` removes
+   the template's `Sheet1` document module, since the generated workbook
+   replaces that sheet.
+2. ExcelJS generates the workbook content in memory (unchanged).
+3. The generated content is merged INTO the macro workbook at the zip level
+   with JSZip: the template keeps its workbook part (identity attributes and
+   the `ThisWorkbook` binding), `vbaProject.bin`, and macro content types;
+   the generated worksheets/styles/sharedStrings/theme/docProps move in,
+   with `<sheets>` spliced into `workbook.xml` and relationships/content
+   types merged. ExcelJS never loads the xlsm — it cannot read macro files
+   (see issues `exceljs/exceljs#1196`, `#1407`, `#1654`).
+
+The project never moves, so `ThisWorkbook`, `Workbook_Open`, and
+`Worksheets.Add` behave exactly as they do in the template itself.
+
+---
+
 The standard workaround (used by basically every OOXML library that has this limitation) is:
 
 ## Why you can't generate the macro code itself in JS
@@ -147,4 +180,5 @@ This is stored in `vbaProject.bin` exactly like any other macro — you're not g
 So: if your use case is "internal users open this in their own Excel," the `Workbook_Open`-driven approach is clean, robust, and exactly the right way to do dynamic controls without fighting the OOXML format directly. If you need statically-baked controls with no macro execution required on the recipient's end, that pushes you toward COM automation or a proper commercial library like Aspose.Cells that can write ActiveX/form-control parts directly and deterministically.
 
 ***
-* 
+* https://github.com/WilliamSmithEdward/pyOpenVBA
+* https://pypi.org/project/ms-ovba/ 

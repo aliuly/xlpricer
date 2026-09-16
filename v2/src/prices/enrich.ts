@@ -184,19 +184,25 @@ function processTier(rec: Row, x: Record<string, number>, ws: WorkingState): boo
 
   const tier = ws.tiers[tierID]
   tier._tiers++
-  tier._tariffs_.push(rowToObject(rec, x))
+  const tariff = rowToObject(rec, x)
+  tier._tariffs_.push(tariff)
   rec[x._XlTitle_] += ` [T${tier._tiers}]`
 
   // Append tier-range suffix
   const fromOn = rec[x.fromOn] as number
   const upTo = rec[x.upTo] as number
+  let rangeSuffix = ''
   if (!fromOn) {
-    rec[x._XlTitle_] += ` (until ${upTo.toLocaleString()})`
+    rangeSuffix = ` (until ${upTo.toLocaleString()})`
   } else if (!upTo) {
-    rec[x._XlTitle_] += ` (from ${fromOn.toLocaleString()})`
+    rangeSuffix = ` (from ${fromOn.toLocaleString()})`
   } else {
-    rec[x._XlTitle_] += ` (${fromOn.toLocaleString()} to ${upTo.toLocaleString()})`
+    rangeSuffix = ` (${fromOn.toLocaleString()} to ${upTo.toLocaleString()})`
   }
+  rec[x._XlTitle_] += rangeSuffix
+  // The tariff copy feeds the Volumes sheet (src/xlsx/vol.ts); give it
+  // the range suffix too so tariff rows read as e.g. "(until 50)".
+  tariff['_XlTitle_'] = String(tariff['_XlTitle_']) + rangeSuffix
 
   return true
 }

@@ -133,11 +133,26 @@ npx tsx src/xlsx/cli.ts https://aliuly.github.io/pipeline/prices-latest.json \
   --verbose
 ```
 
+**Generate a macro-enabled XLSM workbook** — the generated content is merged
+into the VBA host workbook (built from `vba/handlers.vba` and `vba/ui.vba`):
+
+```bash
+npx tsx src/xlsx/cli.ts https://aliuly.github.io/pipeline/prices-latest.json \
+  includes/included.csv includes/oracle.csv \
+  -o pricing.xlsm \
+  --xlsm public/vba/template.xlsm \
+  --assumptions public/assumptions.csv \
+  --components "Components=public/preload.csv" \
+  --verbose
+```
+
 Or use the Makefile (from the `v2/` directory, or `make -C v2` from the repo root):
 
 ```bash
 make pipeline       # run pricing pipeline -> out.json
 make xlsx           # generate XLSX -> pricing.xlsx
+make vba            # build the VBA host workbook -> public/vba/template.xlsm
+make xlsm           # generate macro-enabled XLSM -> pricing.xlsm
 ```
 
 ## Configuration

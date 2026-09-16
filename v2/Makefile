@@ -3,11 +3,13 @@ PRICE_INCLUDES = public/includes/*
 XLSX_ASSUMPTIONS = public/assumptions.csv
 XLSX_COMPONENTS = public/preload.csv
 XLSX_OUTPUT = pricing.xlsx
+XLSM_OUTPUT = pricing.xlsm
+VBA_TEMPLATE = public/vba/template.xlsm
 PIPELINE_OUTPUT = out.json
 BASE ?= /
 
 
-.PHONY: help install ci dev build preview test pipeline xlsx manifest test
+.PHONY: help install ci dev build preview test pipeline xlsx xlsm vba clean manifest test
 
 
 help: ## Show this help
@@ -47,23 +49,38 @@ manifest: ## Generate includes/manifest.json from git history
 	json.dump(out, open("public/includes/manifest.json","w"), indent=2); \
 	print("Wrote public/includes/manifest.json")'
 
-dev: manifest node_modules ## Start Vite dev server
+dev: manifest vba node_modules ## Start Vite dev server
 	npm run dev
 
-build: manifest node_modules ## Build for production (use BASE=./ for GH Pages)
+build: manifest vba node_modules ## Build for production (use BASE=./ for GH Pages)
 	npm run build -- --base=$(BASE)
 
 preview: build ## Preview production build locally
 	npm run preview
 
+vba: ## Build the VBA host workbook (public/vba/template.xlsm)
+	$(MAKE) -C vba
+
 pipeline: node_modules ## Test pricing pipeline from CLI.  use PRICES_URL to change targets
 	npx tsx src/prices/cli.ts $(PRICES_URL) -o $(PIPELINE_OUTPUT) --verbose $(PRICE_INCLUDES)
 
-xlsx: node_modules ## Generate XLSX workbook from local data.  Override vars as needed
+xlsx: node_modules ## Generate plain XLSX workbook (no VBA).  Override vars as needed
 	npx tsx src/xlsx/cli.ts $(PRICES_URL) $(PRICE_INCLUDES) \
 		-o $(XLSX_OUTPUT) \
 		--assumptions $(XLSX_ASSUMPTIONS) \
 		--components Components=$(XLSX_COMPONENTS) \
 		--verbose
+
+xlsm: vba node_modules ## Generate macro-enabled XLSM workbook.  Override vars as needed
+	npx tsx src/xlsx/cli.ts $(PRICES_URL) $(PRICE_INCLUDES) \
+		-o $(XLSM_OUTPUT) \
+		--xlsm $(VBA_TEMPLATE) \
+		--assumptions $(XLSX_ASSUMPTIONS) \
+		--components Components=$(XLSX_COMPONENTS) \
+		--verbose
+
+clean: ## Remove generated artifacts
+	$(MAKE) -C vba clean
+	rm -f $(XLSX_OUTPUT) $(XLSM_OUTPUT) $(PIPELINE_OUTPUT)
 
 

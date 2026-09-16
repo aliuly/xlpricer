@@ -62,7 +62,9 @@ function normalizeValues(
     }
 
     if (typeof v === 'string') {
-      if (v.endsWith(' GiB')) {
+      if (v === 'GiB') {
+      	v = '';
+      } else if (v.endsWith(' GiB')) {
         const num = v.slice(0, -4);
         v = num === '' ? '' : num.includes('.') ? parseFloat(num) : parseInt(num, 10);
       } else if (v.endsWith(' ' + currency)) {

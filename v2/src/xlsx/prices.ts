@@ -29,6 +29,43 @@ export interface PricesPayload {
   records: unknown[][];
 }
 
+/** Column layout of the generated Prices sheet. */
+export interface PricesLayout {
+  /** key → 1-based sheet column.  `_XlTitle_` is not included (it has
+   * no header cell) and always lives in column B (2). */
+  colmap: Record<string, number>;
+  /** First data row (row 2 = title, row 3 = headers). */
+  firstRow: number;
+  /** Last data row, inclusive. */
+  lastRow: number;
+  /** Last data column (the trailing Backup Index column). */
+  lastCol: number;
+}
+
+/**
+ * Compute the Prices sheet column mapping.
+ *
+ * Single source of truth for the layout rule: column B (2) carries
+ * `_XlTitle_`, headers start at column C (3) with one column per key in
+ * `prices.keys` order — keys whose label is null/empty are skipped —
+ * and the final column is the Backup Index (`_backup_idx_`).  Kept in
+ * sync with {@link genPriceSheet}, which lays the sheet out the same way.
+ */
+export function pricesLayout(prices: PricesPayload): PricesLayout {
+  const colmap: Record<string, number> = {};
+  let c = 3;
+  for (let i = 0; i < prices.keys.length; i++) {
+    if (!prices.columns[i]) continue;
+    colmap[prices.keys[i]] = c++;
+  }
+  return {
+    colmap,
+    firstRow: 4,
+    lastRow: 3 + prices.records.length,
+    lastCol: c, // Backup Index column appended after the header loop
+  };
+}
+
 /* ── Main generator ────────────────────────── */
 
 export function genPriceSheet(
@@ -39,7 +76,8 @@ export function genPriceSheet(
   const prices = pricingRaw as PricesPayload;
   // Exit early if we don't have any records!
   if (!prices.records) throw new Error('Missing price data');
-  const colmap: Record<string, number> = {};
+  const layout = pricesLayout(prices);
+  const colmap = layout.colmap;
   const x : Record<string,number> = {};
 
   for (let i = 0; i < prices.keys.length ; i++) {
@@ -72,7 +110,6 @@ export function genPriceSheet(
 
   /* ── Headings ───────────────────────────────── */
 
-  let c = 3;
   for (let i=0; i < prices.keys.length ; i++) {
     const key = prices.keys[i];
     const value = prices.columns[i];
@@ -80,20 +117,19 @@ export function genPriceSheet(
       console.log(`Skipping ${key} form prices table`);
       continue;
     }
+    const c = colmap[key];
     writeCell(ws, r, c, `${value}\n(${key})`, ['prices', 'header']);
     if (key in overrides) {
       setColumnWidth(ws, c, overrides[key]);
     } else {
       setColumnWidth(ws, c, value.length * 1.25);
     }
-    colmap[key] = c;
     def(refMap,`cm_${key}`, String(c-1));
-    c++;
   }
+  let c = layout.lastCol;
   writeCell(ws, r, c, 'Backup Index\n(_backup_idx_)', ['prices', 'header']);
   setColumnWidth(ws, c, 12);
   def(refMap,'cm__backup_idx_',String(c-1));
-  c++;
   r++;
   freezePanes(ws, r, 3);
 

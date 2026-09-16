@@ -23,14 +23,15 @@ Special pricing can be added by uploading "csv" files in the custom
 UI.
 
 ## TODO
-* [ ] be more compatible with V1... use similar file naming.
+* [x] be more compatible with V1... use similar file naming.
 * Option:
-  * xlsx/xlsm
-* Tool convert xlsx <-> xlsm and (optional) reprice
-* Macros
-  * Remove prices, (volume, tab?)
-  * Add new Components tab (modifies volume tab)
+  * [ ] xlsx/xlsm
+* [ ] Tool convert xlsx <-> xlsm and (optional) reprice
   * Find VMs and adds them (Shortcut)
+* Macros
+  * [x] Remove prices, (volume, tab?)
+  * [x] Add new Components tab (modifies volume tab)
+  * Add more years?
 ***
 * ~~Wizard:~~
   * ~~Generate~~

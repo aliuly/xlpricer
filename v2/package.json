@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "exceljs": "^4.4.0",
+    "jszip": "^3.10.1",
     "papaparse": "^5.5.4",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",

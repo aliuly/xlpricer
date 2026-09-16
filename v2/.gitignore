@@ -28,3 +28,9 @@ out.json
 pricing.xlsx
 public/includes/manifest.json
 *~
+# Generated VBA artifacts
+public/vba/
+vba/.venv/
+vba/tmp/
+vba/project.xlsm
+pricing.xlsm
