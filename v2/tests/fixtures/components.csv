@@ -1,0 +1,7 @@
+qty,function,description,storage,hr
+base,Base Infrastructure
+1,,Compute: Virtuelle Maschine 2 vcpu 4 GiB,140
+1,,Storage: EVS SATA,100
+com,Compute
+1,webserver,Compute: Virtuelle Maschine 2 vcpu 4 GiB,140
+1,,Storage: OBS Outbound Traffic (GiB),

@@ -1,0 +1,2 @@
+id,idGroupTiered,productId,opiFlavour,productName,osUnit,currency,priceAmount,unit,description,vCpu,ram,additionalText,storageType,storageVolume,serviceType,productIdParameter,productSection,productType,productFamily,productCategory,fromOn,upTo,minAmount,maxAmount,region
+OTC_oracle-1,,Oracle,,Oracle Database,,EUR,0.5,h,Oracle Database,4,8,,,,,oracle,,,Database,,0,,,,*

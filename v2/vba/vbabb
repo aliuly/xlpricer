@@ -34,8 +34,11 @@ from __future__ import annotations
 import argparse
 import os
 import re
+import subprocess
 import sys
 import tempfile
+from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 
 from pyopenvba.excel import ExcelFile
@@ -45,6 +48,7 @@ SUPPORTED_OUT_SUFFIXES = frozenset({'.xlsm', '.xlsb', '.xlam'})
 
 VB_NAME_RE = re.compile(r'(?im)^\s*Attribute\s+VB_Name\s*=\s*"([^"]+)"\s*$')
 CLASS_PREAMBLE_RE = re.compile(r'^\s*VERSION\s+1\.0\s+CLASS\b', re.IGNORECASE)
+ATTRIBUTE_LINE_RE = re.compile(r'^\s*Attribute\s+\w+\s*=')
 EVENT_RE = re.compile(
     r'(?im)^\s*(?:Private|Public|Friend)\s+Sub\s+(Workbook|Worksheet)_\w+\s*\('
 )
@@ -87,6 +91,167 @@ def normalize_line_endings(text: str) -> str:
   :returns: Source with all line endings converted to ``\\r\\n``.
   '''
   return text.replace('\r\n', '\n').replace('\r', '\n').replace('\n', '\r\n')
+
+
+@dataclass
+class Provenance:
+  '''Where a VBA source file came from, for the REM provenance header.'''
+  source_path: str
+  version: str | None
+  timestamp: str
+  timestamp_source: str
+  dirty: bool
+
+
+def run_git(args: list[str], cwd: Path) -> tuple[bool, str]:
+  '''Run a git command without ever failing the build.
+
+  :param args: Git arguments (without the ``git`` executable).
+  :param cwd: Working directory for the command.
+  :returns: ``(ok, stdout)``; ``ok`` is ``False`` on any failure.
+  '''
+  try:
+    res = subprocess.run(
+        ['git', *args],
+        cwd=str(cwd),
+        capture_output=True,
+        text=True,
+        timeout=5,
+    )
+    if res.returncode == 0:
+      return True, res.stdout.strip()
+  except (OSError, subprocess.SubprocessError):
+    pass
+  return False, ''
+
+
+def git_root_for(path: Path) -> Path | None:
+  '''Resolve the git worktree root containing ``path``, if any.'''
+  ok, out = run_git(['rev-parse', '--show-toplevel'], path.parent)
+  if not ok or not out:
+    return None
+  root = Path(out)
+  return root if root.is_dir() else None
+
+
+def repo_relative(root: Path, path: Path) -> str | None:
+  '''Return ``path`` relative to ``root`` with ``/`` separators, or None.'''
+  try:
+    return path.resolve().relative_to(root.resolve()).as_posix()
+  except ValueError:
+    return None
+
+
+def is_tracked(root: Path, rel: str) -> bool:
+  '''Whether ``rel`` names a git-tracked file inside ``root``.'''
+  ok, _ = run_git(['ls-files', '--error-unmatch', '--', rel], root)
+  return ok
+
+
+def last_commit_info(root: Path, rel: str) -> dict[str, str] | None:
+  '''Full hash, short hash, and committer epoch of the last commit
+  touching ``rel``.  The epoch is converted to UTC by the caller.'''
+  ok, out = run_git(['log', '-1', '--format=%H%x00%h%x00%ct', '--', rel], root)
+  if not ok or not out:
+    return None
+  parts = out.split('\x00')
+  if len(parts) != 3:
+    return None
+  return {'full': parts[0], 'short': parts[1], 'committed_at_epoch': parts[2]}
+
+
+def describe_commit(root: Path, commit: str) -> str | None:
+  '''``git describe --tags`` for a commit; ``None`` when it has nothing
+  to say.'''
+  ok, out = run_git(['describe', '--tags', commit], root)
+  return out if ok and out else None
+
+
+def has_uncommitted_changes(root: Path, rel: str) -> bool:
+  '''Whether a tracked file has staged or unstaged changes.'''
+  ok, out = run_git(
+      ['status', '--porcelain', '--untracked-files=no', '--', rel],
+      root,
+  )
+  return ok and bool(out)
+
+
+def mtime_iso(path: Path) -> str:
+  '''Filesystem mtime as UTC ISO-8601 with second precision.'''
+  return datetime.fromtimestamp(
+      path.stat().st_mtime, tz=timezone.utc,
+  ).isoformat(timespec='seconds')
+
+
+def commit_time_iso(epoch: str) -> str:
+  '''Git committer epoch as UTC ISO-8601 with second precision.'''
+  return datetime.fromtimestamp(
+      int(epoch), tz=timezone.utc,
+  ).isoformat(timespec='seconds')
+
+
+def build_provenance(path: Path) -> Provenance:
+  '''Build the provenance record for one source file.
+
+  Tracked git files get the describe-or-short-hash version and the
+  commit timestamp (or the file mtime plus the dirty marker when the
+  file has uncommitted changes).  Everything else gets the file mtime
+  only.
+  '''
+  fallback = Provenance(
+      source_path=str(path),
+      version=None,
+      timestamp=mtime_iso(path),
+      timestamp_source='file mtime',
+      dirty=False,
+  )
+  root = git_root_for(path)
+  if root is None:
+    return fallback
+  rel = repo_relative(root, path)
+  if rel is None or not is_tracked(root, rel):
+    return fallback
+  info = last_commit_info(root, rel)
+  if info is None:
+    return fallback
+
+  version = describe_commit(root, info['full']) or info['short']
+  dirty = has_uncommitted_changes(root, rel)
+  return Provenance(
+      source_path=str(path),
+      version=version,
+      timestamp=(
+          commit_time_iso(info['committed_at_epoch'])
+          if not dirty
+          else mtime_iso(path)
+      ),
+      timestamp_source='commit' if not dirty else 'file mtime',
+      dirty=dirty,
+  )
+
+
+def format_provenance_header(prov: Provenance) -> str:
+  '''Render the provenance record as VBA REM comment lines.'''
+  lines = [f"' Source: {prov.source_path}"]
+  if prov.version:
+    suffix = ' (dirty)' if prov.dirty else ''
+    lines.append(f"' Version: {prov.version}{suffix}")
+  lines.append(f"' Timestamp: {prov.timestamp} ({prov.timestamp_source})")
+  return '\n'.join(lines) + '\n'
+
+
+def insert_header_after_attributes(source: str, header: str) -> str:
+  '''Insert ``header`` after any leading ``Attribute ...`` lines.
+
+  VBE-exported standard modules put their attribute block first; class
+  exports carry the attributes at the end and therefore get the header
+  at the very top.
+  '''
+  lines = source.splitlines(keepends=True)
+  index = 0
+  while index < len(lines) and ATTRIBUTE_LINE_RE.match(lines[index]):
+    index += 1
+  return ''.join(lines[:index]) + header + ''.join(lines[index:])
 
 
 def sanitize_module_name(name: str) -> str:
@@ -354,6 +519,9 @@ def main(argv: list[str] | None = None) -> int:
 
         name, is_new, reason = plan_module(path, source, explicit, existing)
         kind = determine_kind(path, source, args.kind)
+
+        header = normalize_line_endings(format_provenance_header(build_provenance(path)))
+        source = insert_header_after_attributes(source, header)
 
         if is_new:
           wb.vba_project().add_module(name, source, kind=kind)

@@ -7,12 +7,12 @@
     "dataUrl": "./preload.csv"
   },
   "home": {
-    "pricesUrl": "https://aliuly.github.io/pipeline/prices-latest.json"
+    "pricesUrl": "https://aliuly.github.io/pipeline/prices-latest.json",
+    "vbaTemplateUrl": "./vba/template.xlsm"
   },
   "includes": {
     "files": [
       "includes/included.csv",
-      "includes/dctemp.csv",
       "includes/oracle.csv"
     ]
   }

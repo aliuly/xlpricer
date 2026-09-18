@@ -21,10 +21,11 @@ import {
   sheetRef,
 } from './xlu';
 
-import { YEAR_MAX } from './constants';
+import { YEAR_MAX, TEMPLATE_SECTION_QTY, TEMPLATE_SECTION_FUNCTION, TEMPLATE_DATA_ROWS } from './constants';
 
 
 /* ── Types ─────────────────────────────────── */
+import { classifyComponents } from '../editorTab/classify';
 import type { ComponentsRow } from '../editorTab/classify';
 import type { ColumnDef } from './xlu';
 
@@ -862,6 +863,41 @@ function wsInflationTotal(
   }
 }
 
+
+/* ── Hidden clone template for the VBA AddBOM macro ──
+ * One section row opens a group header; the trailing data rows are
+ * closed by genBOMSheet with a group total footer (sums auto-expand
+ * when rows are inserted inside the group).  Shared by the writer
+ * and the refresh feature (which adds the sheet to xlsx inputs when
+ * the output becomes macro-enabled).
+ */
+export function genBomTemplateSheet(
+  ws: Worksheet,
+  refMap: Record<string, string>,
+): void {
+  const blankRows = [
+    classifyComponents({ qty: TEMPLATE_SECTION_QTY, function: TEMPLATE_SECTION_FUNCTION }),
+    ...Array.from(
+      { length: TEMPLATE_DATA_ROWS },
+      () => classifyComponents({}),
+    ),
+  ];
+  genBOMSheet(ws, refMap, blankRows);
+}
+
+/**
+ * Whole-column refs of the BOM lookup columns per the current layout
+ * (same for every BOM tab — AddBOM clones the template).  Used by the
+ * refresh's BOM discovery fallback when the Volumes sheet is absent
+ * (trimmed workbooks).
+ */
+export function bomColumnRefs(): { qxh: string; desc: string; reg: string } {
+  const ref = (name: string): string => {
+    const c = colToName(wsColumn(name), true);
+    return `${c}:${c}`;
+  };
+  return { qxh: ref('f_qxh'), desc: ref('f_desc'), reg: ref('f_reg') };
+}
 
 /* ── Main generator ────────────────────────── */
 export function genBOMSheet(

@@ -219,6 +219,7 @@ export function dataValidationList(
   c: number,
   vlist: string | readonly string[],
   allowBlank:boolean = true,
+  showError: boolean = true,
 ): void {
   // ExcelJS runtime has .dataValidations but the type declarations
   // haven't caught up — cast through unknown.
@@ -234,7 +235,9 @@ export function dataValidationList(
     type: 'list',
     allowBlank,
     formulae: [`${nlist}`],
-    showErrorMessage: true,
+    // `showError: false` turns the list into a suggestion dropdown:
+    // values not in the list are still accepted (free text).
+    showErrorMessage: showError,
     showInputMessage: true,
   });
 }

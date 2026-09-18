@@ -4,19 +4,20 @@ import { genMetaSheet } from './meta';
 import { genAssSheet } from './params';
 import { genPriceSheet } from './prices';
 import { genFinderSheet, FINDER_SHEET_NAME, modernizeWorkbookMetadata } from './finder';
-import { genBOMSheet } from './bom';
+import { genBOMSheet, genBomTemplateSheet } from './bom';
 import { genVolumeSheet, updatePrices } from './vol';
 import { genOverviewSheet } from './overview';
 import { genEsaSheet } from './esa';
-import { TEMPLATE_SHEET_NAME, TEMPLATE_DATA_ROWS, TEMPLATE_SECTION_QTY, TEMPLATE_SECTION_FUNCTION } from './constants';
+import { TEMPLATE_SHEET_NAME, META_SHEET_NAME } from './constants';
 import type { PricesData } from '../prices/types';
-import { classifyComponents } from '../editorTab/classify';
 
 /* ── Build workbook ────────────────────────── */
 
 export interface AppMeta {
   version?: string;
   spaUrl?: string;
+  /** URL of the pricing JSON source; recorded in the T sheet. */
+  sourceUrl?: string;
   /** Enable ESA (Enterprise Support Agreement) section in the Overview sheet. */
   enableEsa?: boolean;
 }
@@ -67,13 +68,14 @@ export async function generatePricingXlsx(
   if (enableEsa) {
     wsEsa = workbook.addWorksheet('ESA');
   }
-  const wsMeta = workbook.addWorksheet('T');
+  const wsMeta = workbook.addWorksheet(META_SHEET_NAME);
 
   genMetaSheet(
       wsMeta,
       refMap,
       data.appMeta.version ?? '',
       data.appMeta.spaUrl ?? '',
+      data.appMeta.sourceUrl ?? '',
       pricingData,
   );
   genAssSheet(
@@ -104,17 +106,7 @@ export async function generatePricingXlsx(
 
   /* ── Hidden clone template for the VBA AddBOM macro ── */
   if (wsTemplate) {
-    // One section row opens a group header; the trailing data rows are
-    // closed by genBOMSheet with a group total footer (sums auto-expand
-    // when rows are inserted inside the group).
-    const blankRows = [
-      classifyComponents({ qty: TEMPLATE_SECTION_QTY, function: TEMPLATE_SECTION_FUNCTION }),
-      ...Array.from(
-        { length: TEMPLATE_DATA_ROWS },
-        () => classifyComponents({}),
-      ),
-    ];
-    genBOMSheet(wsTemplate, refMap, blankRows);
+    genBomTemplateSheet(wsTemplate, refMap);
   }
   /* ──  ──────────────────── */
 

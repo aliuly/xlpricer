@@ -2,11 +2,12 @@ import { Fragment, useState, useRef, useEffect } from 'react'
 import { useTheme } from '../themes/useTheme'
 import type { ThemeMode } from '../themes/types'
 
-export type AppMode = 'basic' | 'custom' | 'includes'
+export type AppMode = 'basic' | 'custom' | 'conversion' | 'includes'
 
 const MODES: { id: AppMode; label: string }[] = [
   { id: 'basic',    label: 'Basic' },
   { id: 'custom',   label: 'Custom' },
+  { id: 'conversion', label: 'Conversion' },
   // { id: 'includes', label: 'Includes' },
 ]
 

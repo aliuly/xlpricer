@@ -1,6 +1,6 @@
 # Versions
 
-- Next:
+- 1.8.1:
   - Fixed a bug where random prices were being pulled in for items
     without backup items.
 - 1.8.0:

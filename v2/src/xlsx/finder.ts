@@ -20,7 +20,7 @@
  * - dropdown validations reference the helper blocks as plain ranges
  *   (DV lists skip blank cells, so padding rows stay out of the
  *   dropdowns);
- * - hidden count cells (H9, N4:N8) drive the padding and the
+ * - hidden count cells (S3, S4:S8) drive the padding and the
  *   "Results (n matches)" line;
  * - the workbook is stamped with current engine markers
  *   (`calcId=191029`, `rupBuild=30228`, calcFeatures, per-sheet
@@ -56,7 +56,7 @@ const BLANK = '(blank)';
 /** productFamily is always applied; this value is pre-selected. */
 const DEFAULT_FAMILY = 'Compute';
 
-/** Pre-selected description (falls back to `(all)` if not present). */
+/** Pre-selected Description filter value. */
 const DEFAULT_DESCRIPTION = 'Virtuelle Maschine';
 
 /* ── Function names ─────────────────────────────────────────
@@ -66,37 +66,41 @@ const DEFAULT_DESCRIPTION = 'Virtuelle Maschine';
  */
 const XL_FILTER = '_xlfn._xlws.FILTER';
 const XL_SORT = '_xlfn._xlws.SORT';
+const XL_SORTBY = '_xlfn.SORTBY';
 const XL_UNIQUE = '_xlfn.UNIQUE';
 const XL_VSTACK = '_xlfn.VSTACK';
-const XL_CHOOSECOLS = '_xlfn.CHOOSECOLS';
 
 /* ── Finder sheet coordinates (1-based) ─────────────────── */
 const TITLE_COL = 2;                    // Prices B: _XlTitle_ (no header cell)
 
 const LEFT = 1;                         // column A: thin empty spacer
 const COL_LABEL = LEFT + 1;             // B: row labels + results Description
-const COL_INPUT = LEFT + 2;             // C: dropdowns
-const COL_SIDE = LEFT + 3;              // D: vCpu/RAM/osUnit/Region labels
-const COL_OPTD = LEFT + 4;              // E: min/max labels + dropdowns
-const COL_MIN = LEFT + 5;               // F: min input
-const COL_MAXL = LEFT + 6;              // G: max label
-const COL_MAX = LEFT + 7;               // H: max input
+const COL_DROP = LEFT + 2;              // C: left dropdowns (merged C..F)
+const COL_DROP_END = LEFT + 5;          // F: last column of the merge
+const COL_SIDE = LEFT + 6;              // G: vCpu/RAM/Description labels
+const COL_MINL = LEFT + 7;              // H: "min" label
+const COL_MIN = LEFT + 8;               // I: min input
+const COL_MAXL = LEFT + 9;              // J: "max" label
+const COL_MAX = LEFT + 10;              // K: max input (mirrors min)
 
 const ROW_FAMILY = 3;
-const ROW_DESC = 4;
+const ROW_REGION = 4;                   // Region filter + RAM min/max
 const ROW_PRODUCT_ID = 5;
-const ROW_STORAGE = 6;
+const ROW_STORAGE = 6;                  // storageType filter + Description
 const ROW_SERVICE = 7;
+const ROW_OSUNIT = 8;                   // last left-side dropdown
 
 const ROW_RESULTS_TITLE = 9;
 const ROW_RESULTS_HEADER = 10;
 const ROW_RESULTS = 11;
 
 const HELP_ROW = 4;                     // helper array formulas live in row 4
-const HELP_COLS = [10, 11, 12, 13, 14]; // J..N: helper list arrays
-const COUNT_COL = 15;                   // O: hidden count cells
-const BLANK_COL = 16;                   // P: hidden blank-flag cells
-const MATCH_COUNT_CELL = '$O$3';        // total matches (drives the pad)
+const HELP_COLS = [14, 15, 16, 17, 18]; // N..R: helper list arrays
+const COUNT_COL = 19;                   // S: hidden count cells
+const BLANK_COL = 20;                   // T: hidden blank-flag cells
+const MATCH_COUNT_CELL = '$S$3';        // total matches (drives the pad)
+
+const RESULTS_ROW_COL = 11;             // K: shared match-row index column
 
 /* ── Helpers ────────────────────────────────────────────── */
 
@@ -163,7 +167,7 @@ export function genFinderSheet(
   if (!prices.records) throw new Error('Missing price data');
 
   const layout = pricesLayout(prices);
-  const { colmap, firstRow, lastRow, lastCol } = layout;
+  const { colmap, firstRow, lastRow } = layout;
 
   const x: Record<string, number> = {};
   for (let i = 0; i < prices.keys.length; i++) {
@@ -176,20 +180,14 @@ export function genFinderSheet(
   const family = families.includes(DEFAULT_FAMILY) ? DEFAULT_FAMILY : (families[0] ?? '');
   const regions = [ALL, ...distinctSorted(prices.records.map(r => r[x.region]))];
 
-  /* ── Default filter state (pre-selected values) ───── */
-  const familyRows = prices.records.filter(r => String(r[x.productFamily]) === family);
-  const descOptions = distinctSorted(familyRows.map(r => r[x.description]));
-  const descDefault = descOptions.includes(DEFAULT_DESCRIPTION) ? DEFAULT_DESCRIPTION : ALL;
-
   /* ── Maximum output sizes (fixed array refs) ──────── */
-  // description lists are family-scoped; the other four are scoped to
-  // family+description.
-  const helperMax = (key: string, descScoped: boolean): number => {
+  // Upper bound for every helper list: the maximum distinct-value
+  // count within a single productFamily.
+  const helperMax = (key: string): number => {
     let max = 0;
     const groups = new Map<string, Set<string>>();
     for (const r of prices.records) {
-      const fam = String(r[x.productFamily]);
-      const grp = descScoped ? `${fam}|${String(r[x.description])}` : fam;
+      const grp = String(r[x.productFamily]);
       let set = groups.get(grp);
       if (!set) {
         set = new Set();
@@ -205,46 +203,56 @@ export function genFinderSheet(
 
   /* ── Shared formula fragments ──────────────────────── */
   const data = (key: string): string => colRange(colmap[key], firstRow, lastRow);
-  const array = `${colToName(TITLE_COL, true, PRICES_SHEET)}$${firstRow}:${colToName(lastCol, true, PRICES_SHEET)}$${lastRow}`;
 
   // Parens around the family condition: Excel's comparison operators
   // bind looser than `*`, so an unparenthesised `a=b*c` parses as
   // `a=(b*c)`.
-  const familyCond = `(${data('productFamily')}=${cellRef(ROW_FAMILY, COL_INPUT)})`;
-  // Optional-equality criterion for a dropdown filter: "(all)" passes
-  // everything, "(blank)" matches empty cells, otherwise exact match.
+  const familyCond = `(${data('productFamily')}=${cellRef(ROW_FAMILY, COL_DROP)})`;
+  // Optional-equality criterion for a dropdown filter: blank or
+  // "(all)" passes everything, "(blank)" matches empty cells,
+  // otherwise exact match.
   const optEq = (key: string, cell: string): string =>
-    `((${cell}="${ALL}")+(${cell}="${BLANK}")*(${data(key)}="")+(${data(key)}=${cell}))`;
-  const descCond = optEq('description', cellRef(ROW_DESC, COL_INPUT));
+    `((${cell}="")+(${cell}="${ALL}")+(${cell}="${BLANK}")*(${data(key)}="")+(${data(key)}=${cell}))`;
+  // Description is a guarded exact-match filter: blank or "(all)"
+  // passes everything, otherwise the description must equal the
+  // input (case-sensitive — the contains scan was too slow).
+  const descCond = `((${cellRef(ROW_STORAGE, COL_MINL)}="")+(${cellRef(ROW_STORAGE, COL_MINL)}="${ALL}")+(${data('description')}=${cellRef(ROW_STORAGE, COL_MINL)}))`;
 
-  const criteria = [
+  // Every criterion EXCEPT description — used by the results together
+  // with descCond, and alone as the source scope of the dynamic
+  // Description dropdown (so its options reflect the other filters).
+  const otherCriteria = [
     familyCond,
-    descCond,
-    optEq('productId', cellRef(ROW_PRODUCT_ID, COL_INPUT)),
-    optEq('osUnit', cellRef(ROW_PRODUCT_ID, COL_OPTD)),
-    optEq('storageType', cellRef(ROW_STORAGE, COL_INPUT)),
-    optEq('serviceType', cellRef(ROW_SERVICE, COL_INPUT)),
-    `((${cellRef(ROW_STORAGE, COL_OPTD)}="${ALL}")+(${data('region')}=${cellRef(ROW_STORAGE, COL_OPTD)}))`,
+    optEq('productId', cellRef(ROW_PRODUCT_ID, COL_DROP)),
+    optEq('osUnit', cellRef(ROW_OSUNIT, COL_DROP)),
+    optEq('storageType', cellRef(ROW_STORAGE, COL_DROP)),
+    optEq('serviceType', cellRef(ROW_SERVICE, COL_DROP)),
+    `((${cellRef(ROW_REGION, COL_DROP)}="")+(${cellRef(ROW_REGION, COL_DROP)}="${ALL}")+(${data('region')}=${cellRef(ROW_REGION, COL_DROP)}))`,
     `((${cellRef(ROW_FAMILY, COL_MIN)}="")+(${data('vCpu')}>=${cellRef(ROW_FAMILY, COL_MIN)}))`,
     `((${cellRef(ROW_FAMILY, COL_MAX)}="")+(${data('vCpu')}<=${cellRef(ROW_FAMILY, COL_MAX)}))`,
-    `((${cellRef(ROW_DESC, COL_MIN)}="")+(${data('ram')}>=${cellRef(ROW_DESC, COL_MIN)}))`,
-    `((${cellRef(ROW_DESC, COL_MAX)}="")+(${data('ram')}<=${cellRef(ROW_DESC, COL_MAX)}))`,
+    `((${cellRef(ROW_REGION, COL_MIN)}="")+(${data('ram')}>=${cellRef(ROW_REGION, COL_MIN)}))`,
+    `((${cellRef(ROW_REGION, COL_MAX)}="")+(${data('ram')}<=${cellRef(ROW_REGION, COL_MAX)}))`,
   ].join('*');
+  const criteria = `${otherCriteria}*${descCond}`;
 
   /* ── Title ─────────────────────────────────────────── */
   writeCell(ws, 1, COL_LABEL, 'Price Finder', ['finder', 'title']);
 
-  /* ── Column widths ─────────────────────────────────── */
+  /* ── Column widths (sized for the RESULTS columns) ── */
   const widths: Record<number, number> = {
     [LEFT]: 3,      // A: thin empty spacer
     [COL_LABEL]: 50,   // B: labels + results Description
-    [COL_INPUT]: 24,   // C: dropdowns
-    [COL_SIDE]: 10,    // D: vCpu / RAM / osUnit labels
-    [COL_OPTD]: 14,    // E: min / max / dropdowns
-    [COL_MIN]: 8,      // F: min input
-    [COL_MAXL]: 8,     // G: max label
-    [COL_MAX]: 8,      // H: max input
-    9: 10,             // I: separator before helper columns
+    3: 8,              // C: Region results
+    4: 8,              // D: vCpu results
+    5: 8,              // E: RAM results
+    6: 10,             // F: priceAmount results
+    [COL_SIDE]: 10,    // G: unit results
+    [COL_MINL]: 10,    // H: R12 results
+    [COL_MIN]: 10,     // I: R24 results
+    [COL_MAXL]: 10,    // J: R36 results
+    [COL_MAX]: 10,      // K: Row results
+    12: 3,             // L: thin spacer before the helper lists
+    13: 10,            // M: normal spacer before the helper lists
   };
   for (const [c, w] of Object.entries(widths)) {
     setColumnWidth(ws, Number(c), w);
@@ -253,42 +261,42 @@ export function genFinderSheet(
   /* ── Filter grid ───────────────────────────────────── */
   const labels: Array<[row: number, col: number, text: string]> = [
     [ROW_FAMILY, COL_LABEL, 'Product Family'],
-    [ROW_DESC, COL_LABEL, 'Description'],
+    [ROW_REGION, COL_LABEL, 'Region'],
     [ROW_PRODUCT_ID, COL_LABEL, 'productId'],
     [ROW_STORAGE, COL_LABEL, 'storageType'],
     [ROW_SERVICE, COL_LABEL, 'serviceType'],
+    [ROW_OSUNIT, COL_LABEL, 'osUnit'],
     [ROW_FAMILY, COL_SIDE, 'vCpu'],
-    [ROW_FAMILY, COL_OPTD, 'min'],
+    [ROW_FAMILY, COL_MINL, 'min'],
     [ROW_FAMILY, COL_MAXL, 'max'],
-    [ROW_DESC, COL_SIDE, 'RAM'],
-    [ROW_DESC, COL_OPTD, 'min'],
-    [ROW_DESC, COL_MAXL, 'max'],
-    [ROW_PRODUCT_ID, COL_SIDE, 'osUnit'],
-    [ROW_STORAGE, COL_SIDE, 'Region'],
+    [ROW_REGION, COL_SIDE, 'RAM'],
+    [ROW_REGION, COL_MINL, 'min'],
+    [ROW_REGION, COL_MAXL, 'max'],
+    [ROW_STORAGE, COL_SIDE, 'Description'],
   ];
   for (const [r, c, text] of labels) {
     writeCell(ws, r, c, text, ['finder', 'label']);
   }
 
-  // Dynamic dropdowns: fixed-size helper arrays in columns J..N, one
-  // per filter.  The description list is restricted to the selected
-  // family only; the other four are restricted to family AND
-  // description.  The columns are left VISIBLE for now so the dropdown
-  // sources can be inspected; to hide them, set
-  // `ws.getColumn(10..14).hidden = true` again.
-  const helpers: Array<[key: string, col: number, input: [number, number], label: string]> = [
-    ['description', HELP_COLS[0], [ROW_DESC, COL_INPUT], 'description list → C4'],
-    ['productId', HELP_COLS[1], [ROW_PRODUCT_ID, COL_INPUT], 'productId list → C5'],
-    ['osUnit', HELP_COLS[2], [ROW_PRODUCT_ID, COL_OPTD], 'osUnit list → E5'],
-    ['storageType', HELP_COLS[3], [ROW_STORAGE, COL_INPUT], 'storageType list → C6'],
-    ['serviceType', HELP_COLS[4], [ROW_SERVICE, COL_INPUT], 'serviceType list → C7'],
+  // Dynamic dropdowns: fixed-size helper arrays in columns N..R, one
+  // per cascading filter.  The Description list is scoped to ALL the
+  // OTHER criteria (family + productId + osUnit + storageType +
+  // serviceType + region + vCpu/RAM ranges), so its options reflect
+  // the rest of the filter state; the other four are restricted to
+  // productFamily only.  The columns are left VISIBLE for now so the
+  // dropdown sources can be inspected; to hide them, set
+  // `ws.getColumn(14..18).hidden = true` again.
+  const helpers: Array<{ key: string; col: number; input: [number, number]; label: string; cond?: string }> = [
+    { key: 'description', col: HELP_COLS[0], input: [ROW_STORAGE, COL_MINL], label: 'description list → H6', cond: otherCriteria },
+    { key: 'productId', col: HELP_COLS[1], input: [ROW_PRODUCT_ID, COL_DROP], label: 'productId list → C5' },
+    { key: 'osUnit', col: HELP_COLS[2], input: [ROW_OSUNIT, COL_DROP], label: 'osUnit list → C8' },
+    { key: 'storageType', col: HELP_COLS[3], input: [ROW_STORAGE, COL_DROP], label: 'storageType list → C6' },
+    { key: 'serviceType', col: HELP_COLS[4], input: [ROW_SERVICE, COL_DROP], label: 'serviceType list → C7' },
   ];
-  helpers.forEach(([key, hcol, [row, col], label], i) => {
+  helpers.forEach(({ key, col: hcol, input: [row, col], label, cond = familyCond }, i) => {
     writeCell(ws, HELP_ROW - 1, hcol, label, ['finder', 'label']);
 
-    const isDesc = key === 'description';
-    const cond = isDesc ? familyCond : `${familyCond}*${descCond}`;
-    const size = helperMax(key, !isDesc) + 1; // + the "(blank)" slot
+    const size = helperMax(key) + 1; // + the "(blank)" slot
 
     // per-helper count of distinct source values (drives the pad)
     const countCell = cellRef(HELP_ROW + i, COUNT_COL);
@@ -314,31 +322,58 @@ export function genFinderSheet(
     const padded = `IF(${countCell}+2>=${size},${listExpr},${paddedList})`;
     writeArrayCell(ws, HELP_ROW, hcol, padded, arrayRef(HELP_ROW, hcol, size));
 
-    writeCell(ws, row, col, isDesc ? descDefault : ALL, ['finder', 'input']);
+    writeCell(ws, row, col, key === 'description' ? DEFAULT_DESCRIPTION : ALL, ['finder', 'input']);
     // Plain-range DV source: data-validation lists skip blank cells,
     // so the array's "" padding never appears in the dropdown.
     dataValidationList(
       ws, row, col,
       `${colToName(hcol, true)}${HELP_ROW}:${colToName(hcol, true)}${HELP_ROW + size - 1}`,
     );
+    // The dropdown inputs span 4 columns (C..F on the left rows,
+    // H..K for Description).  The DV lives on the merged top-left
+    // cell; the style is applied to every cell of the merge.
+    const endCol = key === 'description' ? COL_MAX : COL_DROP_END;
+    ws.mergeCells(row, col, row, endCol);
+    for (let c = col + 1; c <= endCol; c++) {
+      applyStyle(ws.getCell(row, c), fmt('finder', 'input'));
+    }
   });
 
   // productFamily: static list, always applied (no sentinel)
-  writeCell(ws, ROW_FAMILY, COL_INPUT, family, ['finder', 'input']);
-  dataValidationList(ws, ROW_FAMILY, COL_INPUT, families, false);
+  writeCell(ws, ROW_FAMILY, COL_DROP, family, ['finder', 'input']);
+  dataValidationList(ws, ROW_FAMILY, COL_DROP, families, false);
+  ws.mergeCells(ROW_FAMILY, COL_DROP, ROW_FAMILY, COL_DROP_END);
+  for (let c = COL_DROP + 1; c <= COL_DROP_END; c++) {
+    applyStyle(ws.getCell(ROW_FAMILY, c), fmt('finder', 'input'));
+  }
 
   // Region: static list, independent of the other filters
-  writeCell(ws, ROW_STORAGE, COL_OPTD, ALL, ['finder', 'input']);
-  dataValidationList(ws, ROW_STORAGE, COL_OPTD, regions);
-
-  // vCpu / RAM min/max inputs (empty = no bound)
-  for (const [row, col] of [[ROW_FAMILY, COL_MIN], [ROW_FAMILY, COL_MAX], [ROW_DESC, COL_MIN], [ROW_DESC, COL_MAX]] as Array<[number, number]>) {
-    writeCell(ws, row, col, null, ['finder', 'input']);
+  writeCell(ws, ROW_REGION, COL_DROP, ALL, ['finder', 'input']);
+  dataValidationList(ws, ROW_REGION, COL_DROP, regions);
+  ws.mergeCells(ROW_REGION, COL_DROP, ROW_REGION, COL_DROP_END);
+  for (let c = COL_DROP + 1; c <= COL_DROP_END; c++) {
+    applyStyle(ws.getCell(ROW_REGION, c), fmt('finder', 'input'));
   }
+
+  // vCpu / RAM min/max inputs.  The max cell mirrors the min cell, so
+  // typing just a min gives an exact match; typing a max directly
+  // overwrites the formula to set a range.
+  writeCell(ws, ROW_FAMILY, COL_MIN, null, ['finder', 'input']);
+  writeCell(
+    ws, ROW_FAMILY, COL_MAX,
+    `=IF(${cellRef(ROW_FAMILY, COL_MIN)}="","",${cellRef(ROW_FAMILY, COL_MIN)})`,
+    ['finder', 'input'],
+  );
+  writeCell(ws, ROW_REGION, COL_MIN, null, ['finder', 'input']);
+  writeCell(
+    ws, ROW_REGION, COL_MAX,
+    `=IF(${cellRef(ROW_REGION, COL_MIN)}="","",${cellRef(ROW_REGION, COL_MIN)})`,
+    ['finder', 'input'],
+  );
 
   /* ── Results block ─────────────────────────────────── */
   // Fixed-size arrays spanning the whole record count; rows beyond the
-  // current matches are padded with "".  O3 holds the numeric match
+  // current matches are padded with "".  R3 holds the numeric match
   // count and B9 renders it as text.
   const maxRows = prices.records.length;
   writeArrayCell(
@@ -352,31 +387,52 @@ export function genFinderSheet(
     ['finder', 'count'],
   );
 
-  const headers = ['Description', 'vCpu', 'RAM', 'priceAmount', 'R12', 'R24', 'R36'];
+  const headers = ['Description', 'Region', 'vCpu', 'RAM', 'priceAmount', 'unit', 'R12', 'R24', 'R36', 'Row'];
   headers.forEach((h, i) => {
     writeCell(ws, ROW_RESULTS_HEADER, COL_LABEL + i, h, ['finder', 'header']);
   });
 
-  // One array formula per output column.  The FILTER array starts at
-  // column B, so a key's position inside it is its column minus one.
+  // Shared filter (column K): the criteria are resolved ONCE into the
+  // matching Prices ROW numbers, sorted cheapest-first by priceAmount.
+  // Every visible column below just INDEXes into its own Prices column
+  // with those row numbers — no repeated FILTER per column.
+  // (`_xlfn.SORTBY` — the plain `_xlfn.` spelling, like `_xlfn.UNIQUE`;
+  // LibreOffice does not map the `_xlws.` variant of SORTBY.)
+  const rowBlock = `${colToName(RESULTS_ROW_COL, true)}$${ROW_RESULTS}:${colToName(RESULTS_ROW_COL, true)}$${ROW_RESULTS + maxRows - 1}`;
+  const sortedRows = `${XL_SORTBY}(${XL_FILTER}(ROW(${colRange(TITLE_COL, firstRow, lastRow)}),${criteria}),${XL_FILTER}(${data('priceAmount')},${criteria}))`;
+  writeArrayCell(
+    ws, ROW_RESULTS, RESULTS_ROW_COL,
+    `IFERROR(${XL_VSTACK}(${sortedRows},${padExpr(`${maxRows}-${MATCH_COUNT_CELL}`)}),"")`,
+    arrayRef(ROW_RESULTS, RESULTS_ROW_COL, maxRows),
+    ['finder', 'data', 'num'],
+  );
+  for (let r = ROW_RESULTS + 1; r <= ROW_RESULTS + maxRows - 1; r++) {
+    applyStyle(ws.getCell(r, RESULTS_ROW_COL), fmt('finder', 'data', 'num'));
+  }
+
+  // Visible results columns: one array INDEX per column.
+  // Description is formatted like the BOM tabs' Description column
+  // (`itext`: light-grey fill + wrap text).
   const results: Array<[key: string, fmt: string]> = [
-    ['_XlTitle_', 'text'],
+    ['_XlTitle_', 'itext'],
+    ['region', 'text'],
     ['vCpu', 'num'],
     ['ram', 'num'],
     ['priceAmount', 'price_sm'],
+    ['unit', 'text'],
     ['R12', 'price_lg'],
     ['R24', 'price_lg'],
     ['R36', 'price_lg'],
   ];
+  const offset = firstRow - 1; // Prices row number → 1-based column position
   results.forEach(([key, fmtKey], i) => {
-    const idx = key === '_XlTitle_' ? 1 : colmap[key] - 1;
     const col = COL_LABEL + i;
-    // Sort the filtered rows by priceAmount (position within the B..AK
-    // array), ascending — cheapest first.
-    const sorted = `${XL_SORT}(${XL_FILTER}(${array},${criteria}),${colmap['priceAmount'] - 1})`;
+    const source = key === '_XlTitle_'
+      ? colRange(TITLE_COL, firstRow, lastRow)
+      : data(key);
     writeArrayCell(
       ws, ROW_RESULTS, col,
-      `IFERROR(${XL_CHOOSECOLS}(${XL_VSTACK}(${sorted},${padExpr(`${maxRows}-${MATCH_COUNT_CELL}`)}),${idx}),"")`,
+      `IFERROR(INDEX(${source},${rowBlock}-${offset}),"")`,
       arrayRef(ROW_RESULTS, col, maxRows),
       ['finder', 'data', fmtKey],
     );

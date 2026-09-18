@@ -296,6 +296,7 @@ const FORMAT_FINDER: Record<string, StyleDef|Record<string, StyleDef>> = {
   'header': FMT_HDR,
   'data': {
     'text': FMT_DEF_DATA,
+    'itext': FMT_IN_TEXT,	// BOM Description column format (light grey + wrap)
     'num': FMT_NUM,
     'price_sm': FMT_PRICE_5,
     'price_lg': FMT_PRICE_2,

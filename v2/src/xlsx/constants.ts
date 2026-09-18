@@ -4,10 +4,22 @@
  */
 
 /** Appears in the "Format version" meta row of the Assumptions sheet. */
-export const FORMAT_VERSION = '2.0.0';
+export const FORMAT_VERSION = '2.0.1';
 
 /** Written into the "Non-recurrent items" meta row. */
 export const AS_ONE_TIME = 'Item/ot';
+
+/**
+ * Name of the metadata sheet ("T") — shared by the writer and the
+ * staleness check (see docs/TODO-gen-t-tab.md).
+ */
+export const META_SHEET_NAME = 'T';
+
+/**
+ * Name of the veryHidden sheet TrimWB/trimWorkbook record frozen
+ * cells in (LiveRef / OriginalAddress / FormulaText) for revival.
+ */
+export const FROZEN_SHEET_NAME = '_Frozen';
 
 /**
  * Choices for the BACKUP data validation list (`$vlist(BACKUP;…)`).

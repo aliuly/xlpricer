@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { TabulatorFull as Tabulator } from 'tabulator-tables'
-import type { Options, ColumnDefinition } from 'tabulator-tables'
+import type { CellComponent, Options, ColumnDefinition } from 'tabulator-tables'
 import 'tabulator-tables/dist/css/tabulator_simple.min.css'
 import Papa from 'papaparse'
 
@@ -70,6 +70,9 @@ export default function CsvTabBase<TRow extends { type: 'section' | 'data' }>({
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const tableReadyRef = useRef(false)
+  // Cell most recently opened for editing — the Enter capture handler
+  // navigates from it after the editor commits.
+  const lastCellRef = useRef<CellComponent | null>(null)
 
   /* ── Persist ──────────────────────────────── */
 
@@ -139,6 +142,11 @@ export default function CsvTabBase<TRow extends { type: 'section' | 'data' }>({
       layout: 'fitData',
       height: '100%',
       selectableRows: 1,
+      // On the table's last cell, Tab appends a new empty row (from
+      // the tab's factory) and enters it.  Enter does the same via
+      // the capture-phase handler below (the editor consumes Enter
+      // before Tabulator's own keybindings can see it).
+      tabEndNewRow: () => config.createEmptyRow(),
       // Section rows get the .section-row class; the actual colors live in
       // index.css (.tabulator .tabulator-row.section-row + :root.dark …),
       // so they follow the theme without needing a repaint on change.
@@ -155,6 +163,42 @@ export default function CsvTabBase<TRow extends { type: 'section' | 'data' }>({
     table.on('tableBuilt', () => {
       tableReadyRef.current = true
     })
+
+    table.on('cellEditing', (cell: CellComponent) => {
+      lastCellRef.current = cell
+    })
+
+    /* ── Enter: navigate like Tab, add a row on the last cell ── */
+    // The cell editor's own keydown handler commits on Enter and
+    // clears the current cell before Tabulator's table-level keybinding
+    // runs, so Enter can never navigate via the normal path (Tab works
+    // because the editor ignores it).  Intercept Enter in the capture
+    // phase instead: the editor stays open, navigation commits it, and
+    // on the last cell we mirror tabEndNewRow.
+    const onEnterCapture = (e: KeyboardEvent) => {
+      if (e.key !== 'Enter' || e.shiftKey || e.ctrlKey || e.metaKey || e.altKey) return
+      const target = e.target as Element | null
+      const cellEl = target?.closest?.('.tabulator-cell') as HTMLElement | null
+      if (!cellEl || !cellEl.classList.contains('tabulator-editing')) return
+
+      e.stopPropagation()
+      e.preventDefault()
+
+      if (tbl(tableRef.current).navigateNext()) return
+
+      // Last cell: commit the open editor, append the empty row, and
+      // enter its first editable cell (the tabEndNewRow recipe).
+      const cell = lastCellRef.current
+      if (!cell) return
+      ;(cell.getElement().firstChild as HTMLElement | null)?.blur()
+      const newRow = tbl(tableRef.current).addRow(
+        config.createEmptyRow() as unknown as Record<string, unknown>,
+      )
+      newRow.then(() => {
+        setTimeout(() => cell.navigateNext(), 0)
+      })
+    }
+    table.element.addEventListener('keydown', onEnterCapture, true)
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const recheck = (cell: any) => {

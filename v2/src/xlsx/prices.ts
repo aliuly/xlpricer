@@ -12,8 +12,7 @@ import {
   setColumnWidth,
   //~ sheetRef,
   freezePanes,
-  rowcolToCell,
-  //~ colToName,
+  colToName,
   def,
   //~ dataValidationList,
   //~ resolveFormula,
@@ -41,6 +40,12 @@ export interface PricesLayout {
   /** Last data column (the trailing Backup Index column). */
   lastCol: number;
 }
+
+/* ── Prices-scoped defined names (PriceList* convention) ── */
+
+export const PRICES_DESC_NAME = 'PriceListDescs';
+export const PRICES_REGIONS_NAME = 'PriceListRegions';
+export const PRICES_TABLE_NAME = 'PriceListTable';
 
 /**
  * Compute the Prices sheet column mapping.
@@ -149,7 +154,7 @@ export function genPriceSheet(
 
   for (let i = 0; i < prices.records.length; i++, r++) {
     c = 2;
-    writeCell(ws, r, c, prices.records[i][x._XlTitle_], [ 'prices', 'data' ], 'PriceListDescs');
+    writeCell(ws, r, c, prices.records[i][x._XlTitle_], [ 'prices', 'data' ]);
     c++;
     for (const key of prices.keys) {
       if (!prices.columns[x[key]]) continue;
@@ -181,12 +186,25 @@ export function genPriceSheet(
   console.log("top:", top);
   console.log("bottom:", bottom);
 
-  //~ def(refMap,'prices_desc',`${sheetRef(ws.name)}!${colToName(2,true)}:${colToName(2,true)}`);
-  //~ def(refMap,'prices_region', `${sheetRef(ws.name)}!${colToName(colmap['region'],true)}:${colToName(colmap['region'],true)}`);
-  //~ def(refMap,'prices_table',`${sheetRef(ws.name)}!${colToName(2,true)}:${colToName(right,true)}`);
-  def(refMap,'prices_desc',`${rowcolToCell(1,2,true,true,ws.name)}:${rowcolToCell(bottom,2,true,true)}`);
-  def(refMap,'prices_region',`${rowcolToCell(1,colmap['region'],true,true,ws.name)}:${rowcolToCell(bottom,colmap['region'],true,true)}`);
-  def(refMap,'prices_table',`${rowcolToCell(1,2,true,true,ws.name)}:${rowcolToCell(bottom,right,true,true)}`);
+  /* ── Prices-scoped defined names (PriceList* convention) ──
+   * BOM formulas reference these names instead of literal ranges, so
+   * a refresh only redefines the names — see
+   * docs/DONE-switch-to-dnames.md.  All ranges start at row 1 (the
+   * MATCH/INDEX row-alignment invariant).
+   */
+  const named = ws.workbook.definedNames;
+  const absCol = (col: number): string => colToName(col, true);
+  named.add(`${ws.name}!${absCol(2)}$1:${absCol(2)}$${bottom}`, PRICES_DESC_NAME);
+  named.add(
+    `${ws.name}!${absCol(colmap['region'])}$1:${absCol(colmap['region'])}$${bottom}`,
+    PRICES_REGIONS_NAME,
+  );
+  named.add(`${ws.name}!${absCol(2)}$1:${absCol(right)}$${bottom}`, PRICES_TABLE_NAME);
+
+  // BOM templates splice these into formulas as bare defined-name refs.
+  def(refMap,'prices_desc', PRICES_DESC_NAME);
+  def(refMap,'prices_region', PRICES_REGIONS_NAME);
+  def(refMap,'prices_table', PRICES_TABLE_NAME);
 
   def(refMap,'last_sku', String(bottom));
   def(refMap,'last_column', String(right));

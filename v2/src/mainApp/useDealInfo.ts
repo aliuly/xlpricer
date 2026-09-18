@@ -42,19 +42,25 @@ export function useDealInfo() {
     })
   }
 
-  return { info, setField }
+  const clear = () => {
+    const next = { ...EMPTY_DEAL }
+    setInfo(next)
+    saveDealInfo(next)
+  }
+
+  return { info, setField, clear }
 }
 
 /* ── Download filename ─────────────────────── */
 
 /**
- * Sanitize a free-text field for use inside a filename: remove the
+ * Sanitize a free-text part for use inside a filename: remove the
  * characters that are invalid in MS Windows filenames
  * (< > : " / \ | ? * and control chars), plus trailing dots/spaces,
  * which Windows strips from the saved file.  Everything else is
  * kept as the user typed it (case, spaces, etc.).
  */
-function sanitizePart(s: string): string {
+export function sanitizeFilenamePart(s: string): string {
   return s
     .trim()
     .replace(/[<>:"/\\|?*\p{Cc}]/gu, '')
@@ -72,16 +78,17 @@ function todayStamp(): string {
 /**
  * Build the download filename:
  *
- *   TCP_<DEAL-ID>_<CUSTOMER-NAME>_<SEQ-NO>_<DATE>.xlsx
+ *   TCP_<DEAL-ID>_<CUSTOMER-NAME>_<SEQ-NO>_<DATE>.<ext>
  *
  * Each part is used as typed (with Windows-invalid characters
  * removed) and falls back to "Number", "customer", "1of1" when the
  * corresponding field is empty.  Date is the current local date as
- * YYYY-MM-DD.
+ * YYYY-MM-DD.  Extension defaults to `xlsx`; pass `xlsm` for
+ * macro-enabled output.
  */
-export function dealInfoFilename(info: DealInfo): string {
-  const dealId = sanitizePart(info.dealId) || 'Number'
-  const customer = sanitizePart(info.customer) || 'customer'
-  const seqNo = sanitizePart(info.seqNo) || '1of1'
-  return `TCP_${dealId}_${customer}_${seqNo}_${todayStamp()}.xlsx`
+export function dealInfoFilename(info: DealInfo, format: 'xlsx' | 'xlsm' = 'xlsx'): string {
+  const dealId = sanitizeFilenamePart(info.dealId) || 'Number'
+  const customer = sanitizeFilenamePart(info.customer) || 'customer'
+  const seqNo = sanitizeFilenamePart(info.seqNo) || '1of1'
+  return `TCP_${dealId}_${customer}_${seqNo}_${todayStamp()}.${format}`
 }

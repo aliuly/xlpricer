@@ -24,7 +24,7 @@ lint: node_modules ## run linting
 	npm run lint
 
 test: node_modules ## run tests
-	: no tests currently available
+	npm run test:run
 
 install: node_modules ## Install npm dependencies
 

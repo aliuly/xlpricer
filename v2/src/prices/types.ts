@@ -23,7 +23,7 @@ export interface PricesData {
   count?: number;
   /* ── metadata ──────── */
   schema?: string;
-  params?: Record<string, string | Record<string, string>>;
+  params?: Record<string, string | string[] | Record<string, string>>;
   timestamp?: number;
   datetime?: string;
   cksum?: string;

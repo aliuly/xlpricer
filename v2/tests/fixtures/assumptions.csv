@@ -1,0 +1,29 @@
+key,                    value,         when,    who,	   notes
+General
+$INFLATION,              %2,           , 	by script, Annual inflation rate
+Defaults
+$DEFAULT_REGION,         eu-de:REGIONS,,	by script, Default region
+$DEFAULT_EVS,            High I/O:EVS, ,	by script, Default EVS class
+$DEFAULT_BACKUP,         STD:BACKUP,   ,	by script, Default backup mode
+$DEFAULT_RXM,            R36M:RXM,     ,	by script, Default pricing model
+$DEFAULT_HOURS,          ={FT_HOURS},  ,	by script, Default operating hours
+Backups
+Used storage,           %70,           ,	by script, Percentage of allocated storage that needs to be backed up
+Daily change rate,      %3,            ,	by script,
+Number of full,         1,             ,	by script,
+Number of incrementals, 29,            ,	by script,
+$BACKUP_FACT,           #=({Number of full}+(1+{Daily change rate})^{Number of incrementals})*{Used storage},,by script,
+Hours
+$FT_HOURS,              730,           ,	by script, Full time hours per month (24x7 Operation)
+$WK_HOURS,              174,           ,	by script, Working Hours per month Based on 10x5 per week
+$WK_HOURS_PCT,          %={WK_HOURS}/{FT_HOURS},, by script, Working Hours Percent
+Internet
+$DEF_OUTBOUND_INTERNET, 100,           ,	by script, Outbound Internet GB
+-
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,

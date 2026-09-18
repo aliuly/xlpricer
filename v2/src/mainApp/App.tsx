@@ -8,6 +8,9 @@ import ComponentsTab from '../editorTab/ComponentsTab'
 import IncludesTab from '../editorTab/IncludesTab'
 import ModeSelector from './ModeSelector'
 import BasicView from './BasicView'
+import WorkbookMode from '../workbookTab/WorkbookMode'
+import { useWorkbookOps } from '../workbookTab/useWorkbookOps'
+import { useGenOptions } from './GenOptions'
 import type { AppMode } from './ModeSelector'
 
 interface TabProps {
@@ -33,6 +36,14 @@ const tabRegistry: Record<string, { label: string; Component: ComponentType<TabP
 const fallbackTabs: TabDef[] = [
   { id: 'default', label: 'Default Tab', Component: DefaultTab },
 ]
+
+function tabButtonClass(active: boolean): string {
+  return `px-6 py-3 text-sm font-medium border-b-2 transition-colors cursor-pointer
+    ${active
+      ? 'border-magenta text-magenta dark:border-magenta-light dark:text-magenta-light'
+      : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'
+    }`
+}
 
 /* ── Component‑tab helpers ──────────────────── */
 
@@ -64,7 +75,7 @@ function nextCompId(metas: CompTabMeta[]): string {
 export default function App() {
   const [appMode, setAppMode] = useState<AppMode>(() => {
     const saved = localStorage.getItem('xlpricer-mode')
-    if (saved === 'basic' || saved === 'custom' || saved === 'includes') return saved
+    if (saved === 'basic' || saved === 'custom' || saved === 'conversion' || saved === 'includes') return saved
     return 'basic'
   })
 
@@ -75,14 +86,40 @@ export default function App() {
   const [editValue, setEditValue] = useState('')
   useTheme() // still needed — keeps ThemeProvider wired
 
-  const [homeConfig, setHomeConfig] = useState<{ pricesUrl?: string; includes?: string[] }>({})
+  const [conversionTab, setConversionTab] = useState<'workbook' | 'includes'>('workbook')
+  // Custom pricing is a Gen-Options setting shared by Basic, Custom
+  // and Conversion (persisted under the one gen-options key).
+  const { options: genOptions, setOptions: setGenOptions } = useGenOptions()
+  const customPricing = genOptions.customPricing
+  const workbookOps = useWorkbookOps()
+
+  const [homeConfig, setHomeConfig] = useState<{ pricesUrl?: string; includes?: string[]; vbaTemplateUrl?: string }>({})
+  const [standardIncludes, setStandardIncludes] = useState<string[]>([])
   const [assumptionsDataUrl, setAssumptionsDataUrl] = useState<string | undefined>()
   const [componentsDataUrl, setComponentsDataUrl] = useState<string | undefined>()
 
   const handleSetAppMode = useCallback((m: AppMode) => {
+    if (appMode === 'conversion' && m !== 'conversion') {
+      workbookOps.clear()
+    }
     setAppMode(m)
     localStorage.setItem('xlpricer-mode', m)
-  }, [])
+  }, [appMode, workbookOps.clear])
+
+  const handleCustomPricing = useCallback((value: boolean) => {
+    setGenOptions({ ...genOptions, customPricing: value })
+    if (!value) {
+      // The Includes tab is gated by this checkbox in every mode.
+      if (conversionTab === 'includes') setConversionTab('workbook')
+      if (active === 'includes') setActive('home')
+    }
+  }, [genOptions, setGenOptions, conversionTab, active])
+
+  const handleUploadWorkbook = useCallback((file: File) => {
+    // No include payload: the staleness check is pipeline-only
+    // (compareSourceMeta excludes `includes|*` keys).
+    workbookOps.upload(file, { dataUrl: homeConfig.pricesUrl })
+  }, [workbookOps.upload, homeConfig.pricesUrl])
 
   const compConfigRef = useRef<Record<string, unknown>>({})
 
@@ -105,9 +142,10 @@ export default function App() {
         compConfigRef.current = (config?.components as Record<string, unknown>) ?? {}
         const includesFiles: string[] = (config?.includes as Record<string, unknown>)?.files as string[] ?? []
         setHomeConfig({
-          ...(config?.home as { pricesUrl?: string }),
+          ...(config?.home as { pricesUrl?: string; vbaTemplateUrl?: string }),
           includes: includesFiles,
         })
+        setStandardIncludes(includesFiles)
         setAssumptionsDataUrl((config?.assumptions as { dataUrl?: string })?.dataUrl)
         setComponentsDataUrl((config?.components as { dataUrl?: string })?.dataUrl)
 
@@ -252,13 +290,31 @@ export default function App() {
   const compEnabled = tabs.some(t => t.id.startsWith(COMP_PREFIX))
   const compCount = tabs.filter(t => t.id.startsWith(COMP_PREFIX)).length
 
-  const showTabs = appMode === 'custom' || appMode === 'includes'
+  const showTabs = appMode === 'custom' || appMode === 'includes' || appMode === 'conversion'
 
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-gray-50 dark:bg-gray-900 transition-colors">
       <div className="flex border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
         <ModeSelector mode={appMode} onSelectMode={handleSetAppMode} />
-        {showTabs && (
+        {showTabs && appMode === 'conversion' ? (
+          <>
+            <button
+              onClick={() => setConversionTab('workbook')}
+              className={tabButtonClass(conversionTab === 'workbook')}
+            >
+              Workbook
+            </button>
+            <button
+              onClick={() => setConversionTab('includes')}
+              disabled={!customPricing}
+              title={customPricing ? 'Includes' : 'Enable custom pricing to use includes'}
+              className={`${tabButtonClass(conversionTab === 'includes')}
+                disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-transparent disabled:hover:text-gray-500 dark:disabled:hover:text-gray-400`}
+            >
+              Includes
+            </button>
+          </>
+        ) : showTabs ? (
           <>
             {tabs.map((t) => {
               const isCompTab = t.id.startsWith(COMP_PREFIX)
@@ -291,11 +347,16 @@ export default function App() {
                     <button
                       onClick={() => setActive(t.id)}
                       onDoubleClick={() => startRename(t.id, t.label)}
+                      disabled={t.id === 'includes' && !customPricing}
+                      title={t.id !== 'includes' || customPricing
+                        ? t.label
+                        : 'Enable custom pricing to use includes'}
                       className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors cursor-pointer
                         ${active === t.id
                           ? 'border-magenta text-magenta dark:border-magenta-light dark:text-magenta-light'
                           : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'
-                        }`}
+                        }
+                        disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-transparent disabled:hover:text-gray-500 dark:disabled:hover:text-gray-400`}
                     >
                       {t.label}
                     </button>
@@ -313,11 +374,11 @@ export default function App() {
               </button>
             )}
           </>
-        )}
+        ) : null}
       </div>
       <div className="flex-1 p-0 overflow-hidden">
         {loading ? null : appMode === 'basic' ? (
-          <BasicView pricesUrl={homeConfig.pricesUrl} includes={homeConfig.includes} assumptionsDataUrl={assumptionsDataUrl} componentsDataUrl={componentsDataUrl} />
+          <BasicView pricesUrl={homeConfig.pricesUrl} includes={homeConfig.includes} assumptionsDataUrl={assumptionsDataUrl} componentsDataUrl={componentsDataUrl} vbaTemplateUrl={homeConfig.vbaTemplateUrl} genOptions={genOptions} setGenOptions={setGenOptions} />
         ) : appMode === 'includes' ? (
           <div className="flex-1 flex flex-col items-center justify-center gap-4 p-8 text-center">
             <h2 className="text-2xl font-medium text-gray-800 dark:text-gray-100">
@@ -327,11 +388,37 @@ export default function App() {
               Yet to be implemented.
             </p>
           </div>
+        ) : appMode === 'conversion' ? (
+          <WorkbookMode
+            active={conversionTab}
+            standardIncludes={standardIncludes}
+            workbookTab={{
+              busy: workbookOps.busy,
+              file: workbookOps.file,
+              inspection: workbookOps.inspection,
+              status: workbookOps.status,
+              warnings: workbookOps.warnings,
+              error: workbookOps.error,
+              opKind: workbookOps.opKind,
+              setOpKind: workbookOps.setOpKind,
+              convertFormat: workbookOps.convertFormat,
+              setConvertFormat: workbookOps.setConvertFormat,
+              refreshFormat: workbookOps.refreshFormat,
+              setRefreshFormat: workbookOps.setRefreshFormat,
+              customPricing,
+              onCustomPricingChange: handleCustomPricing,
+              onUpload: handleUploadWorkbook,
+              onClear: workbookOps.clear,
+              onProcess: workbookOps.process,
+              pricesUrl: homeConfig.pricesUrl,
+              vbaTemplateUrl: homeConfig.vbaTemplateUrl,
+            }}
+          />
         ) : (
           <ActiveComponent
             key={tab?.id ?? 'default'}
             tabId={tab?.id ?? 'default'}
-            config={tab?.config}
+            config={tab ? { ...tab.config, genOptions, setGenOptions } : undefined}
             visible={true}
           />
         )}

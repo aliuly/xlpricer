@@ -1,0 +1,1377 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generated workbook layout > snapshot: cells and formulas across all sheets 1`] = `
+"## Overview
+A1 Yearly Overview
+B2 Yearly Prices
+M2 Monthly Prices
+B4 Year
+D4 2026
+E4 =D4+1
+F4 =E4+1
+G4 =F4+1
+H4 =G4+1
+I4 =H4+1
+K4 Total
+M4 groups
+N4 set-up
+O4 =TEXT(Components!$AO5,"@")
+P4 =TEXT(Components!$AP5,"@")
+Q4 =TEXT(Components!$AQ5,"@")
+R4 =TEXT(Components!$AR5,"@")
+S4 =TEXT(Components!$AS5,"@")
+T4 =TEXT(Components!$AT5,"@")
+B5 Months
+D5 3
+E5 12
+F5 12
+G5 12
+H5 12
+I5 12
+K5 =SUM(D5:I5)
+M5 total tabs
+N5 =SUM(Components!$E$2)
+O5 =SUM(Components!$E$3)
+B6 Ram-up
+D6 1
+E6 1
+F6 1
+G6 1
+H6 1
+I6 1
+M6 total overview
+N6 =SUMIFS(N:N,M:M,"<>total*")
+O6 =SUMIFS(O:O,M:M,"<>total*")
+M7 total diff
+N7 =N5-N6
+O7 =O5-O6
+B8 Per-Group Prices
+M8 Monthly Group Prices
+B10 Base Infrastructure
+D10 =IF($D$4=D$4,N10+O10*D$5*D$6,IF($D$5>D$5,D$5*N10*D$6,(D$5-$D$5)*N10*D$6+($D$5)*O10*D$6))
+E10 =IF($D$4=E$4,N10+P10*E$5*E$6,IF($D$5>E$5,E$5*O10*E$6,(E$5-$D$5)*O10*E$6+($D$5)*P10*E$6))
+F10 =IF($D$4=F$4,N10+Q10*F$5*F$6,IF($D$5>F$5,F$5*P10*F$6,(F$5-$D$5)*P10*F$6+($D$5)*Q10*F$6))
+G10 =IF($D$4=G$4,N10+R10*G$5*G$6,IF($D$5>G$5,G$5*Q10*G$6,(G$5-$D$5)*Q10*G$6+($D$5)*R10*G$6))
+H10 =IF($D$4=H$4,N10+S10*H$5*H$6,IF($D$5>H$5,H$5*R10*H$6,(H$5-$D$5)*R10*H$6+($D$5)*S10*H$6))
+I10 =IF($D$4=I$4,N10+T10*I$5*I$6,IF($D$5>I$5,I$5*S10*I$6,(I$5-$D$5)*S10*I$6+($D$5)*T10*I$6))
+K10 =SUM(D10:I10)
+M10 base
+N10 =SUMIFS(Components!$AN:$AN,Components!$B:$B,"<>Total*",Components!$I:$I,"="&$M10)
+O10 =SUMIFS(Components!$AO:$AO,Components!$B:$B,"<>Total*",Components!$I:$I,"="&$M10)
+P10 =SUMIFS(Components!$AP:$AP,Components!$B:$B,"<>Total*",Components!$I:$I,"="&$M10)
+Q10 =SUMIFS(Components!$AQ:$AQ,Components!$B:$B,"<>Total*",Components!$I:$I,"="&$M10)
+R10 =SUMIFS(Components!$AR:$AR,Components!$B:$B,"<>Total*",Components!$I:$I,"="&$M10)
+S10 =SUMIFS(Components!$AS:$AS,Components!$B:$B,"<>Total*",Components!$I:$I,"="&$M10)
+T10 =SUMIFS(Components!$AT:$AT,Components!$B:$B,"<>Total*",Components!$I:$I,"="&$M10)
+B11 Compute
+D11 =IF($D$4=D$4,N11+O11*D$5*D$6,IF($D$5>D$5,D$5*N11*D$6,(D$5-$D$5)*N11*D$6+($D$5)*O11*D$6))
+E11 =IF($D$4=E$4,N11+P11*E$5*E$6,IF($D$5>E$5,E$5*O11*E$6,(E$5-$D$5)*O11*E$6+($D$5)*P11*E$6))
+F11 =IF($D$4=F$4,N11+Q11*F$5*F$6,IF($D$5>F$5,F$5*P11*F$6,(F$5-$D$5)*P11*F$6+($D$5)*Q11*F$6))
+G11 =IF($D$4=G$4,N11+R11*G$5*G$6,IF($D$5>G$5,G$5*Q11*G$6,(G$5-$D$5)*Q11*G$6+($D$5)*R11*G$6))
+H11 =IF($D$4=H$4,N11+S11*H$5*H$6,IF($D$5>H$5,H$5*R11*H$6,(H$5-$D$5)*R11*H$6+($D$5)*S11*H$6))
+I11 =IF($D$4=I$4,N11+T11*I$5*I$6,IF($D$5>I$5,I$5*S11*I$6,(I$5-$D$5)*S11*I$6+($D$5)*T11*I$6))
+K11 =SUM(D11:I11)
+M11 com
+N11 =SUMIFS(Components!$AN:$AN,Components!$B:$B,"<>Total*",Components!$I:$I,"="&$M11)
+O11 =SUMIFS(Components!$AO:$AO,Components!$B:$B,"<>Total*",Components!$I:$I,"="&$M11)
+P11 =SUMIFS(Components!$AP:$AP,Components!$B:$B,"<>Total*",Components!$I:$I,"="&$M11)
+Q11 =SUMIFS(Components!$AQ:$AQ,Components!$B:$B,"<>Total*",Components!$I:$I,"="&$M11)
+R11 =SUMIFS(Components!$AR:$AR,Components!$B:$B,"<>Total*",Components!$I:$I,"="&$M11)
+S11 =SUMIFS(Components!$AS:$AS,Components!$B:$B,"<>Total*",Components!$I:$I,"="&$M11)
+T11 =SUMIFS(Components!$AT:$AT,Components!$B:$B,"<>Total*",Components!$I:$I,"="&$M11)
+B13 Totals
+D13 =SUM(D10:D12)
+E13 =SUM(E10:E12)
+F13 =SUM(F10:F12)
+G13 =SUM(G10:G12)
+H13 =SUM(H10:H12)
+I13 =SUM(I10:I12)
+K13 =SUM(D13:I13)
+M13 total
+N13 =SUM(N10:N12)
+O13 =SUM(O10:O12)
+P13 =SUM(P10:P12)
+Q13 =SUM(Q10:Q12)
+R13 =SUM(R10:R12)
+S13 =SUM(S10:S12)
+T13 =SUM(T10:T12)
+A15 Links for more information
+B16 {"text":"T-Cloud Public","hyperlink":"https://www.t-cloud-public.com/en"}
+C16 {"text":"SD","hyperlink":"https://www.t-cloud-public.com/_Resources/Persistent/b/0/d/f/b0dfef8ef4f2619e75390ffd9cc5ccdebc51faa1/open-telekom-cloud-servicedescription.pdf"}
+B17 {"text":"Managed Services","hyperlink":"https://www.t-cloud-public.com/en/products-services/managed-services"}
+C17 {"text":"SD","hyperlink":"https://www.t-cloud-public.com/service-description-managed"}
+B20 Enterprise Support Agreement
+B21 Uplift
+D21 =IF(ESA!$C$7="Y",IF(O13>ESA!$G$11,ESA!$H$12,IF(O13>ESA!$G$10,ESA!$H$11,IF(O13>ESA!$G$9,ESA!$H$10,IF(O13>ESA!$G$8,ESA!$H$9,ESA!$H$8)))),0)
+E21 =IF(ESA!$C$7="Y",IF(P13>ESA!$G$11,ESA!$H$12,IF(P13>ESA!$G$10,ESA!$H$11,IF(P13>ESA!$G$9,ESA!$H$10,IF(P13>ESA!$G$8,ESA!$H$9,ESA!$H$8)))),0)
+F21 =IF(ESA!$C$7="Y",IF(Q13>ESA!$G$11,ESA!$H$12,IF(Q13>ESA!$G$10,ESA!$H$11,IF(Q13>ESA!$G$9,ESA!$H$10,IF(Q13>ESA!$G$8,ESA!$H$9,ESA!$H$8)))),0)
+G21 =IF(ESA!$C$7="Y",IF(R13>ESA!$G$11,ESA!$H$12,IF(R13>ESA!$G$10,ESA!$H$11,IF(R13>ESA!$G$9,ESA!$H$10,IF(R13>ESA!$G$8,ESA!$H$9,ESA!$H$8)))),0)
+H21 =IF(ESA!$C$7="Y",IF(S13>ESA!$G$11,ESA!$H$12,IF(S13>ESA!$G$10,ESA!$H$11,IF(S13>ESA!$G$9,ESA!$H$10,IF(S13>ESA!$G$8,ESA!$H$9,ESA!$H$8)))),0)
+I21 =IF(ESA!$C$7="Y",IF(T13>ESA!$G$11,ESA!$H$12,IF(T13>ESA!$G$10,ESA!$H$11,IF(T13>ESA!$G$9,ESA!$H$10,IF(T13>ESA!$G$8,ESA!$H$9,ESA!$H$8)))),0)
+B22 Fixed Charge
+D22 =ESA!$D$12*D$5*(1+Assumptions!$D$5)^(D$4-$D$4)
+E22 =ESA!$D$12*E$5*(1+Assumptions!$D$5)^(E$4-$D$4)
+F22 =ESA!$D$12*F$5*(1+Assumptions!$D$5)^(F$4-$D$4)
+G22 =ESA!$D$12*G$5*(1+Assumptions!$D$5)^(G$4-$D$4)
+H22 =ESA!$D$12*H$5*(1+Assumptions!$D$5)^(H$4-$D$4)
+I22 =ESA!$D$12*I$5*(1+Assumptions!$D$5)^(I$4-$D$4)
+K22 =SUM(D22:I22)
+B23 Variable Charge
+D23 =D21*D13
+E23 =E21*E13
+F23 =F21*F13
+G23 =G21*G13
+H23 =H21*H13
+I23 =I21*I13
+K23 =SUM(D23:I23)
+B24 Total ESA
+D24 =D23+D22
+E24 =E23+E22
+F24 =F23+F22
+G24 =G23+G22
+H24 =H23+H22
+I24 =I23+I22
+K24 =SUM(D24:I24)
+B25 {"text":"Enterprise Support","hyperlink":"https://www.t-cloud-public.com/_Resources/Persistent/a/c/4/0/ac40e59ad301f60597e327963c463f44b02faec8/open-telekom-cloud-flyer-enterprise-agreement.pdf"}
+C25 {"text":"SD","hyperlink":"https://view-su1.highspot.com/viewer/5c20c71c254d2602c8c415089158cd76"}
+## Components
+A1 Cloud Components
+K1 EVS
+M1 Backup
+AN1 Future Price Forecast (Adjusted for inflation)
+B2 Region:
+C2 =Assumptions!$D$7
+D2 Set-up:
+E2 =SUMIFS($AK:$AK,$Y:$Y,"="&T_ONE_TIME)
+F2 =SUMIFS($AK:$AK,$Y:$Y,"="&T_ONE_TIME)
+K2 Class:
+L2 =Assumptions!$D$8
+M2 Class:
+N2 =Assumptions!$D$9
+B3 Pricing:
+C3 =Assumptions!$D$10
+D3 Monthly Total:
+E3 =SUMIFS($AK:$AK,$Y:$Y,"<>"&T_ONE_TIME,$B:$B,"<>Total *")
+F3 =SUMIFS($AK:$AK,$Y:$Y,"<>"&T_ONE_TIME,$B:$B,"<>Total *")
+M3 Factor:
+N3 =Assumptions!$D$17
+AN4 Years: ➜
+B5 Qty
+C5 Function
+D5 Description
+F5 Storage (GiB)
+G5 H/R
+I5 Group
+K5 Region
+L5 EVS Class
+M5 Persist?
+N5 Backup?
+O5 Backup Factor
+P5 Backup (GiB)
+R5 vCPU
+S5 vRAM (GiB)
+U5 Row Idx
+V5 EVS Idx
+W5 Backup Idx
+X5 PayG
+Y5 Unit
+Z5 R12M
+AA5 R24M
+AB5 R36M
+AC5 QxH
+AD5 EVS €/GiB
+AE5 Backup €/GiB
+AG5 Price
+AH5 EVS price
+AI5 Backup Price
+AJ5 Sub-Total per Unit
+AK5 Sub-Total
+AN5 Set-up
+AO5 1
+AP5 =AO5+1
+AQ5 =AP5+1
+AR5 =AQ5+1
+AS5 =AR5+1
+AT5 =AS5+1
+B6 Base Infrastructure
+I6 base
+B7 1
+D7 Compute: Virtuelle Maschine 2 vcpu 4 GiB
+F7 140
+G7 =IF($C$3="R36M",IF($AB7<>"","R36M",IF($AA7<>"","R24M",IF($Z7<>"","R12M",Assumptions!$D$11))),IF($C$3="R24M",IF($AA7<>"","R24M",IF($Z7<>"","R12M",Assumptions!$D$11)),IF($C$3="R12M",IF($Z7<>"","R12M",Assumptions!$D$11),IF($C$3="Elastic-FT",Assumptions!$D$19,IF($C$3="Elastic-Office",Assumptions!$D$20,Assumptions!$D$11)))))
+I7 =I6
+K7 =$C$2
+L7 =$L$2
+M7 Y
+N7 =$N$2
+O7 =$N$3
+P7 =IF(AND($M7="Y",$F7>0),$F7*$O7,"")
+R7 =IF($U7="","",IF(INDEX(PriceListTable,$U7,12)>0,INDEX(PriceListTable,$U7,12),""))
+S7 =IF($U7="","",IF(INDEX(PriceListTable,$U7,13)>0,INDEX(PriceListTable,$U7,13),""))
+U7 =IF(OR($D7="",$K7=""),"",MATCH(1,INDEX((PriceListDescs=$D7)*(PriceListRegions=$K7),0),0))
+V7 =IF(OR($D7="",$L7="",$K7=""),"",MATCH(1,INDEX((PriceListDescs="Storage: EVS " & $L7)*(PriceListRegions=$K7),0),0))
+W7 =IF(OR($D7="",$L7="",$K7="",$N7<>"STD"),"",INDEX(PriceListTable, $U7, 36))
+X7 =IF($U7="","",INDEX(PriceListTable, $U7, 9))
+Y7 =IF($U7="","",INDEX(PriceListTable, $U7, 10))
+Z7 =IF($U7="","",IF(INDEX(PriceListTable,$U7,29)>0,INDEX(PriceListTable,$U7,29),""))
+AA7 =IF($U7="","",IF(INDEX(PriceListTable,$U7,30)>0,INDEX(PriceListTable,$U7,30),""))
+AB7 =IF($U7="","",IF(INDEX(PriceListTable,$U7,31)>0,INDEX(PriceListTable,$U7,31),""))
+AC7 =IF($U7="","",IF(LEFT($Y7,1)="h",IF(ISNUMBER($G7),$G7,Assumptions!$D$11),1)*$B7)
+AD7 =IF($V7="","",INDEX(PriceListTable,$V7,9))
+AE7 =IF($W7="","",INDEX(PriceListTable,$W7,9))
+AG7 =IF($U7="",0,IF(AND($Z7<>"",$G7="R12M"),$Z7,IF(AND($AA7<>"",$G7="R24M"),$AA7,IF(AND($AB7<>"",$G7="R36M"),$AB7,IF(LEFT($Y7,1)="h",IF(ISNUMBER($G7),$G7,Assumptions!$D$11)*$X7,$X7)))))
+AH7 =IFERROR(IF($F7="",0,$F7*$AD7*IF(AND($M7="N",ISNUMBER($G7)),$G7/Assumptions!$D$19,1)),0)
+AI7 =IFERROR(IF(OR($P7="",$P7=0),0,$P7*$AE7),0)
+AJ7 =IFERROR($AG7+$AH7+$AI7,0)
+AK7 =$B7*$AJ7
+AN7 =IF($Y7=T_ONE_TIME,$AK7,0)
+AO7 =IF($Y7=T_ONE_TIME,0,IF( AND($G7="R24M",$AA7<>0),$B7*($AG7*(1+Assumptions!$D$5)^(FLOOR(AO$5-1,2))+($AI7+$AH7)*(1 + Assumptions!$D$5)^(AO$5-1)),IF( AND($G7="R36M",$AB7<>0),$B7*($AG7*(1+Assumptions!$D$5)^(FLOOR(AO$5-1,3))+($AI7+$AH7)*(1 + Assumptions!$D$5)^(AO$5-1)),$AK7*(1+Assumptions!$D$5)^(AO$5-1))))
+AP7 =IF($Y7=T_ONE_TIME,0,IF( AND($G7="R24M",$AA7<>0),$B7*($AG7*(1+Assumptions!$D$5)^(FLOOR(AP$5-1,2))+($AI7+$AH7)*(1 + Assumptions!$D$5)^(AP$5-1)),IF( AND($G7="R36M",$AB7<>0),$B7*($AG7*(1+Assumptions!$D$5)^(FLOOR(AP$5-1,3))+($AI7+$AH7)*(1 + Assumptions!$D$5)^(AP$5-1)),$AK7*(1+Assumptions!$D$5)^(AP$5-1))))
+AQ7 =IF($Y7=T_ONE_TIME,0,IF( AND($G7="R24M",$AA7<>0),$B7*($AG7*(1+Assumptions!$D$5)^(FLOOR(AQ$5-1,2))+($AI7+$AH7)*(1 + Assumptions!$D$5)^(AQ$5-1)),IF( AND($G7="R36M",$AB7<>0),$B7*($AG7*(1+Assumptions!$D$5)^(FLOOR(AQ$5-1,3))+($AI7+$AH7)*(1 + Assumptions!$D$5)^(AQ$5-1)),$AK7*(1+Assumptions!$D$5)^(AQ$5-1))))
+AR7 =IF($Y7=T_ONE_TIME,0,IF( AND($G7="R24M",$AA7<>0),$B7*($AG7*(1+Assumptions!$D$5)^(FLOOR(AR$5-1,2))+($AI7+$AH7)*(1 + Assumptions!$D$5)^(AR$5-1)),IF( AND($G7="R36M",$AB7<>0),$B7*($AG7*(1+Assumptions!$D$5)^(FLOOR(AR$5-1,3))+($AI7+$AH7)*(1 + Assumptions!$D$5)^(AR$5-1)),$AK7*(1+Assumptions!$D$5)^(AR$5-1))))
+AS7 =IF($Y7=T_ONE_TIME,0,IF( AND($G7="R24M",$AA7<>0),$B7*($AG7*(1+Assumptions!$D$5)^(FLOOR(AS$5-1,2))+($AI7+$AH7)*(1 + Assumptions!$D$5)^(AS$5-1)),IF( AND($G7="R36M",$AB7<>0),$B7*($AG7*(1+Assumptions!$D$5)^(FLOOR(AS$5-1,3))+($AI7+$AH7)*(1 + Assumptions!$D$5)^(AS$5-1)),$AK7*(1+Assumptions!$D$5)^(AS$5-1))))
+AT7 =IF($Y7=T_ONE_TIME,0,IF( AND($G7="R24M",$AA7<>0),$B7*($AG7*(1+Assumptions!$D$5)^(FLOOR(AT$5-1,2))+($AI7+$AH7)*(1 + Assumptions!$D$5)^(AT$5-1)),IF( AND($G7="R36M",$AB7<>0),$B7*($AG7*(1+Assumptions!$D$5)^(FLOOR(AT$5-1,3))+($AI7+$AH7)*(1 + Assumptions!$D$5)^(AT$5-1)),$AK7*(1+Assumptions!$D$5)^(AT$5-1))))
+B8 1
+D8 Storage: EVS SATA
+F8 100
+G8 =IF($C$3="R36M",IF($AB8<>"","R36M",IF($AA8<>"","R24M",IF($Z8<>"","R12M",Assumptions!$D$11))),IF($C$3="R24M",IF($AA8<>"","R24M",IF($Z8<>"","R12M",Assumptions!$D$11)),IF($C$3="R12M",IF($Z8<>"","R12M",Assumptions!$D$11),IF($C$3="Elastic-FT",Assumptions!$D$19,IF($C$3="Elastic-Office",Assumptions!$D$20,Assumptions!$D$11)))))
+I8 =I7
+K8 =$C$2
+L8 =$L$2
+M8 Y
+N8 =$N$2
+O8 =$N$3
+P8 =IF(AND($M8="Y",$F8>0),$F8*$O8,"")
+R8 =IF($U8="","",IF(INDEX(PriceListTable,$U8,12)>0,INDEX(PriceListTable,$U8,12),""))
+S8 =IF($U8="","",IF(INDEX(PriceListTable,$U8,13)>0,INDEX(PriceListTable,$U8,13),""))
+U8 =IF(OR($D8="",$K8=""),"",MATCH(1,INDEX((PriceListDescs=$D8)*(PriceListRegions=$K8),0),0))
+V8 =IF(OR($D8="",$L8="",$K8=""),"",MATCH(1,INDEX((PriceListDescs="Storage: EVS " & $L8)*(PriceListRegions=$K8),0),0))
+W8 =IF(OR($D8="",$L8="",$K8="",$N8<>"STD"),"",INDEX(PriceListTable, $U8, 36))
+X8 =IF($U8="","",INDEX(PriceListTable, $U8, 9))
+Y8 =IF($U8="","",INDEX(PriceListTable, $U8, 10))
+Z8 =IF($U8="","",IF(INDEX(PriceListTable,$U8,29)>0,INDEX(PriceListTable,$U8,29),""))
+AA8 =IF($U8="","",IF(INDEX(PriceListTable,$U8,30)>0,INDEX(PriceListTable,$U8,30),""))
+AB8 =IF($U8="","",IF(INDEX(PriceListTable,$U8,31)>0,INDEX(PriceListTable,$U8,31),""))
+AC8 =IF($U8="","",IF(LEFT($Y8,1)="h",IF(ISNUMBER($G8),$G8,Assumptions!$D$11),1)*$B8)
+AD8 =IF($V8="","",INDEX(PriceListTable,$V8,9))
+AE8 =IF($W8="","",INDEX(PriceListTable,$W8,9))
+AG8 =IF($U8="",0,IF(AND($Z8<>"",$G8="R12M"),$Z8,IF(AND($AA8<>"",$G8="R24M"),$AA8,IF(AND($AB8<>"",$G8="R36M"),$AB8,IF(LEFT($Y8,1)="h",IF(ISNUMBER($G8),$G8,Assumptions!$D$11)*$X8,$X8)))))
+AH8 =IFERROR(IF($F8="",0,$F8*$AD8*IF(AND($M8="N",ISNUMBER($G8)),$G8/Assumptions!$D$19,1)),0)
+AI8 =IFERROR(IF(OR($P8="",$P8=0),0,$P8*$AE8),0)
+AJ8 =IFERROR($AG8+$AH8+$AI8,0)
+AK8 =$B8*$AJ8
+AN8 =IF($Y8=T_ONE_TIME,$AK8,0)
+AO8 =IF($Y8=T_ONE_TIME,0,IF( AND($G8="R24M",$AA8<>0),$B8*($AG8*(1+Assumptions!$D$5)^(FLOOR(AO$5-1,2))+($AI8+$AH8)*(1 + Assumptions!$D$5)^(AO$5-1)),IF( AND($G8="R36M",$AB8<>0),$B8*($AG8*(1+Assumptions!$D$5)^(FLOOR(AO$5-1,3))+($AI8+$AH8)*(1 + Assumptions!$D$5)^(AO$5-1)),$AK8*(1+Assumptions!$D$5)^(AO$5-1))))
+AP8 =IF($Y8=T_ONE_TIME,0,IF( AND($G8="R24M",$AA8<>0),$B8*($AG8*(1+Assumptions!$D$5)^(FLOOR(AP$5-1,2))+($AI8+$AH8)*(1 + Assumptions!$D$5)^(AP$5-1)),IF( AND($G8="R36M",$AB8<>0),$B8*($AG8*(1+Assumptions!$D$5)^(FLOOR(AP$5-1,3))+($AI8+$AH8)*(1 + Assumptions!$D$5)^(AP$5-1)),$AK8*(1+Assumptions!$D$5)^(AP$5-1))))
+AQ8 =IF($Y8=T_ONE_TIME,0,IF( AND($G8="R24M",$AA8<>0),$B8*($AG8*(1+Assumptions!$D$5)^(FLOOR(AQ$5-1,2))+($AI8+$AH8)*(1 + Assumptions!$D$5)^(AQ$5-1)),IF( AND($G8="R36M",$AB8<>0),$B8*($AG8*(1+Assumptions!$D$5)^(FLOOR(AQ$5-1,3))+($AI8+$AH8)*(1 + Assumptions!$D$5)^(AQ$5-1)),$AK8*(1+Assumptions!$D$5)^(AQ$5-1))))
+AR8 =IF($Y8=T_ONE_TIME,0,IF( AND($G8="R24M",$AA8<>0),$B8*($AG8*(1+Assumptions!$D$5)^(FLOOR(AR$5-1,2))+($AI8+$AH8)*(1 + Assumptions!$D$5)^(AR$5-1)),IF( AND($G8="R36M",$AB8<>0),$B8*($AG8*(1+Assumptions!$D$5)^(FLOOR(AR$5-1,3))+($AI8+$AH8)*(1 + Assumptions!$D$5)^(AR$5-1)),$AK8*(1+Assumptions!$D$5)^(AR$5-1))))
+AS8 =IF($Y8=T_ONE_TIME,0,IF( AND($G8="R24M",$AA8<>0),$B8*($AG8*(1+Assumptions!$D$5)^(FLOOR(AS$5-1,2))+($AI8+$AH8)*(1 + Assumptions!$D$5)^(AS$5-1)),IF( AND($G8="R36M",$AB8<>0),$B8*($AG8*(1+Assumptions!$D$5)^(FLOOR(AS$5-1,3))+($AI8+$AH8)*(1 + Assumptions!$D$5)^(AS$5-1)),$AK8*(1+Assumptions!$D$5)^(AS$5-1))))
+AT8 =IF($Y8=T_ONE_TIME,0,IF( AND($G8="R24M",$AA8<>0),$B8*($AG8*(1+Assumptions!$D$5)^(FLOOR(AT$5-1,2))+($AI8+$AH8)*(1 + Assumptions!$D$5)^(AT$5-1)),IF( AND($G8="R36M",$AB8<>0),$B8*($AG8*(1+Assumptions!$D$5)^(FLOOR(AT$5-1,3))+($AI8+$AH8)*(1 + Assumptions!$D$5)^(AT$5-1)),$AK8*(1+Assumptions!$D$5)^(AT$5-1))))
+B9 ="Total "&IFERROR(IF($I9="","N/A",$I9),"N/A")
+I9 =I6
+AK9 =SUMIFS($AK:$AK,$Y:$Y,"<>"&T_ONE_TIME,$B:$B,"<>"&$B9,$I:$I,"="&$I9)
+AN9 =SUMIFS(AN:AN,$B:$B,"<>"&$B9,$I:$I,"="&$I9)
+AO9 =SUMIFS(AO:AO,$B:$B,"<>"&$B9,$I:$I,"="&$I9)
+AP9 =SUMIFS(AP:AP,$B:$B,"<>"&$B9,$I:$I,"="&$I9)
+AQ9 =SUMIFS(AQ:AQ,$B:$B,"<>"&$B9,$I:$I,"="&$I9)
+AR9 =SUMIFS(AR:AR,$B:$B,"<>"&$B9,$I:$I,"="&$I9)
+AS9 =SUMIFS(AS:AS,$B:$B,"<>"&$B9,$I:$I,"="&$I9)
+AT9 =SUMIFS(AT:AT,$B:$B,"<>"&$B9,$I:$I,"="&$I9)
+B10 Compute
+I10 com
+B11 1
+C11 webserver
+D11 Compute: Virtuelle Maschine 2 vcpu 4 GiB
+F11 140
+G11 =IF($C$3="R36M",IF($AB11<>"","R36M",IF($AA11<>"","R24M",IF($Z11<>"","R12M",Assumptions!$D$11))),IF($C$3="R24M",IF($AA11<>"","R24M",IF($Z11<>"","R12M",Assumptions!$D$11)),IF($C$3="R12M",IF($Z11<>"","R12M",Assumptions!$D$11),IF($C$3="Elastic-FT",Assumptions!$D$19,IF($C$3="Elastic-Office",Assumptions!$D$20,Assumptions!$D$11)))))
+I11 =I10
+K11 =$C$2
+L11 =$L$2
+M11 Y
+N11 =$N$2
+O11 =$N$3
+P11 =IF(AND($M11="Y",$F11>0),$F11*$O11,"")
+R11 =IF($U11="","",IF(INDEX(PriceListTable,$U11,12)>0,INDEX(PriceListTable,$U11,12),""))
+S11 =IF($U11="","",IF(INDEX(PriceListTable,$U11,13)>0,INDEX(PriceListTable,$U11,13),""))
+U11 =IF(OR($D11="",$K11=""),"",MATCH(1,INDEX((PriceListDescs=$D11)*(PriceListRegions=$K11),0),0))
+V11 =IF(OR($D11="",$L11="",$K11=""),"",MATCH(1,INDEX((PriceListDescs="Storage: EVS " & $L11)*(PriceListRegions=$K11),0),0))
+W11 =IF(OR($D11="",$L11="",$K11="",$N11<>"STD"),"",INDEX(PriceListTable, $U11, 36))
+X11 =IF($U11="","",INDEX(PriceListTable, $U11, 9))
+Y11 =IF($U11="","",INDEX(PriceListTable, $U11, 10))
+Z11 =IF($U11="","",IF(INDEX(PriceListTable,$U11,29)>0,INDEX(PriceListTable,$U11,29),""))
+AA11 =IF($U11="","",IF(INDEX(PriceListTable,$U11,30)>0,INDEX(PriceListTable,$U11,30),""))
+AB11 =IF($U11="","",IF(INDEX(PriceListTable,$U11,31)>0,INDEX(PriceListTable,$U11,31),""))
+AC11 =IF($U11="","",IF(LEFT($Y11,1)="h",IF(ISNUMBER($G11),$G11,Assumptions!$D$11),1)*$B11)
+AD11 =IF($V11="","",INDEX(PriceListTable,$V11,9))
+AE11 =IF($W11="","",INDEX(PriceListTable,$W11,9))
+AG11 =IF($U11="",0,IF(AND($Z11<>"",$G11="R12M"),$Z11,IF(AND($AA11<>"",$G11="R24M"),$AA11,IF(AND($AB11<>"",$G11="R36M"),$AB11,IF(LEFT($Y11,1)="h",IF(ISNUMBER($G11),$G11,Assumptions!$D$11)*$X11,$X11)))))
+AH11 =IFERROR(IF($F11="",0,$F11*$AD11*IF(AND($M11="N",ISNUMBER($G11)),$G11/Assumptions!$D$19,1)),0)
+AI11 =IFERROR(IF(OR($P11="",$P11=0),0,$P11*$AE11),0)
+AJ11 =IFERROR($AG11+$AH11+$AI11,0)
+AK11 =$B11*$AJ11
+AN11 =IF($Y11=T_ONE_TIME,$AK11,0)
+AO11 =IF($Y11=T_ONE_TIME,0,IF( AND($G11="R24M",$AA11<>0),$B11*($AG11*(1+Assumptions!$D$5)^(FLOOR(AO$5-1,2))+($AI11+$AH11)*(1 + Assumptions!$D$5)^(AO$5-1)),IF( AND($G11="R36M",$AB11<>0),$B11*($AG11*(1+Assumptions!$D$5)^(FLOOR(AO$5-1,3))+($AI11+$AH11)*(1 + Assumptions!$D$5)^(AO$5-1)),$AK11*(1+Assumptions!$D$5)^(AO$5-1))))
+AP11 =IF($Y11=T_ONE_TIME,0,IF( AND($G11="R24M",$AA11<>0),$B11*($AG11*(1+Assumptions!$D$5)^(FLOOR(AP$5-1,2))+($AI11+$AH11)*(1 + Assumptions!$D$5)^(AP$5-1)),IF( AND($G11="R36M",$AB11<>0),$B11*($AG11*(1+Assumptions!$D$5)^(FLOOR(AP$5-1,3))+($AI11+$AH11)*(1 + Assumptions!$D$5)^(AP$5-1)),$AK11*(1+Assumptions!$D$5)^(AP$5-1))))
+AQ11 =IF($Y11=T_ONE_TIME,0,IF( AND($G11="R24M",$AA11<>0),$B11*($AG11*(1+Assumptions!$D$5)^(FLOOR(AQ$5-1,2))+($AI11+$AH11)*(1 + Assumptions!$D$5)^(AQ$5-1)),IF( AND($G11="R36M",$AB11<>0),$B11*($AG11*(1+Assumptions!$D$5)^(FLOOR(AQ$5-1,3))+($AI11+$AH11)*(1 + Assumptions!$D$5)^(AQ$5-1)),$AK11*(1+Assumptions!$D$5)^(AQ$5-1))))
+AR11 =IF($Y11=T_ONE_TIME,0,IF( AND($G11="R24M",$AA11<>0),$B11*($AG11*(1+Assumptions!$D$5)^(FLOOR(AR$5-1,2))+($AI11+$AH11)*(1 + Assumptions!$D$5)^(AR$5-1)),IF( AND($G11="R36M",$AB11<>0),$B11*($AG11*(1+Assumptions!$D$5)^(FLOOR(AR$5-1,3))+($AI11+$AH11)*(1 + Assumptions!$D$5)^(AR$5-1)),$AK11*(1+Assumptions!$D$5)^(AR$5-1))))
+AS11 =IF($Y11=T_ONE_TIME,0,IF( AND($G11="R24M",$AA11<>0),$B11*($AG11*(1+Assumptions!$D$5)^(FLOOR(AS$5-1,2))+($AI11+$AH11)*(1 + Assumptions!$D$5)^(AS$5-1)),IF( AND($G11="R36M",$AB11<>0),$B11*($AG11*(1+Assumptions!$D$5)^(FLOOR(AS$5-1,3))+($AI11+$AH11)*(1 + Assumptions!$D$5)^(AS$5-1)),$AK11*(1+Assumptions!$D$5)^(AS$5-1))))
+AT11 =IF($Y11=T_ONE_TIME,0,IF( AND($G11="R24M",$AA11<>0),$B11*($AG11*(1+Assumptions!$D$5)^(FLOOR(AT$5-1,2))+($AI11+$AH11)*(1 + Assumptions!$D$5)^(AT$5-1)),IF( AND($G11="R36M",$AB11<>0),$B11*($AG11*(1+Assumptions!$D$5)^(FLOOR(AT$5-1,3))+($AI11+$AH11)*(1 + Assumptions!$D$5)^(AT$5-1)),$AK11*(1+Assumptions!$D$5)^(AT$5-1))))
+B12 1
+D12 Storage: OBS Outbound Traffic (GiB)
+G12 =IF($C$3="R36M",IF($AB12<>"","R36M",IF($AA12<>"","R24M",IF($Z12<>"","R12M",Assumptions!$D$11))),IF($C$3="R24M",IF($AA12<>"","R24M",IF($Z12<>"","R12M",Assumptions!$D$11)),IF($C$3="R12M",IF($Z12<>"","R12M",Assumptions!$D$11),IF($C$3="Elastic-FT",Assumptions!$D$19,IF($C$3="Elastic-Office",Assumptions!$D$20,Assumptions!$D$11)))))
+I12 =I11
+K12 =$C$2
+L12 =$L$2
+M12 Y
+N12 =$N$2
+O12 =$N$3
+P12 =IF(AND($M12="Y",$F12>0),$F12*$O12,"")
+R12 =IF($U12="","",IF(INDEX(PriceListTable,$U12,12)>0,INDEX(PriceListTable,$U12,12),""))
+S12 =IF($U12="","",IF(INDEX(PriceListTable,$U12,13)>0,INDEX(PriceListTable,$U12,13),""))
+U12 =IF(OR($D12="",$K12=""),"",MATCH(1,INDEX((PriceListDescs=$D12)*(PriceListRegions=$K12),0),0))
+V12 =IF(OR($D12="",$L12="",$K12=""),"",MATCH(1,INDEX((PriceListDescs="Storage: EVS " & $L12)*(PriceListRegions=$K12),0),0))
+W12 =IF(OR($D12="",$L12="",$K12="",$N12<>"STD"),"",INDEX(PriceListTable, $U12, 36))
+X12 =IF($U12="","",INDEX(PriceListTable, $U12, 9))
+Y12 =IF($U12="","",INDEX(PriceListTable, $U12, 10))
+Z12 =IF($U12="","",IF(INDEX(PriceListTable,$U12,29)>0,INDEX(PriceListTable,$U12,29),""))
+AA12 =IF($U12="","",IF(INDEX(PriceListTable,$U12,30)>0,INDEX(PriceListTable,$U12,30),""))
+AB12 =IF($U12="","",IF(INDEX(PriceListTable,$U12,31)>0,INDEX(PriceListTable,$U12,31),""))
+AC12 =IF($U12="","",IF(LEFT($Y12,1)="h",IF(ISNUMBER($G12),$G12,Assumptions!$D$11),1)*$B12)
+AD12 =IF($V12="","",INDEX(PriceListTable,$V12,9))
+AE12 =IF($W12="","",INDEX(PriceListTable,$W12,9))
+AG12 =IF($U12="",0,IF(AND($Z12<>"",$G12="R12M"),$Z12,IF(AND($AA12<>"",$G12="R24M"),$AA12,IF(AND($AB12<>"",$G12="R36M"),$AB12,IF(LEFT($Y12,1)="h",IF(ISNUMBER($G12),$G12,Assumptions!$D$11)*$X12,$X12)))))
+AH12 =IFERROR(IF($F12="",0,$F12*$AD12*IF(AND($M12="N",ISNUMBER($G12)),$G12/Assumptions!$D$19,1)),0)
+AI12 =IFERROR(IF(OR($P12="",$P12=0),0,$P12*$AE12),0)
+AJ12 =IFERROR($AG12+$AH12+$AI12,0)
+AK12 =$B12*$AJ12
+AN12 =IF($Y12=T_ONE_TIME,$AK12,0)
+AO12 =IF($Y12=T_ONE_TIME,0,IF( AND($G12="R24M",$AA12<>0),$B12*($AG12*(1+Assumptions!$D$5)^(FLOOR(AO$5-1,2))+($AI12+$AH12)*(1 + Assumptions!$D$5)^(AO$5-1)),IF( AND($G12="R36M",$AB12<>0),$B12*($AG12*(1+Assumptions!$D$5)^(FLOOR(AO$5-1,3))+($AI12+$AH12)*(1 + Assumptions!$D$5)^(AO$5-1)),$AK12*(1+Assumptions!$D$5)^(AO$5-1))))
+AP12 =IF($Y12=T_ONE_TIME,0,IF( AND($G12="R24M",$AA12<>0),$B12*($AG12*(1+Assumptions!$D$5)^(FLOOR(AP$5-1,2))+($AI12+$AH12)*(1 + Assumptions!$D$5)^(AP$5-1)),IF( AND($G12="R36M",$AB12<>0),$B12*($AG12*(1+Assumptions!$D$5)^(FLOOR(AP$5-1,3))+($AI12+$AH12)*(1 + Assumptions!$D$5)^(AP$5-1)),$AK12*(1+Assumptions!$D$5)^(AP$5-1))))
+AQ12 =IF($Y12=T_ONE_TIME,0,IF( AND($G12="R24M",$AA12<>0),$B12*($AG12*(1+Assumptions!$D$5)^(FLOOR(AQ$5-1,2))+($AI12+$AH12)*(1 + Assumptions!$D$5)^(AQ$5-1)),IF( AND($G12="R36M",$AB12<>0),$B12*($AG12*(1+Assumptions!$D$5)^(FLOOR(AQ$5-1,3))+($AI12+$AH12)*(1 + Assumptions!$D$5)^(AQ$5-1)),$AK12*(1+Assumptions!$D$5)^(AQ$5-1))))
+AR12 =IF($Y12=T_ONE_TIME,0,IF( AND($G12="R24M",$AA12<>0),$B12*($AG12*(1+Assumptions!$D$5)^(FLOOR(AR$5-1,2))+($AI12+$AH12)*(1 + Assumptions!$D$5)^(AR$5-1)),IF( AND($G12="R36M",$AB12<>0),$B12*($AG12*(1+Assumptions!$D$5)^(FLOOR(AR$5-1,3))+($AI12+$AH12)*(1 + Assumptions!$D$5)^(AR$5-1)),$AK12*(1+Assumptions!$D$5)^(AR$5-1))))
+AS12 =IF($Y12=T_ONE_TIME,0,IF( AND($G12="R24M",$AA12<>0),$B12*($AG12*(1+Assumptions!$D$5)^(FLOOR(AS$5-1,2))+($AI12+$AH12)*(1 + Assumptions!$D$5)^(AS$5-1)),IF( AND($G12="R36M",$AB12<>0),$B12*($AG12*(1+Assumptions!$D$5)^(FLOOR(AS$5-1,3))+($AI12+$AH12)*(1 + Assumptions!$D$5)^(AS$5-1)),$AK12*(1+Assumptions!$D$5)^(AS$5-1))))
+AT12 =IF($Y12=T_ONE_TIME,0,IF( AND($G12="R24M",$AA12<>0),$B12*($AG12*(1+Assumptions!$D$5)^(FLOOR(AT$5-1,2))+($AI12+$AH12)*(1 + Assumptions!$D$5)^(AT$5-1)),IF( AND($G12="R36M",$AB12<>0),$B12*($AG12*(1+Assumptions!$D$5)^(FLOOR(AT$5-1,3))+($AI12+$AH12)*(1 + Assumptions!$D$5)^(AT$5-1)),$AK12*(1+Assumptions!$D$5)^(AT$5-1))))
+B13 ="Total "&IFERROR(IF($I13="","N/A",$I13),"N/A")
+I13 =I10
+AK13 =SUMIFS($AK:$AK,$Y:$Y,"<>"&T_ONE_TIME,$B:$B,"<>"&$B13,$I:$I,"="&$I13)
+AN13 =SUMIFS(AN:AN,$B:$B,"<>"&$B13,$I:$I,"="&$I13)
+AO13 =SUMIFS(AO:AO,$B:$B,"<>"&$B13,$I:$I,"="&$I13)
+AP13 =SUMIFS(AP:AP,$B:$B,"<>"&$B13,$I:$I,"="&$I13)
+AQ13 =SUMIFS(AQ:AQ,$B:$B,"<>"&$B13,$I:$I,"="&$I13)
+AR13 =SUMIFS(AR:AR,$B:$B,"<>"&$B13,$I:$I,"="&$I13)
+AS13 =SUMIFS(AS:AS,$B:$B,"<>"&$B13,$I:$I,"="&$I13)
+AT13 =SUMIFS(AT:AT,$B:$B,"<>"&$B13,$I:$I,"="&$I13)
+## _BOMTemplate
+A1 Cloud _BOMTemplate
+K1 EVS
+M1 Backup
+AN1 Future Price Forecast (Adjusted for inflation)
+B2 Region:
+C2 =Assumptions!$D$7
+D2 Set-up:
+E2 =SUMIFS($AK:$AK,$Y:$Y,"="&T_ONE_TIME)
+F2 =SUMIFS($AK:$AK,$Y:$Y,"="&T_ONE_TIME)
+K2 Class:
+L2 =Assumptions!$D$8
+M2 Class:
+N2 =Assumptions!$D$9
+B3 Pricing:
+C3 =Assumptions!$D$10
+D3 Monthly Total:
+E3 =SUMIFS($AK:$AK,$Y:$Y,"<>"&T_ONE_TIME,$B:$B,"<>Total *")
+F3 =SUMIFS($AK:$AK,$Y:$Y,"<>"&T_ONE_TIME,$B:$B,"<>Total *")
+M3 Factor:
+N3 =Assumptions!$D$17
+AN4 Years: ➜
+B5 Qty
+C5 Function
+D5 Description
+F5 Storage (GiB)
+G5 H/R
+I5 Group
+K5 Region
+L5 EVS Class
+M5 Persist?
+N5 Backup?
+O5 Backup Factor
+P5 Backup (GiB)
+R5 vCPU
+S5 vRAM (GiB)
+U5 Row Idx
+V5 EVS Idx
+W5 Backup Idx
+X5 PayG
+Y5 Unit
+Z5 R12M
+AA5 R24M
+AB5 R36M
+AC5 QxH
+AD5 EVS €/GiB
+AE5 Backup €/GiB
+AG5 Price
+AH5 EVS price
+AI5 Backup Price
+AJ5 Sub-Total per Unit
+AK5 Sub-Total
+AN5 Set-up
+AO5 1
+AP5 =AO5+1
+AQ5 =AP5+1
+AR5 =AQ5+1
+AS5 =AR5+1
+AT5 =AS5+1
+B6 General
+I6 gen
+G7 =IF($C$3="R36M",IF($AB7<>"","R36M",IF($AA7<>"","R24M",IF($Z7<>"","R12M",Assumptions!$D$11))),IF($C$3="R24M",IF($AA7<>"","R24M",IF($Z7<>"","R12M",Assumptions!$D$11)),IF($C$3="R12M",IF($Z7<>"","R12M",Assumptions!$D$11),IF($C$3="Elastic-FT",Assumptions!$D$19,IF($C$3="Elastic-Office",Assumptions!$D$20,Assumptions!$D$11)))))
+I7 =I6
+K7 =$C$2
+L7 =$L$2
+M7 Y
+N7 =$N$2
+O7 =$N$3
+P7 =IF(AND($M7="Y",$F7>0),$F7*$O7,"")
+R7 =IF($U7="","",IF(INDEX(PriceListTable,$U7,12)>0,INDEX(PriceListTable,$U7,12),""))
+S7 =IF($U7="","",IF(INDEX(PriceListTable,$U7,13)>0,INDEX(PriceListTable,$U7,13),""))
+U7 =IF(OR($D7="",$K7=""),"",MATCH(1,INDEX((PriceListDescs=$D7)*(PriceListRegions=$K7),0),0))
+V7 =IF(OR($D7="",$L7="",$K7=""),"",MATCH(1,INDEX((PriceListDescs="Storage: EVS " & $L7)*(PriceListRegions=$K7),0),0))
+W7 =IF(OR($D7="",$L7="",$K7="",$N7<>"STD"),"",INDEX(PriceListTable, $U7, 36))
+X7 =IF($U7="","",INDEX(PriceListTable, $U7, 9))
+Y7 =IF($U7="","",INDEX(PriceListTable, $U7, 10))
+Z7 =IF($U7="","",IF(INDEX(PriceListTable,$U7,29)>0,INDEX(PriceListTable,$U7,29),""))
+AA7 =IF($U7="","",IF(INDEX(PriceListTable,$U7,30)>0,INDEX(PriceListTable,$U7,30),""))
+AB7 =IF($U7="","",IF(INDEX(PriceListTable,$U7,31)>0,INDEX(PriceListTable,$U7,31),""))
+AC7 =IF($U7="","",IF(LEFT($Y7,1)="h",IF(ISNUMBER($G7),$G7,Assumptions!$D$11),1)*$B7)
+AD7 =IF($V7="","",INDEX(PriceListTable,$V7,9))
+AE7 =IF($W7="","",INDEX(PriceListTable,$W7,9))
+AG7 =IF($U7="",0,IF(AND($Z7<>"",$G7="R12M"),$Z7,IF(AND($AA7<>"",$G7="R24M"),$AA7,IF(AND($AB7<>"",$G7="R36M"),$AB7,IF(LEFT($Y7,1)="h",IF(ISNUMBER($G7),$G7,Assumptions!$D$11)*$X7,$X7)))))
+AH7 =IFERROR(IF($F7="",0,$F7*$AD7*IF(AND($M7="N",ISNUMBER($G7)),$G7/Assumptions!$D$19,1)),0)
+AI7 =IFERROR(IF(OR($P7="",$P7=0),0,$P7*$AE7),0)
+AJ7 =IFERROR($AG7+$AH7+$AI7,0)
+AK7 =$B7*$AJ7
+AN7 =IF($Y7=T_ONE_TIME,$AK7,0)
+AO7 =IF($Y7=T_ONE_TIME,0,IF( AND($G7="R24M",$AA7<>0),$B7*($AG7*(1+Assumptions!$D$5)^(FLOOR(AO$5-1,2))+($AI7+$AH7)*(1 + Assumptions!$D$5)^(AO$5-1)),IF( AND($G7="R36M",$AB7<>0),$B7*($AG7*(1+Assumptions!$D$5)^(FLOOR(AO$5-1,3))+($AI7+$AH7)*(1 + Assumptions!$D$5)^(AO$5-1)),$AK7*(1+Assumptions!$D$5)^(AO$5-1))))
+AP7 =IF($Y7=T_ONE_TIME,0,IF( AND($G7="R24M",$AA7<>0),$B7*($AG7*(1+Assumptions!$D$5)^(FLOOR(AP$5-1,2))+($AI7+$AH7)*(1 + Assumptions!$D$5)^(AP$5-1)),IF( AND($G7="R36M",$AB7<>0),$B7*($AG7*(1+Assumptions!$D$5)^(FLOOR(AP$5-1,3))+($AI7+$AH7)*(1 + Assumptions!$D$5)^(AP$5-1)),$AK7*(1+Assumptions!$D$5)^(AP$5-1))))
+AQ7 =IF($Y7=T_ONE_TIME,0,IF( AND($G7="R24M",$AA7<>0),$B7*($AG7*(1+Assumptions!$D$5)^(FLOOR(AQ$5-1,2))+($AI7+$AH7)*(1 + Assumptions!$D$5)^(AQ$5-1)),IF( AND($G7="R36M",$AB7<>0),$B7*($AG7*(1+Assumptions!$D$5)^(FLOOR(AQ$5-1,3))+($AI7+$AH7)*(1 + Assumptions!$D$5)^(AQ$5-1)),$AK7*(1+Assumptions!$D$5)^(AQ$5-1))))
+AR7 =IF($Y7=T_ONE_TIME,0,IF( AND($G7="R24M",$AA7<>0),$B7*($AG7*(1+Assumptions!$D$5)^(FLOOR(AR$5-1,2))+($AI7+$AH7)*(1 + Assumptions!$D$5)^(AR$5-1)),IF( AND($G7="R36M",$AB7<>0),$B7*($AG7*(1+Assumptions!$D$5)^(FLOOR(AR$5-1,3))+($AI7+$AH7)*(1 + Assumptions!$D$5)^(AR$5-1)),$AK7*(1+Assumptions!$D$5)^(AR$5-1))))
+AS7 =IF($Y7=T_ONE_TIME,0,IF( AND($G7="R24M",$AA7<>0),$B7*($AG7*(1+Assumptions!$D$5)^(FLOOR(AS$5-1,2))+($AI7+$AH7)*(1 + Assumptions!$D$5)^(AS$5-1)),IF( AND($G7="R36M",$AB7<>0),$B7*($AG7*(1+Assumptions!$D$5)^(FLOOR(AS$5-1,3))+($AI7+$AH7)*(1 + Assumptions!$D$5)^(AS$5-1)),$AK7*(1+Assumptions!$D$5)^(AS$5-1))))
+AT7 =IF($Y7=T_ONE_TIME,0,IF( AND($G7="R24M",$AA7<>0),$B7*($AG7*(1+Assumptions!$D$5)^(FLOOR(AT$5-1,2))+($AI7+$AH7)*(1 + Assumptions!$D$5)^(AT$5-1)),IF( AND($G7="R36M",$AB7<>0),$B7*($AG7*(1+Assumptions!$D$5)^(FLOOR(AT$5-1,3))+($AI7+$AH7)*(1 + Assumptions!$D$5)^(AT$5-1)),$AK7*(1+Assumptions!$D$5)^(AT$5-1))))
+G8 =IF($C$3="R36M",IF($AB8<>"","R36M",IF($AA8<>"","R24M",IF($Z8<>"","R12M",Assumptions!$D$11))),IF($C$3="R24M",IF($AA8<>"","R24M",IF($Z8<>"","R12M",Assumptions!$D$11)),IF($C$3="R12M",IF($Z8<>"","R12M",Assumptions!$D$11),IF($C$3="Elastic-FT",Assumptions!$D$19,IF($C$3="Elastic-Office",Assumptions!$D$20,Assumptions!$D$11)))))
+I8 =I7
+K8 =$C$2
+L8 =$L$2
+M8 Y
+N8 =$N$2
+O8 =$N$3
+P8 =IF(AND($M8="Y",$F8>0),$F8*$O8,"")
+R8 =IF($U8="","",IF(INDEX(PriceListTable,$U8,12)>0,INDEX(PriceListTable,$U8,12),""))
+S8 =IF($U8="","",IF(INDEX(PriceListTable,$U8,13)>0,INDEX(PriceListTable,$U8,13),""))
+U8 =IF(OR($D8="",$K8=""),"",MATCH(1,INDEX((PriceListDescs=$D8)*(PriceListRegions=$K8),0),0))
+V8 =IF(OR($D8="",$L8="",$K8=""),"",MATCH(1,INDEX((PriceListDescs="Storage: EVS " & $L8)*(PriceListRegions=$K8),0),0))
+W8 =IF(OR($D8="",$L8="",$K8="",$N8<>"STD"),"",INDEX(PriceListTable, $U8, 36))
+X8 =IF($U8="","",INDEX(PriceListTable, $U8, 9))
+Y8 =IF($U8="","",INDEX(PriceListTable, $U8, 10))
+Z8 =IF($U8="","",IF(INDEX(PriceListTable,$U8,29)>0,INDEX(PriceListTable,$U8,29),""))
+AA8 =IF($U8="","",IF(INDEX(PriceListTable,$U8,30)>0,INDEX(PriceListTable,$U8,30),""))
+AB8 =IF($U8="","",IF(INDEX(PriceListTable,$U8,31)>0,INDEX(PriceListTable,$U8,31),""))
+AC8 =IF($U8="","",IF(LEFT($Y8,1)="h",IF(ISNUMBER($G8),$G8,Assumptions!$D$11),1)*$B8)
+AD8 =IF($V8="","",INDEX(PriceListTable,$V8,9))
+AE8 =IF($W8="","",INDEX(PriceListTable,$W8,9))
+AG8 =IF($U8="",0,IF(AND($Z8<>"",$G8="R12M"),$Z8,IF(AND($AA8<>"",$G8="R24M"),$AA8,IF(AND($AB8<>"",$G8="R36M"),$AB8,IF(LEFT($Y8,1)="h",IF(ISNUMBER($G8),$G8,Assumptions!$D$11)*$X8,$X8)))))
+AH8 =IFERROR(IF($F8="",0,$F8*$AD8*IF(AND($M8="N",ISNUMBER($G8)),$G8/Assumptions!$D$19,1)),0)
+AI8 =IFERROR(IF(OR($P8="",$P8=0),0,$P8*$AE8),0)
+AJ8 =IFERROR($AG8+$AH8+$AI8,0)
+AK8 =$B8*$AJ8
+AN8 =IF($Y8=T_ONE_TIME,$AK8,0)
+AO8 =IF($Y8=T_ONE_TIME,0,IF( AND($G8="R24M",$AA8<>0),$B8*($AG8*(1+Assumptions!$D$5)^(FLOOR(AO$5-1,2))+($AI8+$AH8)*(1 + Assumptions!$D$5)^(AO$5-1)),IF( AND($G8="R36M",$AB8<>0),$B8*($AG8*(1+Assumptions!$D$5)^(FLOOR(AO$5-1,3))+($AI8+$AH8)*(1 + Assumptions!$D$5)^(AO$5-1)),$AK8*(1+Assumptions!$D$5)^(AO$5-1))))
+AP8 =IF($Y8=T_ONE_TIME,0,IF( AND($G8="R24M",$AA8<>0),$B8*($AG8*(1+Assumptions!$D$5)^(FLOOR(AP$5-1,2))+($AI8+$AH8)*(1 + Assumptions!$D$5)^(AP$5-1)),IF( AND($G8="R36M",$AB8<>0),$B8*($AG8*(1+Assumptions!$D$5)^(FLOOR(AP$5-1,3))+($AI8+$AH8)*(1 + Assumptions!$D$5)^(AP$5-1)),$AK8*(1+Assumptions!$D$5)^(AP$5-1))))
+AQ8 =IF($Y8=T_ONE_TIME,0,IF( AND($G8="R24M",$AA8<>0),$B8*($AG8*(1+Assumptions!$D$5)^(FLOOR(AQ$5-1,2))+($AI8+$AH8)*(1 + Assumptions!$D$5)^(AQ$5-1)),IF( AND($G8="R36M",$AB8<>0),$B8*($AG8*(1+Assumptions!$D$5)^(FLOOR(AQ$5-1,3))+($AI8+$AH8)*(1 + Assumptions!$D$5)^(AQ$5-1)),$AK8*(1+Assumptions!$D$5)^(AQ$5-1))))
+AR8 =IF($Y8=T_ONE_TIME,0,IF( AND($G8="R24M",$AA8<>0),$B8*($AG8*(1+Assumptions!$D$5)^(FLOOR(AR$5-1,2))+($AI8+$AH8)*(1 + Assumptions!$D$5)^(AR$5-1)),IF( AND($G8="R36M",$AB8<>0),$B8*($AG8*(1+Assumptions!$D$5)^(FLOOR(AR$5-1,3))+($AI8+$AH8)*(1 + Assumptions!$D$5)^(AR$5-1)),$AK8*(1+Assumptions!$D$5)^(AR$5-1))))
+AS8 =IF($Y8=T_ONE_TIME,0,IF( AND($G8="R24M",$AA8<>0),$B8*($AG8*(1+Assumptions!$D$5)^(FLOOR(AS$5-1,2))+($AI8+$AH8)*(1 + Assumptions!$D$5)^(AS$5-1)),IF( AND($G8="R36M",$AB8<>0),$B8*($AG8*(1+Assumptions!$D$5)^(FLOOR(AS$5-1,3))+($AI8+$AH8)*(1 + Assumptions!$D$5)^(AS$5-1)),$AK8*(1+Assumptions!$D$5)^(AS$5-1))))
+AT8 =IF($Y8=T_ONE_TIME,0,IF( AND($G8="R24M",$AA8<>0),$B8*($AG8*(1+Assumptions!$D$5)^(FLOOR(AT$5-1,2))+($AI8+$AH8)*(1 + Assumptions!$D$5)^(AT$5-1)),IF( AND($G8="R36M",$AB8<>0),$B8*($AG8*(1+Assumptions!$D$5)^(FLOOR(AT$5-1,3))+($AI8+$AH8)*(1 + Assumptions!$D$5)^(AT$5-1)),$AK8*(1+Assumptions!$D$5)^(AT$5-1))))
+G9 =IF($C$3="R36M",IF($AB9<>"","R36M",IF($AA9<>"","R24M",IF($Z9<>"","R12M",Assumptions!$D$11))),IF($C$3="R24M",IF($AA9<>"","R24M",IF($Z9<>"","R12M",Assumptions!$D$11)),IF($C$3="R12M",IF($Z9<>"","R12M",Assumptions!$D$11),IF($C$3="Elastic-FT",Assumptions!$D$19,IF($C$3="Elastic-Office",Assumptions!$D$20,Assumptions!$D$11)))))
+I9 =I8
+K9 =$C$2
+L9 =$L$2
+M9 Y
+N9 =$N$2
+O9 =$N$3
+P9 =IF(AND($M9="Y",$F9>0),$F9*$O9,"")
+R9 =IF($U9="","",IF(INDEX(PriceListTable,$U9,12)>0,INDEX(PriceListTable,$U9,12),""))
+S9 =IF($U9="","",IF(INDEX(PriceListTable,$U9,13)>0,INDEX(PriceListTable,$U9,13),""))
+U9 =IF(OR($D9="",$K9=""),"",MATCH(1,INDEX((PriceListDescs=$D9)*(PriceListRegions=$K9),0),0))
+V9 =IF(OR($D9="",$L9="",$K9=""),"",MATCH(1,INDEX((PriceListDescs="Storage: EVS " & $L9)*(PriceListRegions=$K9),0),0))
+W9 =IF(OR($D9="",$L9="",$K9="",$N9<>"STD"),"",INDEX(PriceListTable, $U9, 36))
+X9 =IF($U9="","",INDEX(PriceListTable, $U9, 9))
+Y9 =IF($U9="","",INDEX(PriceListTable, $U9, 10))
+Z9 =IF($U9="","",IF(INDEX(PriceListTable,$U9,29)>0,INDEX(PriceListTable,$U9,29),""))
+AA9 =IF($U9="","",IF(INDEX(PriceListTable,$U9,30)>0,INDEX(PriceListTable,$U9,30),""))
+AB9 =IF($U9="","",IF(INDEX(PriceListTable,$U9,31)>0,INDEX(PriceListTable,$U9,31),""))
+AC9 =IF($U9="","",IF(LEFT($Y9,1)="h",IF(ISNUMBER($G9),$G9,Assumptions!$D$11),1)*$B9)
+AD9 =IF($V9="","",INDEX(PriceListTable,$V9,9))
+AE9 =IF($W9="","",INDEX(PriceListTable,$W9,9))
+AG9 =IF($U9="",0,IF(AND($Z9<>"",$G9="R12M"),$Z9,IF(AND($AA9<>"",$G9="R24M"),$AA9,IF(AND($AB9<>"",$G9="R36M"),$AB9,IF(LEFT($Y9,1)="h",IF(ISNUMBER($G9),$G9,Assumptions!$D$11)*$X9,$X9)))))
+AH9 =IFERROR(IF($F9="",0,$F9*$AD9*IF(AND($M9="N",ISNUMBER($G9)),$G9/Assumptions!$D$19,1)),0)
+AI9 =IFERROR(IF(OR($P9="",$P9=0),0,$P9*$AE9),0)
+AJ9 =IFERROR($AG9+$AH9+$AI9,0)
+AK9 =$B9*$AJ9
+AN9 =IF($Y9=T_ONE_TIME,$AK9,0)
+AO9 =IF($Y9=T_ONE_TIME,0,IF( AND($G9="R24M",$AA9<>0),$B9*($AG9*(1+Assumptions!$D$5)^(FLOOR(AO$5-1,2))+($AI9+$AH9)*(1 + Assumptions!$D$5)^(AO$5-1)),IF( AND($G9="R36M",$AB9<>0),$B9*($AG9*(1+Assumptions!$D$5)^(FLOOR(AO$5-1,3))+($AI9+$AH9)*(1 + Assumptions!$D$5)^(AO$5-1)),$AK9*(1+Assumptions!$D$5)^(AO$5-1))))
+AP9 =IF($Y9=T_ONE_TIME,0,IF( AND($G9="R24M",$AA9<>0),$B9*($AG9*(1+Assumptions!$D$5)^(FLOOR(AP$5-1,2))+($AI9+$AH9)*(1 + Assumptions!$D$5)^(AP$5-1)),IF( AND($G9="R36M",$AB9<>0),$B9*($AG9*(1+Assumptions!$D$5)^(FLOOR(AP$5-1,3))+($AI9+$AH9)*(1 + Assumptions!$D$5)^(AP$5-1)),$AK9*(1+Assumptions!$D$5)^(AP$5-1))))
+AQ9 =IF($Y9=T_ONE_TIME,0,IF( AND($G9="R24M",$AA9<>0),$B9*($AG9*(1+Assumptions!$D$5)^(FLOOR(AQ$5-1,2))+($AI9+$AH9)*(1 + Assumptions!$D$5)^(AQ$5-1)),IF( AND($G9="R36M",$AB9<>0),$B9*($AG9*(1+Assumptions!$D$5)^(FLOOR(AQ$5-1,3))+($AI9+$AH9)*(1 + Assumptions!$D$5)^(AQ$5-1)),$AK9*(1+Assumptions!$D$5)^(AQ$5-1))))
+AR9 =IF($Y9=T_ONE_TIME,0,IF( AND($G9="R24M",$AA9<>0),$B9*($AG9*(1+Assumptions!$D$5)^(FLOOR(AR$5-1,2))+($AI9+$AH9)*(1 + Assumptions!$D$5)^(AR$5-1)),IF( AND($G9="R36M",$AB9<>0),$B9*($AG9*(1+Assumptions!$D$5)^(FLOOR(AR$5-1,3))+($AI9+$AH9)*(1 + Assumptions!$D$5)^(AR$5-1)),$AK9*(1+Assumptions!$D$5)^(AR$5-1))))
+AS9 =IF($Y9=T_ONE_TIME,0,IF( AND($G9="R24M",$AA9<>0),$B9*($AG9*(1+Assumptions!$D$5)^(FLOOR(AS$5-1,2))+($AI9+$AH9)*(1 + Assumptions!$D$5)^(AS$5-1)),IF( AND($G9="R36M",$AB9<>0),$B9*($AG9*(1+Assumptions!$D$5)^(FLOOR(AS$5-1,3))+($AI9+$AH9)*(1 + Assumptions!$D$5)^(AS$5-1)),$AK9*(1+Assumptions!$D$5)^(AS$5-1))))
+AT9 =IF($Y9=T_ONE_TIME,0,IF( AND($G9="R24M",$AA9<>0),$B9*($AG9*(1+Assumptions!$D$5)^(FLOOR(AT$5-1,2))+($AI9+$AH9)*(1 + Assumptions!$D$5)^(AT$5-1)),IF( AND($G9="R36M",$AB9<>0),$B9*($AG9*(1+Assumptions!$D$5)^(FLOOR(AT$5-1,3))+($AI9+$AH9)*(1 + Assumptions!$D$5)^(AT$5-1)),$AK9*(1+Assumptions!$D$5)^(AT$5-1))))
+G10 =IF($C$3="R36M",IF($AB10<>"","R36M",IF($AA10<>"","R24M",IF($Z10<>"","R12M",Assumptions!$D$11))),IF($C$3="R24M",IF($AA10<>"","R24M",IF($Z10<>"","R12M",Assumptions!$D$11)),IF($C$3="R12M",IF($Z10<>"","R12M",Assumptions!$D$11),IF($C$3="Elastic-FT",Assumptions!$D$19,IF($C$3="Elastic-Office",Assumptions!$D$20,Assumptions!$D$11)))))
+I10 =I9
+K10 =$C$2
+L10 =$L$2
+M10 Y
+N10 =$N$2
+O10 =$N$3
+P10 =IF(AND($M10="Y",$F10>0),$F10*$O10,"")
+R10 =IF($U10="","",IF(INDEX(PriceListTable,$U10,12)>0,INDEX(PriceListTable,$U10,12),""))
+S10 =IF($U10="","",IF(INDEX(PriceListTable,$U10,13)>0,INDEX(PriceListTable,$U10,13),""))
+U10 =IF(OR($D10="",$K10=""),"",MATCH(1,INDEX((PriceListDescs=$D10)*(PriceListRegions=$K10),0),0))
+V10 =IF(OR($D10="",$L10="",$K10=""),"",MATCH(1,INDEX((PriceListDescs="Storage: EVS " & $L10)*(PriceListRegions=$K10),0),0))
+W10 =IF(OR($D10="",$L10="",$K10="",$N10<>"STD"),"",INDEX(PriceListTable, $U10, 36))
+X10 =IF($U10="","",INDEX(PriceListTable, $U10, 9))
+Y10 =IF($U10="","",INDEX(PriceListTable, $U10, 10))
+Z10 =IF($U10="","",IF(INDEX(PriceListTable,$U10,29)>0,INDEX(PriceListTable,$U10,29),""))
+AA10 =IF($U10="","",IF(INDEX(PriceListTable,$U10,30)>0,INDEX(PriceListTable,$U10,30),""))
+AB10 =IF($U10="","",IF(INDEX(PriceListTable,$U10,31)>0,INDEX(PriceListTable,$U10,31),""))
+AC10 =IF($U10="","",IF(LEFT($Y10,1)="h",IF(ISNUMBER($G10),$G10,Assumptions!$D$11),1)*$B10)
+AD10 =IF($V10="","",INDEX(PriceListTable,$V10,9))
+AE10 =IF($W10="","",INDEX(PriceListTable,$W10,9))
+AG10 =IF($U10="",0,IF(AND($Z10<>"",$G10="R12M"),$Z10,IF(AND($AA10<>"",$G10="R24M"),$AA10,IF(AND($AB10<>"",$G10="R36M"),$AB10,IF(LEFT($Y10,1)="h",IF(ISNUMBER($G10),$G10,Assumptions!$D$11)*$X10,$X10)))))
+AH10 =IFERROR(IF($F10="",0,$F10*$AD10*IF(AND($M10="N",ISNUMBER($G10)),$G10/Assumptions!$D$19,1)),0)
+AI10 =IFERROR(IF(OR($P10="",$P10=0),0,$P10*$AE10),0)
+AJ10 =IFERROR($AG10+$AH10+$AI10,0)
+AK10 =$B10*$AJ10
+AN10 =IF($Y10=T_ONE_TIME,$AK10,0)
+AO10 =IF($Y10=T_ONE_TIME,0,IF( AND($G10="R24M",$AA10<>0),$B10*($AG10*(1+Assumptions!$D$5)^(FLOOR(AO$5-1,2))+($AI10+$AH10)*(1 + Assumptions!$D$5)^(AO$5-1)),IF( AND($G10="R36M",$AB10<>0),$B10*($AG10*(1+Assumptions!$D$5)^(FLOOR(AO$5-1,3))+($AI10+$AH10)*(1 + Assumptions!$D$5)^(AO$5-1)),$AK10*(1+Assumptions!$D$5)^(AO$5-1))))
+AP10 =IF($Y10=T_ONE_TIME,0,IF( AND($G10="R24M",$AA10<>0),$B10*($AG10*(1+Assumptions!$D$5)^(FLOOR(AP$5-1,2))+($AI10+$AH10)*(1 + Assumptions!$D$5)^(AP$5-1)),IF( AND($G10="R36M",$AB10<>0),$B10*($AG10*(1+Assumptions!$D$5)^(FLOOR(AP$5-1,3))+($AI10+$AH10)*(1 + Assumptions!$D$5)^(AP$5-1)),$AK10*(1+Assumptions!$D$5)^(AP$5-1))))
+AQ10 =IF($Y10=T_ONE_TIME,0,IF( AND($G10="R24M",$AA10<>0),$B10*($AG10*(1+Assumptions!$D$5)^(FLOOR(AQ$5-1,2))+($AI10+$AH10)*(1 + Assumptions!$D$5)^(AQ$5-1)),IF( AND($G10="R36M",$AB10<>0),$B10*($AG10*(1+Assumptions!$D$5)^(FLOOR(AQ$5-1,3))+($AI10+$AH10)*(1 + Assumptions!$D$5)^(AQ$5-1)),$AK10*(1+Assumptions!$D$5)^(AQ$5-1))))
+AR10 =IF($Y10=T_ONE_TIME,0,IF( AND($G10="R24M",$AA10<>0),$B10*($AG10*(1+Assumptions!$D$5)^(FLOOR(AR$5-1,2))+($AI10+$AH10)*(1 + Assumptions!$D$5)^(AR$5-1)),IF( AND($G10="R36M",$AB10<>0),$B10*($AG10*(1+Assumptions!$D$5)^(FLOOR(AR$5-1,3))+($AI10+$AH10)*(1 + Assumptions!$D$5)^(AR$5-1)),$AK10*(1+Assumptions!$D$5)^(AR$5-1))))
+AS10 =IF($Y10=T_ONE_TIME,0,IF( AND($G10="R24M",$AA10<>0),$B10*($AG10*(1+Assumptions!$D$5)^(FLOOR(AS$5-1,2))+($AI10+$AH10)*(1 + Assumptions!$D$5)^(AS$5-1)),IF( AND($G10="R36M",$AB10<>0),$B10*($AG10*(1+Assumptions!$D$5)^(FLOOR(AS$5-1,3))+($AI10+$AH10)*(1 + Assumptions!$D$5)^(AS$5-1)),$AK10*(1+Assumptions!$D$5)^(AS$5-1))))
+AT10 =IF($Y10=T_ONE_TIME,0,IF( AND($G10="R24M",$AA10<>0),$B10*($AG10*(1+Assumptions!$D$5)^(FLOOR(AT$5-1,2))+($AI10+$AH10)*(1 + Assumptions!$D$5)^(AT$5-1)),IF( AND($G10="R36M",$AB10<>0),$B10*($AG10*(1+Assumptions!$D$5)^(FLOOR(AT$5-1,3))+($AI10+$AH10)*(1 + Assumptions!$D$5)^(AT$5-1)),$AK10*(1+Assumptions!$D$5)^(AT$5-1))))
+G11 =IF($C$3="R36M",IF($AB11<>"","R36M",IF($AA11<>"","R24M",IF($Z11<>"","R12M",Assumptions!$D$11))),IF($C$3="R24M",IF($AA11<>"","R24M",IF($Z11<>"","R12M",Assumptions!$D$11)),IF($C$3="R12M",IF($Z11<>"","R12M",Assumptions!$D$11),IF($C$3="Elastic-FT",Assumptions!$D$19,IF($C$3="Elastic-Office",Assumptions!$D$20,Assumptions!$D$11)))))
+I11 =I10
+K11 =$C$2
+L11 =$L$2
+M11 Y
+N11 =$N$2
+O11 =$N$3
+P11 =IF(AND($M11="Y",$F11>0),$F11*$O11,"")
+R11 =IF($U11="","",IF(INDEX(PriceListTable,$U11,12)>0,INDEX(PriceListTable,$U11,12),""))
+S11 =IF($U11="","",IF(INDEX(PriceListTable,$U11,13)>0,INDEX(PriceListTable,$U11,13),""))
+U11 =IF(OR($D11="",$K11=""),"",MATCH(1,INDEX((PriceListDescs=$D11)*(PriceListRegions=$K11),0),0))
+V11 =IF(OR($D11="",$L11="",$K11=""),"",MATCH(1,INDEX((PriceListDescs="Storage: EVS " & $L11)*(PriceListRegions=$K11),0),0))
+W11 =IF(OR($D11="",$L11="",$K11="",$N11<>"STD"),"",INDEX(PriceListTable, $U11, 36))
+X11 =IF($U11="","",INDEX(PriceListTable, $U11, 9))
+Y11 =IF($U11="","",INDEX(PriceListTable, $U11, 10))
+Z11 =IF($U11="","",IF(INDEX(PriceListTable,$U11,29)>0,INDEX(PriceListTable,$U11,29),""))
+AA11 =IF($U11="","",IF(INDEX(PriceListTable,$U11,30)>0,INDEX(PriceListTable,$U11,30),""))
+AB11 =IF($U11="","",IF(INDEX(PriceListTable,$U11,31)>0,INDEX(PriceListTable,$U11,31),""))
+AC11 =IF($U11="","",IF(LEFT($Y11,1)="h",IF(ISNUMBER($G11),$G11,Assumptions!$D$11),1)*$B11)
+AD11 =IF($V11="","",INDEX(PriceListTable,$V11,9))
+AE11 =IF($W11="","",INDEX(PriceListTable,$W11,9))
+AG11 =IF($U11="",0,IF(AND($Z11<>"",$G11="R12M"),$Z11,IF(AND($AA11<>"",$G11="R24M"),$AA11,IF(AND($AB11<>"",$G11="R36M"),$AB11,IF(LEFT($Y11,1)="h",IF(ISNUMBER($G11),$G11,Assumptions!$D$11)*$X11,$X11)))))
+AH11 =IFERROR(IF($F11="",0,$F11*$AD11*IF(AND($M11="N",ISNUMBER($G11)),$G11/Assumptions!$D$19,1)),0)
+AI11 =IFERROR(IF(OR($P11="",$P11=0),0,$P11*$AE11),0)
+AJ11 =IFERROR($AG11+$AH11+$AI11,0)
+AK11 =$B11*$AJ11
+AN11 =IF($Y11=T_ONE_TIME,$AK11,0)
+AO11 =IF($Y11=T_ONE_TIME,0,IF( AND($G11="R24M",$AA11<>0),$B11*($AG11*(1+Assumptions!$D$5)^(FLOOR(AO$5-1,2))+($AI11+$AH11)*(1 + Assumptions!$D$5)^(AO$5-1)),IF( AND($G11="R36M",$AB11<>0),$B11*($AG11*(1+Assumptions!$D$5)^(FLOOR(AO$5-1,3))+($AI11+$AH11)*(1 + Assumptions!$D$5)^(AO$5-1)),$AK11*(1+Assumptions!$D$5)^(AO$5-1))))
+AP11 =IF($Y11=T_ONE_TIME,0,IF( AND($G11="R24M",$AA11<>0),$B11*($AG11*(1+Assumptions!$D$5)^(FLOOR(AP$5-1,2))+($AI11+$AH11)*(1 + Assumptions!$D$5)^(AP$5-1)),IF( AND($G11="R36M",$AB11<>0),$B11*($AG11*(1+Assumptions!$D$5)^(FLOOR(AP$5-1,3))+($AI11+$AH11)*(1 + Assumptions!$D$5)^(AP$5-1)),$AK11*(1+Assumptions!$D$5)^(AP$5-1))))
+AQ11 =IF($Y11=T_ONE_TIME,0,IF( AND($G11="R24M",$AA11<>0),$B11*($AG11*(1+Assumptions!$D$5)^(FLOOR(AQ$5-1,2))+($AI11+$AH11)*(1 + Assumptions!$D$5)^(AQ$5-1)),IF( AND($G11="R36M",$AB11<>0),$B11*($AG11*(1+Assumptions!$D$5)^(FLOOR(AQ$5-1,3))+($AI11+$AH11)*(1 + Assumptions!$D$5)^(AQ$5-1)),$AK11*(1+Assumptions!$D$5)^(AQ$5-1))))
+AR11 =IF($Y11=T_ONE_TIME,0,IF( AND($G11="R24M",$AA11<>0),$B11*($AG11*(1+Assumptions!$D$5)^(FLOOR(AR$5-1,2))+($AI11+$AH11)*(1 + Assumptions!$D$5)^(AR$5-1)),IF( AND($G11="R36M",$AB11<>0),$B11*($AG11*(1+Assumptions!$D$5)^(FLOOR(AR$5-1,3))+($AI11+$AH11)*(1 + Assumptions!$D$5)^(AR$5-1)),$AK11*(1+Assumptions!$D$5)^(AR$5-1))))
+AS11 =IF($Y11=T_ONE_TIME,0,IF( AND($G11="R24M",$AA11<>0),$B11*($AG11*(1+Assumptions!$D$5)^(FLOOR(AS$5-1,2))+($AI11+$AH11)*(1 + Assumptions!$D$5)^(AS$5-1)),IF( AND($G11="R36M",$AB11<>0),$B11*($AG11*(1+Assumptions!$D$5)^(FLOOR(AS$5-1,3))+($AI11+$AH11)*(1 + Assumptions!$D$5)^(AS$5-1)),$AK11*(1+Assumptions!$D$5)^(AS$5-1))))
+AT11 =IF($Y11=T_ONE_TIME,0,IF( AND($G11="R24M",$AA11<>0),$B11*($AG11*(1+Assumptions!$D$5)^(FLOOR(AT$5-1,2))+($AI11+$AH11)*(1 + Assumptions!$D$5)^(AT$5-1)),IF( AND($G11="R36M",$AB11<>0),$B11*($AG11*(1+Assumptions!$D$5)^(FLOOR(AT$5-1,3))+($AI11+$AH11)*(1 + Assumptions!$D$5)^(AT$5-1)),$AK11*(1+Assumptions!$D$5)^(AT$5-1))))
+G12 =IF($C$3="R36M",IF($AB12<>"","R36M",IF($AA12<>"","R24M",IF($Z12<>"","R12M",Assumptions!$D$11))),IF($C$3="R24M",IF($AA12<>"","R24M",IF($Z12<>"","R12M",Assumptions!$D$11)),IF($C$3="R12M",IF($Z12<>"","R12M",Assumptions!$D$11),IF($C$3="Elastic-FT",Assumptions!$D$19,IF($C$3="Elastic-Office",Assumptions!$D$20,Assumptions!$D$11)))))
+I12 =I11
+K12 =$C$2
+L12 =$L$2
+M12 Y
+N12 =$N$2
+O12 =$N$3
+P12 =IF(AND($M12="Y",$F12>0),$F12*$O12,"")
+R12 =IF($U12="","",IF(INDEX(PriceListTable,$U12,12)>0,INDEX(PriceListTable,$U12,12),""))
+S12 =IF($U12="","",IF(INDEX(PriceListTable,$U12,13)>0,INDEX(PriceListTable,$U12,13),""))
+U12 =IF(OR($D12="",$K12=""),"",MATCH(1,INDEX((PriceListDescs=$D12)*(PriceListRegions=$K12),0),0))
+V12 =IF(OR($D12="",$L12="",$K12=""),"",MATCH(1,INDEX((PriceListDescs="Storage: EVS " & $L12)*(PriceListRegions=$K12),0),0))
+W12 =IF(OR($D12="",$L12="",$K12="",$N12<>"STD"),"",INDEX(PriceListTable, $U12, 36))
+X12 =IF($U12="","",INDEX(PriceListTable, $U12, 9))
+Y12 =IF($U12="","",INDEX(PriceListTable, $U12, 10))
+Z12 =IF($U12="","",IF(INDEX(PriceListTable,$U12,29)>0,INDEX(PriceListTable,$U12,29),""))
+AA12 =IF($U12="","",IF(INDEX(PriceListTable,$U12,30)>0,INDEX(PriceListTable,$U12,30),""))
+AB12 =IF($U12="","",IF(INDEX(PriceListTable,$U12,31)>0,INDEX(PriceListTable,$U12,31),""))
+AC12 =IF($U12="","",IF(LEFT($Y12,1)="h",IF(ISNUMBER($G12),$G12,Assumptions!$D$11),1)*$B12)
+AD12 =IF($V12="","",INDEX(PriceListTable,$V12,9))
+AE12 =IF($W12="","",INDEX(PriceListTable,$W12,9))
+AG12 =IF($U12="",0,IF(AND($Z12<>"",$G12="R12M"),$Z12,IF(AND($AA12<>"",$G12="R24M"),$AA12,IF(AND($AB12<>"",$G12="R36M"),$AB12,IF(LEFT($Y12,1)="h",IF(ISNUMBER($G12),$G12,Assumptions!$D$11)*$X12,$X12)))))
+AH12 =IFERROR(IF($F12="",0,$F12*$AD12*IF(AND($M12="N",ISNUMBER($G12)),$G12/Assumptions!$D$19,1)),0)
+AI12 =IFERROR(IF(OR($P12="",$P12=0),0,$P12*$AE12),0)
+AJ12 =IFERROR($AG12+$AH12+$AI12,0)
+AK12 =$B12*$AJ12
+AN12 =IF($Y12=T_ONE_TIME,$AK12,0)
+AO12 =IF($Y12=T_ONE_TIME,0,IF( AND($G12="R24M",$AA12<>0),$B12*($AG12*(1+Assumptions!$D$5)^(FLOOR(AO$5-1,2))+($AI12+$AH12)*(1 + Assumptions!$D$5)^(AO$5-1)),IF( AND($G12="R36M",$AB12<>0),$B12*($AG12*(1+Assumptions!$D$5)^(FLOOR(AO$5-1,3))+($AI12+$AH12)*(1 + Assumptions!$D$5)^(AO$5-1)),$AK12*(1+Assumptions!$D$5)^(AO$5-1))))
+AP12 =IF($Y12=T_ONE_TIME,0,IF( AND($G12="R24M",$AA12<>0),$B12*($AG12*(1+Assumptions!$D$5)^(FLOOR(AP$5-1,2))+($AI12+$AH12)*(1 + Assumptions!$D$5)^(AP$5-1)),IF( AND($G12="R36M",$AB12<>0),$B12*($AG12*(1+Assumptions!$D$5)^(FLOOR(AP$5-1,3))+($AI12+$AH12)*(1 + Assumptions!$D$5)^(AP$5-1)),$AK12*(1+Assumptions!$D$5)^(AP$5-1))))
+AQ12 =IF($Y12=T_ONE_TIME,0,IF( AND($G12="R24M",$AA12<>0),$B12*($AG12*(1+Assumptions!$D$5)^(FLOOR(AQ$5-1,2))+($AI12+$AH12)*(1 + Assumptions!$D$5)^(AQ$5-1)),IF( AND($G12="R36M",$AB12<>0),$B12*($AG12*(1+Assumptions!$D$5)^(FLOOR(AQ$5-1,3))+($AI12+$AH12)*(1 + Assumptions!$D$5)^(AQ$5-1)),$AK12*(1+Assumptions!$D$5)^(AQ$5-1))))
+AR12 =IF($Y12=T_ONE_TIME,0,IF( AND($G12="R24M",$AA12<>0),$B12*($AG12*(1+Assumptions!$D$5)^(FLOOR(AR$5-1,2))+($AI12+$AH12)*(1 + Assumptions!$D$5)^(AR$5-1)),IF( AND($G12="R36M",$AB12<>0),$B12*($AG12*(1+Assumptions!$D$5)^(FLOOR(AR$5-1,3))+($AI12+$AH12)*(1 + Assumptions!$D$5)^(AR$5-1)),$AK12*(1+Assumptions!$D$5)^(AR$5-1))))
+AS12 =IF($Y12=T_ONE_TIME,0,IF( AND($G12="R24M",$AA12<>0),$B12*($AG12*(1+Assumptions!$D$5)^(FLOOR(AS$5-1,2))+($AI12+$AH12)*(1 + Assumptions!$D$5)^(AS$5-1)),IF( AND($G12="R36M",$AB12<>0),$B12*($AG12*(1+Assumptions!$D$5)^(FLOOR(AS$5-1,3))+($AI12+$AH12)*(1 + Assumptions!$D$5)^(AS$5-1)),$AK12*(1+Assumptions!$D$5)^(AS$5-1))))
+AT12 =IF($Y12=T_ONE_TIME,0,IF( AND($G12="R24M",$AA12<>0),$B12*($AG12*(1+Assumptions!$D$5)^(FLOOR(AT$5-1,2))+($AI12+$AH12)*(1 + Assumptions!$D$5)^(AT$5-1)),IF( AND($G12="R36M",$AB12<>0),$B12*($AG12*(1+Assumptions!$D$5)^(FLOOR(AT$5-1,3))+($AI12+$AH12)*(1 + Assumptions!$D$5)^(AT$5-1)),$AK12*(1+Assumptions!$D$5)^(AT$5-1))))
+G13 =IF($C$3="R36M",IF($AB13<>"","R36M",IF($AA13<>"","R24M",IF($Z13<>"","R12M",Assumptions!$D$11))),IF($C$3="R24M",IF($AA13<>"","R24M",IF($Z13<>"","R12M",Assumptions!$D$11)),IF($C$3="R12M",IF($Z13<>"","R12M",Assumptions!$D$11),IF($C$3="Elastic-FT",Assumptions!$D$19,IF($C$3="Elastic-Office",Assumptions!$D$20,Assumptions!$D$11)))))
+I13 =I12
+K13 =$C$2
+L13 =$L$2
+M13 Y
+N13 =$N$2
+O13 =$N$3
+P13 =IF(AND($M13="Y",$F13>0),$F13*$O13,"")
+R13 =IF($U13="","",IF(INDEX(PriceListTable,$U13,12)>0,INDEX(PriceListTable,$U13,12),""))
+S13 =IF($U13="","",IF(INDEX(PriceListTable,$U13,13)>0,INDEX(PriceListTable,$U13,13),""))
+U13 =IF(OR($D13="",$K13=""),"",MATCH(1,INDEX((PriceListDescs=$D13)*(PriceListRegions=$K13),0),0))
+V13 =IF(OR($D13="",$L13="",$K13=""),"",MATCH(1,INDEX((PriceListDescs="Storage: EVS " & $L13)*(PriceListRegions=$K13),0),0))
+W13 =IF(OR($D13="",$L13="",$K13="",$N13<>"STD"),"",INDEX(PriceListTable, $U13, 36))
+X13 =IF($U13="","",INDEX(PriceListTable, $U13, 9))
+Y13 =IF($U13="","",INDEX(PriceListTable, $U13, 10))
+Z13 =IF($U13="","",IF(INDEX(PriceListTable,$U13,29)>0,INDEX(PriceListTable,$U13,29),""))
+AA13 =IF($U13="","",IF(INDEX(PriceListTable,$U13,30)>0,INDEX(PriceListTable,$U13,30),""))
+AB13 =IF($U13="","",IF(INDEX(PriceListTable,$U13,31)>0,INDEX(PriceListTable,$U13,31),""))
+AC13 =IF($U13="","",IF(LEFT($Y13,1)="h",IF(ISNUMBER($G13),$G13,Assumptions!$D$11),1)*$B13)
+AD13 =IF($V13="","",INDEX(PriceListTable,$V13,9))
+AE13 =IF($W13="","",INDEX(PriceListTable,$W13,9))
+AG13 =IF($U13="",0,IF(AND($Z13<>"",$G13="R12M"),$Z13,IF(AND($AA13<>"",$G13="R24M"),$AA13,IF(AND($AB13<>"",$G13="R36M"),$AB13,IF(LEFT($Y13,1)="h",IF(ISNUMBER($G13),$G13,Assumptions!$D$11)*$X13,$X13)))))
+AH13 =IFERROR(IF($F13="",0,$F13*$AD13*IF(AND($M13="N",ISNUMBER($G13)),$G13/Assumptions!$D$19,1)),0)
+AI13 =IFERROR(IF(OR($P13="",$P13=0),0,$P13*$AE13),0)
+AJ13 =IFERROR($AG13+$AH13+$AI13,0)
+AK13 =$B13*$AJ13
+AN13 =IF($Y13=T_ONE_TIME,$AK13,0)
+AO13 =IF($Y13=T_ONE_TIME,0,IF( AND($G13="R24M",$AA13<>0),$B13*($AG13*(1+Assumptions!$D$5)^(FLOOR(AO$5-1,2))+($AI13+$AH13)*(1 + Assumptions!$D$5)^(AO$5-1)),IF( AND($G13="R36M",$AB13<>0),$B13*($AG13*(1+Assumptions!$D$5)^(FLOOR(AO$5-1,3))+($AI13+$AH13)*(1 + Assumptions!$D$5)^(AO$5-1)),$AK13*(1+Assumptions!$D$5)^(AO$5-1))))
+AP13 =IF($Y13=T_ONE_TIME,0,IF( AND($G13="R24M",$AA13<>0),$B13*($AG13*(1+Assumptions!$D$5)^(FLOOR(AP$5-1,2))+($AI13+$AH13)*(1 + Assumptions!$D$5)^(AP$5-1)),IF( AND($G13="R36M",$AB13<>0),$B13*($AG13*(1+Assumptions!$D$5)^(FLOOR(AP$5-1,3))+($AI13+$AH13)*(1 + Assumptions!$D$5)^(AP$5-1)),$AK13*(1+Assumptions!$D$5)^(AP$5-1))))
+AQ13 =IF($Y13=T_ONE_TIME,0,IF( AND($G13="R24M",$AA13<>0),$B13*($AG13*(1+Assumptions!$D$5)^(FLOOR(AQ$5-1,2))+($AI13+$AH13)*(1 + Assumptions!$D$5)^(AQ$5-1)),IF( AND($G13="R36M",$AB13<>0),$B13*($AG13*(1+Assumptions!$D$5)^(FLOOR(AQ$5-1,3))+($AI13+$AH13)*(1 + Assumptions!$D$5)^(AQ$5-1)),$AK13*(1+Assumptions!$D$5)^(AQ$5-1))))
+AR13 =IF($Y13=T_ONE_TIME,0,IF( AND($G13="R24M",$AA13<>0),$B13*($AG13*(1+Assumptions!$D$5)^(FLOOR(AR$5-1,2))+($AI13+$AH13)*(1 + Assumptions!$D$5)^(AR$5-1)),IF( AND($G13="R36M",$AB13<>0),$B13*($AG13*(1+Assumptions!$D$5)^(FLOOR(AR$5-1,3))+($AI13+$AH13)*(1 + Assumptions!$D$5)^(AR$5-1)),$AK13*(1+Assumptions!$D$5)^(AR$5-1))))
+AS13 =IF($Y13=T_ONE_TIME,0,IF( AND($G13="R24M",$AA13<>0),$B13*($AG13*(1+Assumptions!$D$5)^(FLOOR(AS$5-1,2))+($AI13+$AH13)*(1 + Assumptions!$D$5)^(AS$5-1)),IF( AND($G13="R36M",$AB13<>0),$B13*($AG13*(1+Assumptions!$D$5)^(FLOOR(AS$5-1,3))+($AI13+$AH13)*(1 + Assumptions!$D$5)^(AS$5-1)),$AK13*(1+Assumptions!$D$5)^(AS$5-1))))
+AT13 =IF($Y13=T_ONE_TIME,0,IF( AND($G13="R24M",$AA13<>0),$B13*($AG13*(1+Assumptions!$D$5)^(FLOOR(AT$5-1,2))+($AI13+$AH13)*(1 + Assumptions!$D$5)^(AT$5-1)),IF( AND($G13="R36M",$AB13<>0),$B13*($AG13*(1+Assumptions!$D$5)^(FLOOR(AT$5-1,3))+($AI13+$AH13)*(1 + Assumptions!$D$5)^(AT$5-1)),$AK13*(1+Assumptions!$D$5)^(AT$5-1))))
+G14 =IF($C$3="R36M",IF($AB14<>"","R36M",IF($AA14<>"","R24M",IF($Z14<>"","R12M",Assumptions!$D$11))),IF($C$3="R24M",IF($AA14<>"","R24M",IF($Z14<>"","R12M",Assumptions!$D$11)),IF($C$3="R12M",IF($Z14<>"","R12M",Assumptions!$D$11),IF($C$3="Elastic-FT",Assumptions!$D$19,IF($C$3="Elastic-Office",Assumptions!$D$20,Assumptions!$D$11)))))
+I14 =I13
+K14 =$C$2
+L14 =$L$2
+M14 Y
+N14 =$N$2
+O14 =$N$3
+P14 =IF(AND($M14="Y",$F14>0),$F14*$O14,"")
+R14 =IF($U14="","",IF(INDEX(PriceListTable,$U14,12)>0,INDEX(PriceListTable,$U14,12),""))
+S14 =IF($U14="","",IF(INDEX(PriceListTable,$U14,13)>0,INDEX(PriceListTable,$U14,13),""))
+U14 =IF(OR($D14="",$K14=""),"",MATCH(1,INDEX((PriceListDescs=$D14)*(PriceListRegions=$K14),0),0))
+V14 =IF(OR($D14="",$L14="",$K14=""),"",MATCH(1,INDEX((PriceListDescs="Storage: EVS " & $L14)*(PriceListRegions=$K14),0),0))
+W14 =IF(OR($D14="",$L14="",$K14="",$N14<>"STD"),"",INDEX(PriceListTable, $U14, 36))
+X14 =IF($U14="","",INDEX(PriceListTable, $U14, 9))
+Y14 =IF($U14="","",INDEX(PriceListTable, $U14, 10))
+Z14 =IF($U14="","",IF(INDEX(PriceListTable,$U14,29)>0,INDEX(PriceListTable,$U14,29),""))
+AA14 =IF($U14="","",IF(INDEX(PriceListTable,$U14,30)>0,INDEX(PriceListTable,$U14,30),""))
+AB14 =IF($U14="","",IF(INDEX(PriceListTable,$U14,31)>0,INDEX(PriceListTable,$U14,31),""))
+AC14 =IF($U14="","",IF(LEFT($Y14,1)="h",IF(ISNUMBER($G14),$G14,Assumptions!$D$11),1)*$B14)
+AD14 =IF($V14="","",INDEX(PriceListTable,$V14,9))
+AE14 =IF($W14="","",INDEX(PriceListTable,$W14,9))
+AG14 =IF($U14="",0,IF(AND($Z14<>"",$G14="R12M"),$Z14,IF(AND($AA14<>"",$G14="R24M"),$AA14,IF(AND($AB14<>"",$G14="R36M"),$AB14,IF(LEFT($Y14,1)="h",IF(ISNUMBER($G14),$G14,Assumptions!$D$11)*$X14,$X14)))))
+AH14 =IFERROR(IF($F14="",0,$F14*$AD14*IF(AND($M14="N",ISNUMBER($G14)),$G14/Assumptions!$D$19,1)),0)
+AI14 =IFERROR(IF(OR($P14="",$P14=0),0,$P14*$AE14),0)
+AJ14 =IFERROR($AG14+$AH14+$AI14,0)
+AK14 =$B14*$AJ14
+AN14 =IF($Y14=T_ONE_TIME,$AK14,0)
+AO14 =IF($Y14=T_ONE_TIME,0,IF( AND($G14="R24M",$AA14<>0),$B14*($AG14*(1+Assumptions!$D$5)^(FLOOR(AO$5-1,2))+($AI14+$AH14)*(1 + Assumptions!$D$5)^(AO$5-1)),IF( AND($G14="R36M",$AB14<>0),$B14*($AG14*(1+Assumptions!$D$5)^(FLOOR(AO$5-1,3))+($AI14+$AH14)*(1 + Assumptions!$D$5)^(AO$5-1)),$AK14*(1+Assumptions!$D$5)^(AO$5-1))))
+AP14 =IF($Y14=T_ONE_TIME,0,IF( AND($G14="R24M",$AA14<>0),$B14*($AG14*(1+Assumptions!$D$5)^(FLOOR(AP$5-1,2))+($AI14+$AH14)*(1 + Assumptions!$D$5)^(AP$5-1)),IF( AND($G14="R36M",$AB14<>0),$B14*($AG14*(1+Assumptions!$D$5)^(FLOOR(AP$5-1,3))+($AI14+$AH14)*(1 + Assumptions!$D$5)^(AP$5-1)),$AK14*(1+Assumptions!$D$5)^(AP$5-1))))
+AQ14 =IF($Y14=T_ONE_TIME,0,IF( AND($G14="R24M",$AA14<>0),$B14*($AG14*(1+Assumptions!$D$5)^(FLOOR(AQ$5-1,2))+($AI14+$AH14)*(1 + Assumptions!$D$5)^(AQ$5-1)),IF( AND($G14="R36M",$AB14<>0),$B14*($AG14*(1+Assumptions!$D$5)^(FLOOR(AQ$5-1,3))+($AI14+$AH14)*(1 + Assumptions!$D$5)^(AQ$5-1)),$AK14*(1+Assumptions!$D$5)^(AQ$5-1))))
+AR14 =IF($Y14=T_ONE_TIME,0,IF( AND($G14="R24M",$AA14<>0),$B14*($AG14*(1+Assumptions!$D$5)^(FLOOR(AR$5-1,2))+($AI14+$AH14)*(1 + Assumptions!$D$5)^(AR$5-1)),IF( AND($G14="R36M",$AB14<>0),$B14*($AG14*(1+Assumptions!$D$5)^(FLOOR(AR$5-1,3))+($AI14+$AH14)*(1 + Assumptions!$D$5)^(AR$5-1)),$AK14*(1+Assumptions!$D$5)^(AR$5-1))))
+AS14 =IF($Y14=T_ONE_TIME,0,IF( AND($G14="R24M",$AA14<>0),$B14*($AG14*(1+Assumptions!$D$5)^(FLOOR(AS$5-1,2))+($AI14+$AH14)*(1 + Assumptions!$D$5)^(AS$5-1)),IF( AND($G14="R36M",$AB14<>0),$B14*($AG14*(1+Assumptions!$D$5)^(FLOOR(AS$5-1,3))+($AI14+$AH14)*(1 + Assumptions!$D$5)^(AS$5-1)),$AK14*(1+Assumptions!$D$5)^(AS$5-1))))
+AT14 =IF($Y14=T_ONE_TIME,0,IF( AND($G14="R24M",$AA14<>0),$B14*($AG14*(1+Assumptions!$D$5)^(FLOOR(AT$5-1,2))+($AI14+$AH14)*(1 + Assumptions!$D$5)^(AT$5-1)),IF( AND($G14="R36M",$AB14<>0),$B14*($AG14*(1+Assumptions!$D$5)^(FLOOR(AT$5-1,3))+($AI14+$AH14)*(1 + Assumptions!$D$5)^(AT$5-1)),$AK14*(1+Assumptions!$D$5)^(AT$5-1))))
+G15 =IF($C$3="R36M",IF($AB15<>"","R36M",IF($AA15<>"","R24M",IF($Z15<>"","R12M",Assumptions!$D$11))),IF($C$3="R24M",IF($AA15<>"","R24M",IF($Z15<>"","R12M",Assumptions!$D$11)),IF($C$3="R12M",IF($Z15<>"","R12M",Assumptions!$D$11),IF($C$3="Elastic-FT",Assumptions!$D$19,IF($C$3="Elastic-Office",Assumptions!$D$20,Assumptions!$D$11)))))
+I15 =I14
+K15 =$C$2
+L15 =$L$2
+M15 Y
+N15 =$N$2
+O15 =$N$3
+P15 =IF(AND($M15="Y",$F15>0),$F15*$O15,"")
+R15 =IF($U15="","",IF(INDEX(PriceListTable,$U15,12)>0,INDEX(PriceListTable,$U15,12),""))
+S15 =IF($U15="","",IF(INDEX(PriceListTable,$U15,13)>0,INDEX(PriceListTable,$U15,13),""))
+U15 =IF(OR($D15="",$K15=""),"",MATCH(1,INDEX((PriceListDescs=$D15)*(PriceListRegions=$K15),0),0))
+V15 =IF(OR($D15="",$L15="",$K15=""),"",MATCH(1,INDEX((PriceListDescs="Storage: EVS " & $L15)*(PriceListRegions=$K15),0),0))
+W15 =IF(OR($D15="",$L15="",$K15="",$N15<>"STD"),"",INDEX(PriceListTable, $U15, 36))
+X15 =IF($U15="","",INDEX(PriceListTable, $U15, 9))
+Y15 =IF($U15="","",INDEX(PriceListTable, $U15, 10))
+Z15 =IF($U15="","",IF(INDEX(PriceListTable,$U15,29)>0,INDEX(PriceListTable,$U15,29),""))
+AA15 =IF($U15="","",IF(INDEX(PriceListTable,$U15,30)>0,INDEX(PriceListTable,$U15,30),""))
+AB15 =IF($U15="","",IF(INDEX(PriceListTable,$U15,31)>0,INDEX(PriceListTable,$U15,31),""))
+AC15 =IF($U15="","",IF(LEFT($Y15,1)="h",IF(ISNUMBER($G15),$G15,Assumptions!$D$11),1)*$B15)
+AD15 =IF($V15="","",INDEX(PriceListTable,$V15,9))
+AE15 =IF($W15="","",INDEX(PriceListTable,$W15,9))
+AG15 =IF($U15="",0,IF(AND($Z15<>"",$G15="R12M"),$Z15,IF(AND($AA15<>"",$G15="R24M"),$AA15,IF(AND($AB15<>"",$G15="R36M"),$AB15,IF(LEFT($Y15,1)="h",IF(ISNUMBER($G15),$G15,Assumptions!$D$11)*$X15,$X15)))))
+AH15 =IFERROR(IF($F15="",0,$F15*$AD15*IF(AND($M15="N",ISNUMBER($G15)),$G15/Assumptions!$D$19,1)),0)
+AI15 =IFERROR(IF(OR($P15="",$P15=0),0,$P15*$AE15),0)
+AJ15 =IFERROR($AG15+$AH15+$AI15,0)
+AK15 =$B15*$AJ15
+AN15 =IF($Y15=T_ONE_TIME,$AK15,0)
+AO15 =IF($Y15=T_ONE_TIME,0,IF( AND($G15="R24M",$AA15<>0),$B15*($AG15*(1+Assumptions!$D$5)^(FLOOR(AO$5-1,2))+($AI15+$AH15)*(1 + Assumptions!$D$5)^(AO$5-1)),IF( AND($G15="R36M",$AB15<>0),$B15*($AG15*(1+Assumptions!$D$5)^(FLOOR(AO$5-1,3))+($AI15+$AH15)*(1 + Assumptions!$D$5)^(AO$5-1)),$AK15*(1+Assumptions!$D$5)^(AO$5-1))))
+AP15 =IF($Y15=T_ONE_TIME,0,IF( AND($G15="R24M",$AA15<>0),$B15*($AG15*(1+Assumptions!$D$5)^(FLOOR(AP$5-1,2))+($AI15+$AH15)*(1 + Assumptions!$D$5)^(AP$5-1)),IF( AND($G15="R36M",$AB15<>0),$B15*($AG15*(1+Assumptions!$D$5)^(FLOOR(AP$5-1,3))+($AI15+$AH15)*(1 + Assumptions!$D$5)^(AP$5-1)),$AK15*(1+Assumptions!$D$5)^(AP$5-1))))
+AQ15 =IF($Y15=T_ONE_TIME,0,IF( AND($G15="R24M",$AA15<>0),$B15*($AG15*(1+Assumptions!$D$5)^(FLOOR(AQ$5-1,2))+($AI15+$AH15)*(1 + Assumptions!$D$5)^(AQ$5-1)),IF( AND($G15="R36M",$AB15<>0),$B15*($AG15*(1+Assumptions!$D$5)^(FLOOR(AQ$5-1,3))+($AI15+$AH15)*(1 + Assumptions!$D$5)^(AQ$5-1)),$AK15*(1+Assumptions!$D$5)^(AQ$5-1))))
+AR15 =IF($Y15=T_ONE_TIME,0,IF( AND($G15="R24M",$AA15<>0),$B15*($AG15*(1+Assumptions!$D$5)^(FLOOR(AR$5-1,2))+($AI15+$AH15)*(1 + Assumptions!$D$5)^(AR$5-1)),IF( AND($G15="R36M",$AB15<>0),$B15*($AG15*(1+Assumptions!$D$5)^(FLOOR(AR$5-1,3))+($AI15+$AH15)*(1 + Assumptions!$D$5)^(AR$5-1)),$AK15*(1+Assumptions!$D$5)^(AR$5-1))))
+AS15 =IF($Y15=T_ONE_TIME,0,IF( AND($G15="R24M",$AA15<>0),$B15*($AG15*(1+Assumptions!$D$5)^(FLOOR(AS$5-1,2))+($AI15+$AH15)*(1 + Assumptions!$D$5)^(AS$5-1)),IF( AND($G15="R36M",$AB15<>0),$B15*($AG15*(1+Assumptions!$D$5)^(FLOOR(AS$5-1,3))+($AI15+$AH15)*(1 + Assumptions!$D$5)^(AS$5-1)),$AK15*(1+Assumptions!$D$5)^(AS$5-1))))
+AT15 =IF($Y15=T_ONE_TIME,0,IF( AND($G15="R24M",$AA15<>0),$B15*($AG15*(1+Assumptions!$D$5)^(FLOOR(AT$5-1,2))+($AI15+$AH15)*(1 + Assumptions!$D$5)^(AT$5-1)),IF( AND($G15="R36M",$AB15<>0),$B15*($AG15*(1+Assumptions!$D$5)^(FLOOR(AT$5-1,3))+($AI15+$AH15)*(1 + Assumptions!$D$5)^(AT$5-1)),$AK15*(1+Assumptions!$D$5)^(AT$5-1))))
+G16 =IF($C$3="R36M",IF($AB16<>"","R36M",IF($AA16<>"","R24M",IF($Z16<>"","R12M",Assumptions!$D$11))),IF($C$3="R24M",IF($AA16<>"","R24M",IF($Z16<>"","R12M",Assumptions!$D$11)),IF($C$3="R12M",IF($Z16<>"","R12M",Assumptions!$D$11),IF($C$3="Elastic-FT",Assumptions!$D$19,IF($C$3="Elastic-Office",Assumptions!$D$20,Assumptions!$D$11)))))
+I16 =I15
+K16 =$C$2
+L16 =$L$2
+M16 Y
+N16 =$N$2
+O16 =$N$3
+P16 =IF(AND($M16="Y",$F16>0),$F16*$O16,"")
+R16 =IF($U16="","",IF(INDEX(PriceListTable,$U16,12)>0,INDEX(PriceListTable,$U16,12),""))
+S16 =IF($U16="","",IF(INDEX(PriceListTable,$U16,13)>0,INDEX(PriceListTable,$U16,13),""))
+U16 =IF(OR($D16="",$K16=""),"",MATCH(1,INDEX((PriceListDescs=$D16)*(PriceListRegions=$K16),0),0))
+V16 =IF(OR($D16="",$L16="",$K16=""),"",MATCH(1,INDEX((PriceListDescs="Storage: EVS " & $L16)*(PriceListRegions=$K16),0),0))
+W16 =IF(OR($D16="",$L16="",$K16="",$N16<>"STD"),"",INDEX(PriceListTable, $U16, 36))
+X16 =IF($U16="","",INDEX(PriceListTable, $U16, 9))
+Y16 =IF($U16="","",INDEX(PriceListTable, $U16, 10))
+Z16 =IF($U16="","",IF(INDEX(PriceListTable,$U16,29)>0,INDEX(PriceListTable,$U16,29),""))
+AA16 =IF($U16="","",IF(INDEX(PriceListTable,$U16,30)>0,INDEX(PriceListTable,$U16,30),""))
+AB16 =IF($U16="","",IF(INDEX(PriceListTable,$U16,31)>0,INDEX(PriceListTable,$U16,31),""))
+AC16 =IF($U16="","",IF(LEFT($Y16,1)="h",IF(ISNUMBER($G16),$G16,Assumptions!$D$11),1)*$B16)
+AD16 =IF($V16="","",INDEX(PriceListTable,$V16,9))
+AE16 =IF($W16="","",INDEX(PriceListTable,$W16,9))
+AG16 =IF($U16="",0,IF(AND($Z16<>"",$G16="R12M"),$Z16,IF(AND($AA16<>"",$G16="R24M"),$AA16,IF(AND($AB16<>"",$G16="R36M"),$AB16,IF(LEFT($Y16,1)="h",IF(ISNUMBER($G16),$G16,Assumptions!$D$11)*$X16,$X16)))))
+AH16 =IFERROR(IF($F16="",0,$F16*$AD16*IF(AND($M16="N",ISNUMBER($G16)),$G16/Assumptions!$D$19,1)),0)
+AI16 =IFERROR(IF(OR($P16="",$P16=0),0,$P16*$AE16),0)
+AJ16 =IFERROR($AG16+$AH16+$AI16,0)
+AK16 =$B16*$AJ16
+AN16 =IF($Y16=T_ONE_TIME,$AK16,0)
+AO16 =IF($Y16=T_ONE_TIME,0,IF( AND($G16="R24M",$AA16<>0),$B16*($AG16*(1+Assumptions!$D$5)^(FLOOR(AO$5-1,2))+($AI16+$AH16)*(1 + Assumptions!$D$5)^(AO$5-1)),IF( AND($G16="R36M",$AB16<>0),$B16*($AG16*(1+Assumptions!$D$5)^(FLOOR(AO$5-1,3))+($AI16+$AH16)*(1 + Assumptions!$D$5)^(AO$5-1)),$AK16*(1+Assumptions!$D$5)^(AO$5-1))))
+AP16 =IF($Y16=T_ONE_TIME,0,IF( AND($G16="R24M",$AA16<>0),$B16*($AG16*(1+Assumptions!$D$5)^(FLOOR(AP$5-1,2))+($AI16+$AH16)*(1 + Assumptions!$D$5)^(AP$5-1)),IF( AND($G16="R36M",$AB16<>0),$B16*($AG16*(1+Assumptions!$D$5)^(FLOOR(AP$5-1,3))+($AI16+$AH16)*(1 + Assumptions!$D$5)^(AP$5-1)),$AK16*(1+Assumptions!$D$5)^(AP$5-1))))
+AQ16 =IF($Y16=T_ONE_TIME,0,IF( AND($G16="R24M",$AA16<>0),$B16*($AG16*(1+Assumptions!$D$5)^(FLOOR(AQ$5-1,2))+($AI16+$AH16)*(1 + Assumptions!$D$5)^(AQ$5-1)),IF( AND($G16="R36M",$AB16<>0),$B16*($AG16*(1+Assumptions!$D$5)^(FLOOR(AQ$5-1,3))+($AI16+$AH16)*(1 + Assumptions!$D$5)^(AQ$5-1)),$AK16*(1+Assumptions!$D$5)^(AQ$5-1))))
+AR16 =IF($Y16=T_ONE_TIME,0,IF( AND($G16="R24M",$AA16<>0),$B16*($AG16*(1+Assumptions!$D$5)^(FLOOR(AR$5-1,2))+($AI16+$AH16)*(1 + Assumptions!$D$5)^(AR$5-1)),IF( AND($G16="R36M",$AB16<>0),$B16*($AG16*(1+Assumptions!$D$5)^(FLOOR(AR$5-1,3))+($AI16+$AH16)*(1 + Assumptions!$D$5)^(AR$5-1)),$AK16*(1+Assumptions!$D$5)^(AR$5-1))))
+AS16 =IF($Y16=T_ONE_TIME,0,IF( AND($G16="R24M",$AA16<>0),$B16*($AG16*(1+Assumptions!$D$5)^(FLOOR(AS$5-1,2))+($AI16+$AH16)*(1 + Assumptions!$D$5)^(AS$5-1)),IF( AND($G16="R36M",$AB16<>0),$B16*($AG16*(1+Assumptions!$D$5)^(FLOOR(AS$5-1,3))+($AI16+$AH16)*(1 + Assumptions!$D$5)^(AS$5-1)),$AK16*(1+Assumptions!$D$5)^(AS$5-1))))
+AT16 =IF($Y16=T_ONE_TIME,0,IF( AND($G16="R24M",$AA16<>0),$B16*($AG16*(1+Assumptions!$D$5)^(FLOOR(AT$5-1,2))+($AI16+$AH16)*(1 + Assumptions!$D$5)^(AT$5-1)),IF( AND($G16="R36M",$AB16<>0),$B16*($AG16*(1+Assumptions!$D$5)^(FLOOR(AT$5-1,3))+($AI16+$AH16)*(1 + Assumptions!$D$5)^(AT$5-1)),$AK16*(1+Assumptions!$D$5)^(AT$5-1))))
+G17 =IF($C$3="R36M",IF($AB17<>"","R36M",IF($AA17<>"","R24M",IF($Z17<>"","R12M",Assumptions!$D$11))),IF($C$3="R24M",IF($AA17<>"","R24M",IF($Z17<>"","R12M",Assumptions!$D$11)),IF($C$3="R12M",IF($Z17<>"","R12M",Assumptions!$D$11),IF($C$3="Elastic-FT",Assumptions!$D$19,IF($C$3="Elastic-Office",Assumptions!$D$20,Assumptions!$D$11)))))
+I17 =I16
+K17 =$C$2
+L17 =$L$2
+M17 Y
+N17 =$N$2
+O17 =$N$3
+P17 =IF(AND($M17="Y",$F17>0),$F17*$O17,"")
+R17 =IF($U17="","",IF(INDEX(PriceListTable,$U17,12)>0,INDEX(PriceListTable,$U17,12),""))
+S17 =IF($U17="","",IF(INDEX(PriceListTable,$U17,13)>0,INDEX(PriceListTable,$U17,13),""))
+U17 =IF(OR($D17="",$K17=""),"",MATCH(1,INDEX((PriceListDescs=$D17)*(PriceListRegions=$K17),0),0))
+V17 =IF(OR($D17="",$L17="",$K17=""),"",MATCH(1,INDEX((PriceListDescs="Storage: EVS " & $L17)*(PriceListRegions=$K17),0),0))
+W17 =IF(OR($D17="",$L17="",$K17="",$N17<>"STD"),"",INDEX(PriceListTable, $U17, 36))
+X17 =IF($U17="","",INDEX(PriceListTable, $U17, 9))
+Y17 =IF($U17="","",INDEX(PriceListTable, $U17, 10))
+Z17 =IF($U17="","",IF(INDEX(PriceListTable,$U17,29)>0,INDEX(PriceListTable,$U17,29),""))
+AA17 =IF($U17="","",IF(INDEX(PriceListTable,$U17,30)>0,INDEX(PriceListTable,$U17,30),""))
+AB17 =IF($U17="","",IF(INDEX(PriceListTable,$U17,31)>0,INDEX(PriceListTable,$U17,31),""))
+AC17 =IF($U17="","",IF(LEFT($Y17,1)="h",IF(ISNUMBER($G17),$G17,Assumptions!$D$11),1)*$B17)
+AD17 =IF($V17="","",INDEX(PriceListTable,$V17,9))
+AE17 =IF($W17="","",INDEX(PriceListTable,$W17,9))
+AG17 =IF($U17="",0,IF(AND($Z17<>"",$G17="R12M"),$Z17,IF(AND($AA17<>"",$G17="R24M"),$AA17,IF(AND($AB17<>"",$G17="R36M"),$AB17,IF(LEFT($Y17,1)="h",IF(ISNUMBER($G17),$G17,Assumptions!$D$11)*$X17,$X17)))))
+AH17 =IFERROR(IF($F17="",0,$F17*$AD17*IF(AND($M17="N",ISNUMBER($G17)),$G17/Assumptions!$D$19,1)),0)
+AI17 =IFERROR(IF(OR($P17="",$P17=0),0,$P17*$AE17),0)
+AJ17 =IFERROR($AG17+$AH17+$AI17,0)
+AK17 =$B17*$AJ17
+AN17 =IF($Y17=T_ONE_TIME,$AK17,0)
+AO17 =IF($Y17=T_ONE_TIME,0,IF( AND($G17="R24M",$AA17<>0),$B17*($AG17*(1+Assumptions!$D$5)^(FLOOR(AO$5-1,2))+($AI17+$AH17)*(1 + Assumptions!$D$5)^(AO$5-1)),IF( AND($G17="R36M",$AB17<>0),$B17*($AG17*(1+Assumptions!$D$5)^(FLOOR(AO$5-1,3))+($AI17+$AH17)*(1 + Assumptions!$D$5)^(AO$5-1)),$AK17*(1+Assumptions!$D$5)^(AO$5-1))))
+AP17 =IF($Y17=T_ONE_TIME,0,IF( AND($G17="R24M",$AA17<>0),$B17*($AG17*(1+Assumptions!$D$5)^(FLOOR(AP$5-1,2))+($AI17+$AH17)*(1 + Assumptions!$D$5)^(AP$5-1)),IF( AND($G17="R36M",$AB17<>0),$B17*($AG17*(1+Assumptions!$D$5)^(FLOOR(AP$5-1,3))+($AI17+$AH17)*(1 + Assumptions!$D$5)^(AP$5-1)),$AK17*(1+Assumptions!$D$5)^(AP$5-1))))
+AQ17 =IF($Y17=T_ONE_TIME,0,IF( AND($G17="R24M",$AA17<>0),$B17*($AG17*(1+Assumptions!$D$5)^(FLOOR(AQ$5-1,2))+($AI17+$AH17)*(1 + Assumptions!$D$5)^(AQ$5-1)),IF( AND($G17="R36M",$AB17<>0),$B17*($AG17*(1+Assumptions!$D$5)^(FLOOR(AQ$5-1,3))+($AI17+$AH17)*(1 + Assumptions!$D$5)^(AQ$5-1)),$AK17*(1+Assumptions!$D$5)^(AQ$5-1))))
+AR17 =IF($Y17=T_ONE_TIME,0,IF( AND($G17="R24M",$AA17<>0),$B17*($AG17*(1+Assumptions!$D$5)^(FLOOR(AR$5-1,2))+($AI17+$AH17)*(1 + Assumptions!$D$5)^(AR$5-1)),IF( AND($G17="R36M",$AB17<>0),$B17*($AG17*(1+Assumptions!$D$5)^(FLOOR(AR$5-1,3))+($AI17+$AH17)*(1 + Assumptions!$D$5)^(AR$5-1)),$AK17*(1+Assumptions!$D$5)^(AR$5-1))))
+AS17 =IF($Y17=T_ONE_TIME,0,IF( AND($G17="R24M",$AA17<>0),$B17*($AG17*(1+Assumptions!$D$5)^(FLOOR(AS$5-1,2))+($AI17+$AH17)*(1 + Assumptions!$D$5)^(AS$5-1)),IF( AND($G17="R36M",$AB17<>0),$B17*($AG17*(1+Assumptions!$D$5)^(FLOOR(AS$5-1,3))+($AI17+$AH17)*(1 + Assumptions!$D$5)^(AS$5-1)),$AK17*(1+Assumptions!$D$5)^(AS$5-1))))
+AT17 =IF($Y17=T_ONE_TIME,0,IF( AND($G17="R24M",$AA17<>0),$B17*($AG17*(1+Assumptions!$D$5)^(FLOOR(AT$5-1,2))+($AI17+$AH17)*(1 + Assumptions!$D$5)^(AT$5-1)),IF( AND($G17="R36M",$AB17<>0),$B17*($AG17*(1+Assumptions!$D$5)^(FLOOR(AT$5-1,3))+($AI17+$AH17)*(1 + Assumptions!$D$5)^(AT$5-1)),$AK17*(1+Assumptions!$D$5)^(AT$5-1))))
+G18 =IF($C$3="R36M",IF($AB18<>"","R36M",IF($AA18<>"","R24M",IF($Z18<>"","R12M",Assumptions!$D$11))),IF($C$3="R24M",IF($AA18<>"","R24M",IF($Z18<>"","R12M",Assumptions!$D$11)),IF($C$3="R12M",IF($Z18<>"","R12M",Assumptions!$D$11),IF($C$3="Elastic-FT",Assumptions!$D$19,IF($C$3="Elastic-Office",Assumptions!$D$20,Assumptions!$D$11)))))
+I18 =I17
+K18 =$C$2
+L18 =$L$2
+M18 Y
+N18 =$N$2
+O18 =$N$3
+P18 =IF(AND($M18="Y",$F18>0),$F18*$O18,"")
+R18 =IF($U18="","",IF(INDEX(PriceListTable,$U18,12)>0,INDEX(PriceListTable,$U18,12),""))
+S18 =IF($U18="","",IF(INDEX(PriceListTable,$U18,13)>0,INDEX(PriceListTable,$U18,13),""))
+U18 =IF(OR($D18="",$K18=""),"",MATCH(1,INDEX((PriceListDescs=$D18)*(PriceListRegions=$K18),0),0))
+V18 =IF(OR($D18="",$L18="",$K18=""),"",MATCH(1,INDEX((PriceListDescs="Storage: EVS " & $L18)*(PriceListRegions=$K18),0),0))
+W18 =IF(OR($D18="",$L18="",$K18="",$N18<>"STD"),"",INDEX(PriceListTable, $U18, 36))
+X18 =IF($U18="","",INDEX(PriceListTable, $U18, 9))
+Y18 =IF($U18="","",INDEX(PriceListTable, $U18, 10))
+Z18 =IF($U18="","",IF(INDEX(PriceListTable,$U18,29)>0,INDEX(PriceListTable,$U18,29),""))
+AA18 =IF($U18="","",IF(INDEX(PriceListTable,$U18,30)>0,INDEX(PriceListTable,$U18,30),""))
+AB18 =IF($U18="","",IF(INDEX(PriceListTable,$U18,31)>0,INDEX(PriceListTable,$U18,31),""))
+AC18 =IF($U18="","",IF(LEFT($Y18,1)="h",IF(ISNUMBER($G18),$G18,Assumptions!$D$11),1)*$B18)
+AD18 =IF($V18="","",INDEX(PriceListTable,$V18,9))
+AE18 =IF($W18="","",INDEX(PriceListTable,$W18,9))
+AG18 =IF($U18="",0,IF(AND($Z18<>"",$G18="R12M"),$Z18,IF(AND($AA18<>"",$G18="R24M"),$AA18,IF(AND($AB18<>"",$G18="R36M"),$AB18,IF(LEFT($Y18,1)="h",IF(ISNUMBER($G18),$G18,Assumptions!$D$11)*$X18,$X18)))))
+AH18 =IFERROR(IF($F18="",0,$F18*$AD18*IF(AND($M18="N",ISNUMBER($G18)),$G18/Assumptions!$D$19,1)),0)
+AI18 =IFERROR(IF(OR($P18="",$P18=0),0,$P18*$AE18),0)
+AJ18 =IFERROR($AG18+$AH18+$AI18,0)
+AK18 =$B18*$AJ18
+AN18 =IF($Y18=T_ONE_TIME,$AK18,0)
+AO18 =IF($Y18=T_ONE_TIME,0,IF( AND($G18="R24M",$AA18<>0),$B18*($AG18*(1+Assumptions!$D$5)^(FLOOR(AO$5-1,2))+($AI18+$AH18)*(1 + Assumptions!$D$5)^(AO$5-1)),IF( AND($G18="R36M",$AB18<>0),$B18*($AG18*(1+Assumptions!$D$5)^(FLOOR(AO$5-1,3))+($AI18+$AH18)*(1 + Assumptions!$D$5)^(AO$5-1)),$AK18*(1+Assumptions!$D$5)^(AO$5-1))))
+AP18 =IF($Y18=T_ONE_TIME,0,IF( AND($G18="R24M",$AA18<>0),$B18*($AG18*(1+Assumptions!$D$5)^(FLOOR(AP$5-1,2))+($AI18+$AH18)*(1 + Assumptions!$D$5)^(AP$5-1)),IF( AND($G18="R36M",$AB18<>0),$B18*($AG18*(1+Assumptions!$D$5)^(FLOOR(AP$5-1,3))+($AI18+$AH18)*(1 + Assumptions!$D$5)^(AP$5-1)),$AK18*(1+Assumptions!$D$5)^(AP$5-1))))
+AQ18 =IF($Y18=T_ONE_TIME,0,IF( AND($G18="R24M",$AA18<>0),$B18*($AG18*(1+Assumptions!$D$5)^(FLOOR(AQ$5-1,2))+($AI18+$AH18)*(1 + Assumptions!$D$5)^(AQ$5-1)),IF( AND($G18="R36M",$AB18<>0),$B18*($AG18*(1+Assumptions!$D$5)^(FLOOR(AQ$5-1,3))+($AI18+$AH18)*(1 + Assumptions!$D$5)^(AQ$5-1)),$AK18*(1+Assumptions!$D$5)^(AQ$5-1))))
+AR18 =IF($Y18=T_ONE_TIME,0,IF( AND($G18="R24M",$AA18<>0),$B18*($AG18*(1+Assumptions!$D$5)^(FLOOR(AR$5-1,2))+($AI18+$AH18)*(1 + Assumptions!$D$5)^(AR$5-1)),IF( AND($G18="R36M",$AB18<>0),$B18*($AG18*(1+Assumptions!$D$5)^(FLOOR(AR$5-1,3))+($AI18+$AH18)*(1 + Assumptions!$D$5)^(AR$5-1)),$AK18*(1+Assumptions!$D$5)^(AR$5-1))))
+AS18 =IF($Y18=T_ONE_TIME,0,IF( AND($G18="R24M",$AA18<>0),$B18*($AG18*(1+Assumptions!$D$5)^(FLOOR(AS$5-1,2))+($AI18+$AH18)*(1 + Assumptions!$D$5)^(AS$5-1)),IF( AND($G18="R36M",$AB18<>0),$B18*($AG18*(1+Assumptions!$D$5)^(FLOOR(AS$5-1,3))+($AI18+$AH18)*(1 + Assumptions!$D$5)^(AS$5-1)),$AK18*(1+Assumptions!$D$5)^(AS$5-1))))
+AT18 =IF($Y18=T_ONE_TIME,0,IF( AND($G18="R24M",$AA18<>0),$B18*($AG18*(1+Assumptions!$D$5)^(FLOOR(AT$5-1,2))+($AI18+$AH18)*(1 + Assumptions!$D$5)^(AT$5-1)),IF( AND($G18="R36M",$AB18<>0),$B18*($AG18*(1+Assumptions!$D$5)^(FLOOR(AT$5-1,3))+($AI18+$AH18)*(1 + Assumptions!$D$5)^(AT$5-1)),$AK18*(1+Assumptions!$D$5)^(AT$5-1))))
+B19 ="Total "&IFERROR(IF($I19="","N/A",$I19),"N/A")
+I19 =I6
+AK19 =SUMIFS($AK:$AK,$Y:$Y,"<>"&T_ONE_TIME,$B:$B,"<>"&$B19,$I:$I,"="&$I19)
+AN19 =SUMIFS(AN:AN,$B:$B,"<>"&$B19,$I:$I,"="&$I19)
+AO19 =SUMIFS(AO:AO,$B:$B,"<>"&$B19,$I:$I,"="&$I19)
+AP19 =SUMIFS(AP:AP,$B:$B,"<>"&$B19,$I:$I,"="&$I19)
+AQ19 =SUMIFS(AQ:AQ,$B:$B,"<>"&$B19,$I:$I,"="&$I19)
+AR19 =SUMIFS(AR:AR,$B:$B,"<>"&$B19,$I:$I,"="&$I19)
+AS19 =SUMIFS(AS:AS,$B:$B,"<>"&$B19,$I:$I,"="&$I19)
+AT19 =SUMIFS(AT:AT,$B:$B,"<>"&$B19,$I:$I,"="&$I19)
+## Volumes
+A1 Volume
+L1 Tab Volumes
+B3 Tiered Volume
+C3 Description
+D3 Region
+F3 Tiered Price
+G3 Unit
+I3 Sub-total
+L3 Components
+B4 =SUM($K4:$M4)
+C4 Storage: OBS Outbound Traffic (GiB)
+D4 eu-de
+F4 =IF($B4<>0,$I4/$B4,"")
+G4 GiB
+I4 =SUM($I5:$I6)
+L4 =SUMIFS(Components!$AC:$AC,Components!$D:$D,"="&$C4,Components!$K:$K,"="&$D4)
+B5 =IF($B4>50,50-0,IF($B4>=0,$B4-0,0))
+C5 Storage: OBS Outbound Traffic (until 50)
+D5 eu-de
+F5 0.09
+I5 =$B5*$F5
+B6 =IF($B4>=49,$B4-49,0)
+C6 Storage: OBS Outbound Traffic (from 50)
+D6 eu-de
+F6 0.07
+I6 =$B6*$F6
+## Prices
+A2 Price List
+C3 Id
+(id)
+D3 Tier Group
+(idGroupTiered)
+E3 Product ID
+(productId)
+F3 Flavour
+(opiFlavour)
+G3 Product Name
+(productName)
+H3 OS
+(osUnit)
+I3 Currency
+(currency)
+J3 Price
+(priceAmount)
+K3 Unit
+(unit)
+L3 Description
+(description)
+M3 vCPU
+(vCpu)
+N3 RAM
+(ram)
+O3 Notes
+(additionalText)
+P3 Storage Type
+(storageType)
+Q3 Storage Volume
+(storageVolume)
+R3 Service Type
+(serviceType)
+S3 Product Param
+(productIdParameter)
+T3 Section
+(productSection)
+U3 Type
+(productType)
+V3 Family
+(productFamily)
+W3 Category
+(productCategory)
+X3 From
+(fromOn)
+Y3 Up To
+(upTo)
+Z3 Min
+(minAmount)
+AA3 Max
+(maxAmount)
+AB3 Region
+(region)
+AC3 MRC
+(isMRC)
+AD3 R12M
+(R12)
+AE3 R24M
+(R24)
+AF3 R36M
+(R36)
+AG3 RU12M
+(RU12)
+AH3 RU24M
+(RU24)
+AI3 RU36M
+(RU36)
+AJ3 Backup
+(_backup_)
+AK3 Backup Index
+(_backup_idx_)
+B4 Compute: Virtuelle Maschine 2 vcpu 4 GiB
+C4 OTC_vm-1
+E4 ECS
+F4 c3.large.2
+G4 Virtuelle Maschine
+H4 Linux
+I4 EUR
+J4 0.05
+K4 h
+L4 Virtuelle Maschine
+M4 2
+N4 4
+R4 CSS
+S4 ecs
+T4 main
+U4 ECS
+V4 Compute
+X4 0
+AB4 eu-de
+AC4 false
+AD4 0.04
+AE4 0.03
+AF4 0.02
+AG4 0
+AH4 0
+AI4 0
+AJ4 Storage: CBR Server Backup
+AK4 8
+B5 Compute: Virtuelle Maschine 2 vcpu 4 GiB
+C5 OTC_vm-2
+E5 ECS
+F5 c3.large.2
+G5 Virtuelle Maschine
+H5 Linux
+I5 EUR
+J5 0.05
+K5 h
+L5 Virtuelle Maschine
+M5 2
+N5 4
+R5 CSS
+S5 ecs
+T5 main
+U5 ECS
+V5 Compute
+X5 0
+AB5 eu-nl
+AC5 false
+AD5 0.04
+AE5 0.03
+AF5 0.02
+AG5 0
+AH5 0
+AI5 0
+B6 Database: Oracle Database 4 vcpu 8 GiB
+C6 OTC_oracle-1
+E6 Oracle
+G6 Oracle Database
+I6 EUR
+J6 0.5
+K6 h
+L6 Oracle Database
+M6 4
+N6 8
+S6 oracle
+V6 Database
+X6 0
+AB6 eu-de
+AC6 false
+AD6 0
+AE6 0
+AF6 0
+AG6 0
+AH6 0
+AI6 0
+B7 Database: Oracle Database 4 vcpu 8 GiB
+C7 OTC_oracle-1
+E7 Oracle
+G7 Oracle Database
+I7 EUR
+J7 0.5
+K7 h
+L7 Oracle Database
+M7 4
+N7 8
+S7 oracle
+V7 Database
+X7 0
+AB7 eu-nl
+AC7 false
+AD7 0
+AE7 0
+AF7 0
+AG7 0
+AH7 0
+AI7 0
+B8 Storage: CBR Server Backup
+C8 OTC_cbr-1
+E8 CBR
+G8 CBR Server Backup
+I8 EUR
+J8 0.1
+L8 CBR Server Backup
+M8 0
+N8 0
+S8 cbr
+T8 backup
+V8 Storage
+X8 0
+AB8 eu-de
+AC8 false
+AD8 0
+AE8 0
+AF8 0
+AG8 0
+AH8 0
+AI8 0
+B9 Storage: EVS SATA
+C9 OTC_evs-1
+E9 EVS
+F9 evs.sata
+G9 EVS SATA
+I9 EUR
+J9 0.02
+L9 EVS SATA
+M9 0
+N9 0
+S9 evs
+T9 storage
+V9 Storage
+X9 0
+AB9 eu-de
+AC9 false
+AD9 0
+AE9 0
+AF9 0
+AG9 0
+AH9 0
+AI9 0
+B10 Storage: OBS Outbound Traffic (GiB)
+D10 obs-out
+E10 OBS Outbound Traffic
+G10 OBS Outbound Traffic
+J10 =Volumes!$F$4
+K10 GiB
+L10 OBS Outbound Traffic
+S10 obs
+T10 network
+V10 Storage
+AB10 eu-de
+B11 Storage: OBS Outbound Traffic [T1] (until 50)
+C11 obs-out_1
+D11 obs-out
+E11 OBS Outbound Traffic
+G11 OBS Outbound Traffic
+I11 EUR
+J11 0.09
+K11 GiB
+L11 OBS Outbound Traffic
+M11 0
+N11 0
+S11 obs
+T11 network
+V11 Storage
+X11 0
+Y11 50
+AB11 eu-de
+AC11 false
+AD11 0
+AE11 0
+AF11 0
+AG11 0
+AH11 0
+AI11 0
+B12 Storage: OBS Outbound Traffic [T2] (from 50)
+C12 obs-out_2
+D12 obs-out
+E12 OBS Outbound Traffic
+G12 OBS Outbound Traffic
+I12 EUR
+J12 0.07
+K12 GiB
+L12 OBS Outbound Traffic
+M12 0
+N12 0
+S12 obs
+T12 network
+V12 Storage
+X12 50
+AB12 eu-de
+AC12 false
+AD12 0
+AE12 0
+AF12 0
+AG12 0
+AH12 0
+AI12 0
+## Finder
+B1 Price Finder
+B3 Product Family
+C3 Compute
+D3 Compute
+E3 Compute
+F3 Compute
+G3 vCpu
+H3 min
+J3 max
+K3 =IF($I$3="","",$I$3)
+N3 description list → H6
+O3 productId list → C5
+P3 osUnit list → C8
+Q3 storageType list → C6
+R3 serviceType list → C7
+S3 =IFERROR(ROWS(_xlfn._xlws.FILTER(Prices!$B$4:Prices!$B$12,(Prices!$V$4:Prices!$V$12=$C$3)*(($C$5="")+($C$5="(all)")+($C$5="(blank)")*(Prices!$E$4:Prices!$E$12="")+(Prices!$E$4:Prices!$E$12=$C$5))*(($C$8="")+($C$8="(all)")+($C$8="(blank)")*(Prices!$H$4:Prices!$H$12="")+(Prices!$H$4:Prices!$H$12=$C$8))*(($C$6="")+($C$6="(all)")+($C$6="(blank)")*(Prices!$P$4:Prices!$P$12="")+(Prices!$P$4:Prices!$P$12=$C$6))*(($C$7="")+($C$7="(all)")+($C$7="(blank)")*(Prices!$R$4:Prices!$R$12="")+(Prices!$R$4:Prices!$R$12=$C$7))*(($C$4="")+($C$4="(all)")+(Prices!$AB$4:Prices!$AB$12=$C$4))*(($I$3="")+(Prices!$M$4:Prices!$M$12>=$I$3))*(($K$3="")+(Prices!$M$4:Prices!$M$12<=$K$3))*(($I$4="")+(Prices!$N$4:Prices!$N$12>=$I$4))*(($K$4="")+(Prices!$N$4:Prices!$N$12<=$K$4))*(($H$6="")+($H$6="(all)")+(Prices!$L$4:Prices!$L$12=$H$6)))),0)
+B4 Region
+C4 (all)
+D4 (all)
+E4 (all)
+F4 (all)
+G4 RAM
+H4 min
+J4 max
+K4 =IF($I$4="","",$I$4)
+N4 =IF($S$4+2>=5,_xlfn.VSTACK("(all)",_xlfn._xlws.SORT(_xlfn.UNIQUE(_xlfn._xlws.FILTER(IF(Prices!$L$4:Prices!$L$12="","",Prices!$L$4:Prices!$L$12),(Prices!$V$4:Prices!$V$12=$C$3)*(($C$5="")+($C$5="(all)")+($C$5="(blank)")*(Prices!$E$4:Prices!$E$12="")+(Prices!$E$4:Prices!$E$12=$C$5))*(($C$8="")+($C$8="(all)")+($C$8="(blank)")*(Prices!$H$4:Prices!$H$12="")+(Prices!$H$4:Prices!$H$12=$C$8))*(($C$6="")+($C$6="(all)")+($C$6="(blank)")*(Prices!$P$4:Prices!$P$12="")+(Prices!$P$4:Prices!$P$12=$C$6))*(($C$7="")+($C$7="(all)")+($C$7="(blank)")*(Prices!$R$4:Prices!$R$12="")+(Prices!$R$4:Prices!$R$12=$C$7))*(($C$4="")+($C$4="(all)")+(Prices!$AB$4:Prices!$AB$12=$C$4))*(($I$3="")+(Prices!$M$4:Prices!$M$12>=$I$3))*(($K$3="")+(Prices!$M$4:Prices!$M$12<=$K$3))*(($I$4="")+(Prices!$N$4:Prices!$N$12>=$I$4))*(($K$4="")+(Prices!$N$4:Prices!$N$12<=$K$4))))),IF($T$4>0,"(blank)","")),_xlfn.VSTACK("(all)",_xlfn._xlws.SORT(_xlfn.UNIQUE(_xlfn._xlws.FILTER(IF(Prices!$L$4:Prices!$L$12="","",Prices!$L$4:Prices!$L$12),(Prices!$V$4:Prices!$V$12=$C$3)*(($C$5="")+($C$5="(all)")+($C$5="(blank)")*(Prices!$E$4:Prices!$E$12="")+(Prices!$E$4:Prices!$E$12=$C$5))*(($C$8="")+($C$8="(all)")+($C$8="(blank)")*(Prices!$H$4:Prices!$H$12="")+(Prices!$H$4:Prices!$H$12=$C$8))*(($C$6="")+($C$6="(all)")+($C$6="(blank)")*(Prices!$P$4:Prices!$P$12="")+(Prices!$P$4:Prices!$P$12=$C$6))*(($C$7="")+($C$7="(all)")+($C$7="(blank)")*(Prices!$R$4:Prices!$R$12="")+(Prices!$R$4:Prices!$R$12=$C$7))*(($C$4="")+($C$4="(all)")+(Prices!$AB$4:Prices!$AB$12=$C$4))*(($I$3="")+(Prices!$M$4:Prices!$M$12>=$I$3))*(($K$3="")+(Prices!$M$4:Prices!$M$12<=$K$3))*(($I$4="")+(Prices!$N$4:Prices!$N$12>=$I$4))*(($K$4="")+(Prices!$N$4:Prices!$N$12<=$K$4))))),IF($T$4>0,"(blank)",""),IF(ROW(INDEX($A:$A,1):INDEX($A:$A,5-$S$4-2))>0,"","")))
+O4 =IF($S$5+2>=5,_xlfn.VSTACK("(all)",_xlfn._xlws.SORT(_xlfn.UNIQUE(_xlfn._xlws.FILTER(IF(Prices!$E$4:Prices!$E$12="","",Prices!$E$4:Prices!$E$12),(Prices!$V$4:Prices!$V$12=$C$3)))),IF($T$5>0,"(blank)","")),_xlfn.VSTACK("(all)",_xlfn._xlws.SORT(_xlfn.UNIQUE(_xlfn._xlws.FILTER(IF(Prices!$E$4:Prices!$E$12="","",Prices!$E$4:Prices!$E$12),(Prices!$V$4:Prices!$V$12=$C$3)))),IF($T$5>0,"(blank)",""),IF(ROW(INDEX($A:$A,1):INDEX($A:$A,5-$S$5-2))>0,"","")))
+P4 =IF($S$6+2>=3,_xlfn.VSTACK("(all)",_xlfn._xlws.SORT(_xlfn.UNIQUE(_xlfn._xlws.FILTER(IF(Prices!$H$4:Prices!$H$12="","",Prices!$H$4:Prices!$H$12),(Prices!$V$4:Prices!$V$12=$C$3)))),IF($T$6>0,"(blank)","")),_xlfn.VSTACK("(all)",_xlfn._xlws.SORT(_xlfn.UNIQUE(_xlfn._xlws.FILTER(IF(Prices!$H$4:Prices!$H$12="","",Prices!$H$4:Prices!$H$12),(Prices!$V$4:Prices!$V$12=$C$3)))),IF($T$6>0,"(blank)",""),IF(ROW(INDEX($A:$A,1):INDEX($A:$A,3-$S$6-2))>0,"","")))
+Q4 =IF($S$7+2>=3,_xlfn.VSTACK("(all)",_xlfn._xlws.SORT(_xlfn.UNIQUE(_xlfn._xlws.FILTER(IF(Prices!$P$4:Prices!$P$12="","",Prices!$P$4:Prices!$P$12),(Prices!$V$4:Prices!$V$12=$C$3)))),IF($T$7>0,"(blank)","")),_xlfn.VSTACK("(all)",_xlfn._xlws.SORT(_xlfn.UNIQUE(_xlfn._xlws.FILTER(IF(Prices!$P$4:Prices!$P$12="","",Prices!$P$4:Prices!$P$12),(Prices!$V$4:Prices!$V$12=$C$3)))),IF($T$7>0,"(blank)",""),IF(ROW(INDEX($A:$A,1):INDEX($A:$A,3-$S$7-2))>0,"","")))
+R4 =IF($S$8+2>=3,_xlfn.VSTACK("(all)",_xlfn._xlws.SORT(_xlfn.UNIQUE(_xlfn._xlws.FILTER(IF(Prices!$R$4:Prices!$R$12="","",Prices!$R$4:Prices!$R$12),(Prices!$V$4:Prices!$V$12=$C$3)))),IF($T$8>0,"(blank)","")),_xlfn.VSTACK("(all)",_xlfn._xlws.SORT(_xlfn.UNIQUE(_xlfn._xlws.FILTER(IF(Prices!$R$4:Prices!$R$12="","",Prices!$R$4:Prices!$R$12),(Prices!$V$4:Prices!$V$12=$C$3)))),IF($T$8>0,"(blank)",""),IF(ROW(INDEX($A:$A,1):INDEX($A:$A,3-$S$8-2))>0,"","")))
+S4 =IFERROR(ROWS(_xlfn.UNIQUE(_xlfn._xlws.FILTER(Prices!$L$4:Prices!$L$12,(Prices!$V$4:Prices!$V$12=$C$3)*(($C$5="")+($C$5="(all)")+($C$5="(blank)")*(Prices!$E$4:Prices!$E$12="")+(Prices!$E$4:Prices!$E$12=$C$5))*(($C$8="")+($C$8="(all)")+($C$8="(blank)")*(Prices!$H$4:Prices!$H$12="")+(Prices!$H$4:Prices!$H$12=$C$8))*(($C$6="")+($C$6="(all)")+($C$6="(blank)")*(Prices!$P$4:Prices!$P$12="")+(Prices!$P$4:Prices!$P$12=$C$6))*(($C$7="")+($C$7="(all)")+($C$7="(blank)")*(Prices!$R$4:Prices!$R$12="")+(Prices!$R$4:Prices!$R$12=$C$7))*(($C$4="")+($C$4="(all)")+(Prices!$AB$4:Prices!$AB$12=$C$4))*(($I$3="")+(Prices!$M$4:Prices!$M$12>=$I$3))*(($K$3="")+(Prices!$M$4:Prices!$M$12<=$K$3))*(($I$4="")+(Prices!$N$4:Prices!$N$12>=$I$4))*(($K$4="")+(Prices!$N$4:Prices!$N$12<=$K$4))))),0)
+T4 =IF(IFERROR(ROWS(_xlfn._xlws.FILTER(Prices!$L$4:Prices!$L$12,(Prices!$V$4:Prices!$V$12=$C$3)*(($C$5="")+($C$5="(all)")+($C$5="(blank)")*(Prices!$E$4:Prices!$E$12="")+(Prices!$E$4:Prices!$E$12=$C$5))*(($C$8="")+($C$8="(all)")+($C$8="(blank)")*(Prices!$H$4:Prices!$H$12="")+(Prices!$H$4:Prices!$H$12=$C$8))*(($C$6="")+($C$6="(all)")+($C$6="(blank)")*(Prices!$P$4:Prices!$P$12="")+(Prices!$P$4:Prices!$P$12=$C$6))*(($C$7="")+($C$7="(all)")+($C$7="(blank)")*(Prices!$R$4:Prices!$R$12="")+(Prices!$R$4:Prices!$R$12=$C$7))*(($C$4="")+($C$4="(all)")+(Prices!$AB$4:Prices!$AB$12=$C$4))*(($I$3="")+(Prices!$M$4:Prices!$M$12>=$I$3))*(($K$3="")+(Prices!$M$4:Prices!$M$12<=$K$3))*(($I$4="")+(Prices!$N$4:Prices!$N$12>=$I$4))*(($K$4="")+(Prices!$N$4:Prices!$N$12<=$K$4))*(Prices!$L$4:Prices!$L$12=""))),0)>0,1,0)
+B5 productId
+C5 (all)
+D5 (all)
+E5 (all)
+F5 (all)
+S5 =IFERROR(ROWS(_xlfn.UNIQUE(_xlfn._xlws.FILTER(Prices!$E$4:Prices!$E$12,(Prices!$V$4:Prices!$V$12=$C$3)))),0)
+T5 =IF(IFERROR(ROWS(_xlfn._xlws.FILTER(Prices!$E$4:Prices!$E$12,(Prices!$V$4:Prices!$V$12=$C$3)*(Prices!$E$4:Prices!$E$12=""))),0)>0,1,0)
+B6 storageType
+C6 (all)
+D6 (all)
+E6 (all)
+F6 (all)
+G6 Description
+H6 Virtuelle Maschine
+I6 Virtuelle Maschine
+J6 Virtuelle Maschine
+K6 Virtuelle Maschine
+S6 =IFERROR(ROWS(_xlfn.UNIQUE(_xlfn._xlws.FILTER(Prices!$H$4:Prices!$H$12,(Prices!$V$4:Prices!$V$12=$C$3)))),0)
+T6 =IF(IFERROR(ROWS(_xlfn._xlws.FILTER(Prices!$H$4:Prices!$H$12,(Prices!$V$4:Prices!$V$12=$C$3)*(Prices!$H$4:Prices!$H$12=""))),0)>0,1,0)
+B7 serviceType
+C7 (all)
+D7 (all)
+E7 (all)
+F7 (all)
+S7 =IFERROR(ROWS(_xlfn.UNIQUE(_xlfn._xlws.FILTER(Prices!$P$4:Prices!$P$12,(Prices!$V$4:Prices!$V$12=$C$3)))),0)
+T7 =IF(IFERROR(ROWS(_xlfn._xlws.FILTER(Prices!$P$4:Prices!$P$12,(Prices!$V$4:Prices!$V$12=$C$3)*(Prices!$P$4:Prices!$P$12=""))),0)>0,1,0)
+B8 osUnit
+C8 (all)
+D8 (all)
+E8 (all)
+F8 (all)
+S8 =IFERROR(ROWS(_xlfn.UNIQUE(_xlfn._xlws.FILTER(Prices!$R$4:Prices!$R$12,(Prices!$V$4:Prices!$V$12=$C$3)))),0)
+T8 =IF(IFERROR(ROWS(_xlfn._xlws.FILTER(Prices!$R$4:Prices!$R$12,(Prices!$V$4:Prices!$V$12=$C$3)*(Prices!$R$4:Prices!$R$12=""))),0)>0,1,0)
+B9 ="Results ("&$S$3&" matches)"
+B10 Description
+C10 Region
+D10 vCpu
+E10 RAM
+F10 priceAmount
+G10 unit
+H10 R12
+I10 R24
+J10 R36
+K10 Row
+B11 =IFERROR(INDEX(Prices!$B$4:Prices!$B$12,$K$11:$K$19-3),"")
+C11 =IFERROR(INDEX(Prices!$AB$4:Prices!$AB$12,$K$11:$K$19-3),"")
+D11 =IFERROR(INDEX(Prices!$M$4:Prices!$M$12,$K$11:$K$19-3),"")
+E11 =IFERROR(INDEX(Prices!$N$4:Prices!$N$12,$K$11:$K$19-3),"")
+F11 =IFERROR(INDEX(Prices!$J$4:Prices!$J$12,$K$11:$K$19-3),"")
+G11 =IFERROR(INDEX(Prices!$K$4:Prices!$K$12,$K$11:$K$19-3),"")
+H11 =IFERROR(INDEX(Prices!$AD$4:Prices!$AD$12,$K$11:$K$19-3),"")
+I11 =IFERROR(INDEX(Prices!$AE$4:Prices!$AE$12,$K$11:$K$19-3),"")
+J11 =IFERROR(INDEX(Prices!$AF$4:Prices!$AF$12,$K$11:$K$19-3),"")
+K11 =IFERROR(_xlfn.VSTACK(_xlfn.SORTBY(_xlfn._xlws.FILTER(ROW(Prices!$B$4:Prices!$B$12),(Prices!$V$4:Prices!$V$12=$C$3)*(($C$5="")+($C$5="(all)")+($C$5="(blank)")*(Prices!$E$4:Prices!$E$12="")+(Prices!$E$4:Prices!$E$12=$C$5))*(($C$8="")+($C$8="(all)")+($C$8="(blank)")*(Prices!$H$4:Prices!$H$12="")+(Prices!$H$4:Prices!$H$12=$C$8))*(($C$6="")+($C$6="(all)")+($C$6="(blank)")*(Prices!$P$4:Prices!$P$12="")+(Prices!$P$4:Prices!$P$12=$C$6))*(($C$7="")+($C$7="(all)")+($C$7="(blank)")*(Prices!$R$4:Prices!$R$12="")+(Prices!$R$4:Prices!$R$12=$C$7))*(($C$4="")+($C$4="(all)")+(Prices!$AB$4:Prices!$AB$12=$C$4))*(($I$3="")+(Prices!$M$4:Prices!$M$12>=$I$3))*(($K$3="")+(Prices!$M$4:Prices!$M$12<=$K$3))*(($I$4="")+(Prices!$N$4:Prices!$N$12>=$I$4))*(($K$4="")+(Prices!$N$4:Prices!$N$12<=$K$4))*(($H$6="")+($H$6="(all)")+(Prices!$L$4:Prices!$L$12=$H$6))),_xlfn._xlws.FILTER(Prices!$J$4:Prices!$J$12,(Prices!$V$4:Prices!$V$12=$C$3)*(($C$5="")+($C$5="(all)")+($C$5="(blank)")*(Prices!$E$4:Prices!$E$12="")+(Prices!$E$4:Prices!$E$12=$C$5))*(($C$8="")+($C$8="(all)")+($C$8="(blank)")*(Prices!$H$4:Prices!$H$12="")+(Prices!$H$4:Prices!$H$12=$C$8))*(($C$6="")+($C$6="(all)")+($C$6="(blank)")*(Prices!$P$4:Prices!$P$12="")+(Prices!$P$4:Prices!$P$12=$C$6))*(($C$7="")+($C$7="(all)")+($C$7="(blank)")*(Prices!$R$4:Prices!$R$12="")+(Prices!$R$4:Prices!$R$12=$C$7))*(($C$4="")+($C$4="(all)")+(Prices!$AB$4:Prices!$AB$12=$C$4))*(($I$3="")+(Prices!$M$4:Prices!$M$12>=$I$3))*(($K$3="")+(Prices!$M$4:Prices!$M$12<=$K$3))*(($I$4="")+(Prices!$N$4:Prices!$N$12>=$I$4))*(($K$4="")+(Prices!$N$4:Prices!$N$12<=$K$4))*(($H$6="")+($H$6="(all)")+(Prices!$L$4:Prices!$L$12=$H$6)))),IF(ROW(INDEX($A:$A,1):INDEX($A:$A,9-$S$3))>0,"","")),"")
+## Assumptions
+B2 Assumptions
+B3 #
+C3 Key
+D3 Value
+E3 When
+F3 Who
+G3 Comment
+B4 General
+C5 $INFLATION
+D5 0.02
+F5 by script
+G5 Annual inflation rate
+B6 Defaults
+C7 $DEFAULT_REGION
+D7 eu-de
+F7 by script
+G7 Default region
+C8 $DEFAULT_EVS
+D8 High I/O
+F8 by script
+G8 Default EVS class
+C9 $DEFAULT_BACKUP
+D9 STD
+F9 by script
+G9 Default backup mode
+C10 $DEFAULT_RXM
+D10 R36M
+F10 by script
+G10 Default pricing model
+C11 $DEFAULT_HOURS
+D11 =D19
+F11 by script
+G11 Default operating hours
+B12 Backups
+C13 Used storage
+D13 0.7
+F13 by script
+G13 Percentage of allocated storage that needs to be backed up
+C14 Daily change rate
+D14 0.03
+F14 by script
+C15 Number of full
+D15 1
+F15 by script
+C16 Number of incrementals
+D16 29
+F16 by script
+C17 $BACKUP_FACT
+D17 =(D15+(1+D14)^D16)*D13
+F17 by script
+B18 Hours
+C19 $FT_HOURS
+D19 730
+F19 by script
+G19 Full time hours per month (24x7 Operation)
+C20 $WK_HOURS
+D20 174
+F20 by script
+G20 Working Hours per month Based on 10x5 per week
+C21 $WK_HOURS_PCT
+D21 =D20/D19
+F21 by script
+G21 Working Hours Percent
+B22 Internet
+C23 $DEF_OUTBOUND_INTERNET
+D23 100
+F23 by script
+G23 Outbound Internet GB
+B24 -
+## ESA
+A2 Enterprise Support Agreement
+B4 Fixed Price Component
+F4 Uplift bands
+B6 Item Description
+D6 Monthly
+F6 Oplift range
+H6 Percentage
+B7 Base Fee
+C7 Y
+D7 2500
+F7 From
+G7 To
+B8 Optional Components
+C8  Y/N
+F8 0
+G8 5000
+H8 0.1
+B9 Service Credits on ECS/EVS/OBS
+D9 1000
+F9 5001
+G9 100000
+H9 0.04
+B10 Dedicated Service Delivery Manager
+D10 3000
+F10 100001
+G10 200000
+H10 0.03
+B11 SD Manager on Duty
+D11 6000
+F11 200001
+G11 500000
+H11 0.02
+B12 Total
+D12 =IF(C7="Y",SUMIF(C:C,"=Y",D:D),0)
+F12 500001
+H12 0.01
+## T
+B2 Meta Data
+B3 Key
+C3 Value
+D3 Comment
+B4 System
+B5 Generated
+C5 <date>
+D5 by XLpricer SPA
+B6 Script version
+C6 test
+D6 TypeScript
+B7 SPA URL
+C7 http://spa/
+B8 Source URL
+C8 https://example.com/prices.json
+B9 Schema
+C9 pipeline-pricing-1.0
+B10 Format version
+C10 2.0.1
+B11 Pricing Data
+C11 08-09-2026
+B12 Non-recurrent items
+C12 Item/ot
+B13 Params
+B14 region[]
+C14 eu-de,eu-nl
+B15 currency
+C15 EUR
+B16 Includes
+B17 oracle
+C17 test-version
+B18 Choices
+B19 EVS
+C19 SATA
+B20 REGIONS
+C20 eu-de
+C21 eu-nl
+B22 BACKUP
+C22 STD
+C23 None
+B24 RXM
+C24 Elastic-FT
+C25 Elastic-Office
+C26 R12M
+C27 R24M
+C28 R36M
+B29 Units
+B30 GB
+C30 =10^9
+B31 GiB
+C31 =2^30
+B32 GB to GiB
+C32 =C30/C31
+B33 GiB to GB
+C33 =C31/C30"
+`;

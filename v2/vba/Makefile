@@ -7,7 +7,7 @@ VBA_TEMPLATE = ../public/vba/template.xlsm
 
 .DEFAULT_GOAL := build
 
-.PHONY: help build clean
+.PHONY: help build clean test
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## ' Makefile | sort | \
@@ -15,6 +15,9 @@ help: ## Show this help
 
 clean:  ## Clean build
 	rm -f project.xlsm $(VBA_TEMPLATE)
+
+test: ## Run vbabb unit tests
+	./pys.sh test_vbabb.py
 
 build: $(VBA_TEMPLATE) ## Build VBA host workbook (public/vba/template.xlsm)
 
