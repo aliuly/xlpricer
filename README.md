@@ -10,7 +10,7 @@ Enterprise Support Agreement (ESA) calculations.
 
 | Version | Status | Description |
 |---------|--------|-------------|
-| [v2](./v2/README.md) | Current | TypeScript/React single-page app with interactive assumption/component editors and XLSX export |
+| [v2](./v2/README.md) | Current | TypeScript/React single-page app with interactive assumption/component editors and XLSX/XLSM export |
 | [v1](./v1/README.md) | Legacy | Self-contained Pricing workbooks generated using a python script |
 
 ## GitHub Pages

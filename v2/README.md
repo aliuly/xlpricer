@@ -10,13 +10,22 @@ discounts, and Enterprise Support Agreement (ESA) calculations.
 ## Features
 
 - **Browser UI** — Edit assumptions and bill-of-materials components in
-  interactive tabulator-based tables, then export to XLSX.
+  interactive tabulator-based tables, then export to XLSX or macro-enabled
+  XLSM.
 - **Includes management** — Toggle standard pricing data includes and upload
   additional CSV files via drag-and-drop, with metadata from manifest files.
 - **CLI pipeline** — Fetch, normalize, and enrich pricing data from the
   command line (`npx tsx src/prices/cli.ts`).
 - **XLSX generation** — Produce a formatted workbook with Overview, Components
-  (BOM), Prices, Volumes, Assumptions, ESA, and metadata sheets.
+  (BOM), Prices, Volumes, Finder, Assumptions, ESA, and metadata sheets.
+- **Price Finder** — Generated workbooks include a static, VBA-free Finder
+  sheet: cascading dropdowns plus vCpu/RAM min/max filters search the full
+  price list (needs Excel 2021/365).
+- **Workbook mode** — Upload an existing workbook to inspect it (XLPricer
+  detection, macros, trimmed/_Frozen state) and check staleness against the
+  live pipeline. Convert (XLSX ↔ XLSM), update/force-reprice, or trim it
+  into a compact macro-free file — trimmed workbooks can be rebuilt by
+  re-uploading and force-repricing.
 - **Enterprise Support Agreement** — Built-in ESA cost model with fixed fees,
   optional service components, and tiered uplift bands.
 - **Multi-year projections** — Inflation-adjusted forward pricing with
@@ -86,7 +95,7 @@ src/
 
 ### Prerequisites
 
-- Node.js >= 18
+- Node.js 20.19+ or 22.12+
 - npm >= 9
 
 ### Install & Run
@@ -118,7 +127,7 @@ npm run preview
 
 ```bash
 npx tsx src/prices/cli.ts https://aliuly.github.io/pipeline/prices-latest.json \
-  includes/included.csv includes/oracle.csv \
+  public/includes/included.csv public/includes/oracle.csv \
   -o out.json --verbose
 ```
 
@@ -126,7 +135,7 @@ npx tsx src/prices/cli.ts https://aliuly.github.io/pipeline/prices-latest.json \
 
 ```bash
 npx tsx src/xlsx/cli.ts https://aliuly.github.io/pipeline/prices-latest.json \
-  includes/included.csv includes/oracle.csv \
+  public/includes/included.csv public/includes/oracle.csv \
   -o pricing.xlsx \
   --assumptions public/assumptions.csv \
   --components "Components=public/preload.csv" \
@@ -138,7 +147,7 @@ into the VBA host workbook (built from `vba/handlers.vba` and `vba/ui.vba`):
 
 ```bash
 npx tsx src/xlsx/cli.ts https://aliuly.github.io/pipeline/prices-latest.json \
-  includes/included.csv includes/oracle.csv \
+  public/includes/included.csv public/includes/oracle.csv \
   -o pricing.xlsm \
   --xlsm public/vba/template.xlsm \
   --assumptions public/assumptions.csv \
@@ -169,13 +178,24 @@ The browser app reads `public/config.json` on startup:
 
 ### App Modes
 
-The UI supports two modes, persisted in `localStorage`:
+The UI supports three modes, persisted in `localStorage` (`xlpricer-mode`):
 
-- **Basic** — One-click XLSX generation from server-side data. Loads
+- **Basic** — One-click workbook generation from server-side data. Loads
   assumptions and components directly from configured CSV URLs.
 - **Custom** — Tabbed editor for assumptions, components, includes, and
-  XLSX export. The Includes tab lets you toggle standard pricing data
+  workbook export. The Includes tab lets you toggle standard pricing data
   includes and upload additional CSV files via drag-and-drop.
+- **Conversion** — Upload an existing workbook to inspect it (XLPricer
+  detection, macros, trimmed/_Frozen state) and check staleness against the
+  live pipeline. Operations: convert (XLSX ↔ XLSM via the macro template),
+  update/force reprice (rebuilds Prices/Volumes/Finder from the pipeline;
+  trimmed workbooks revive their frozen formulas), and trim (the offline
+  TrimWB equivalent).
+
+The generator offers format options (XLSX/XLSM and an ESA toggle) plus a
+Custom pricing checkbox shared by all modes: on uses your Includes-tab
+configuration, off uses the default standard includes. Generated files are
+named from deal info.
 
 ## Tech Stack
 
@@ -198,6 +218,7 @@ The UI supports two modes, persisted in `localStorage`:
 | **Components** | Bill of materials — quantities, service descriptions, storage, hours, region, and pricing model overrides |
 | **Volumes** | Tiered/volume-based pricing adjustments for services like OBS and outbound traffic |
 | **Prices** | Normalized price list with data validation for lookup in Components |
+| **Finder** | Search the price list via cascading dropdowns and vCpu/RAM min/max filters. Static and VBA-free — works in both XLSX and XLSM (needs Excel 2021/365) |
 | **Assumptions** | Default values for hours, region, EVS class, backup settings, and storage utilisation |
 | **ESA** | Enterprise Support Agreement model (base fee, optional extras, tiered uplift) |
 | **T** | Metadata — version, generation timestamp, data sources |
