@@ -245,7 +245,7 @@ export function genFinderSheet(
     3: 8,              // C: Region results
     4: 8,              // D: vCpu results
     5: 8,              // E: RAM results
-    6: 10,             // F: priceAmount results
+    6: 11,             // F: priceAmount results
     [COL_SIDE]: 10,    // G: unit results
     [COL_MINL]: 10,    // H: R12 results
     [COL_MIN]: 10,     // I: R24 results
