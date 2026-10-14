@@ -5,7 +5,7 @@ DATE=$(date +%Y-%m-%d)
 XLSX="prices-${DATE}.xlsx"
 
 # Record the version of xlpricer that generated this build.
-VERSION=$(python -c "from xlpricer.version import VERSION; print(VERSION)")
+VERSION=1.8.1-$(python -c "from xlpricer.version import VERSION; print(VERSION)")
 
 MAX_VERSIONS=12
 
