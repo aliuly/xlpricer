@@ -7,14 +7,15 @@ XLSM_OUTPUT = pricing.xlsm
 VBA_TEMPLATE = public/vba/template.xlsm
 PIPELINE_OUTPUT = out.json
 DUPLICATES_OUTPUT = duplicates.txt
+V1_OUTPUT ?= $(basename $(FILE))-v2.xlsx
 BASE ?= /
 
 
-.PHONY: help install ci dev build preview test pipeline duplicates xlsx xlsm vba clean manifest test
+.PHONY: help install ci dev build preview test pipeline duplicates v1 xlsx xlsm vba clean manifest test
 
 
 help: ## Show this help
-	@grep -E '^[a-zA-Z_-]+:.*?## ' Makefile | sort | \
+	@grep -E '^[a-zA-Z0-9_-]+:.*?## ' Makefile | sort | \
 	  awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 node_modules: package.json
@@ -68,6 +69,14 @@ pipeline: node_modules ## Test pricing pipeline from CLI.  use PRICES_URL to cha
 duplicates: node_modules ## Report duplicate _XlTitle_/region pairs.  use PRICES_URL to change targets
 	npx tsx src/prices/duplicates.ts $(PRICES_URL) -o $(DUPLICATES_OUTPUT) --verbose $(PRICE_INCLUDES)
 
+v1: node_modules ## Convert a v1 workbook to v2 (FILE=<v1-workbook>.xlsx).  Override vars as needed
+	@test -n "$(FILE)" || { echo "usage: make v1 FILE=<v1-workbook>.xlsx"; exit 1; }
+	npx tsx src/xlsx/cli.ts $(PRICES_URL) $(PRICE_INCLUDES) \
+		--from-v1 $(FILE) \
+		-o $(V1_OUTPUT) \
+		--assumptions $(XLSX_ASSUMPTIONS) \
+		--verbose
+
 xlsx: node_modules ## Generate plain XLSX workbook (no VBA).  Override vars as needed
 	npx tsx src/xlsx/cli.ts $(PRICES_URL) $(PRICE_INCLUDES) \
 		-o $(XLSX_OUTPUT) \
@@ -85,6 +94,6 @@ xlsm: vba node_modules ## Generate macro-enabled XLSM workbook.  Override vars a
 
 clean: ## Remove generated artifacts
 	$(MAKE) -C vba clean
-	rm -f $(XLSX_OUTPUT) $(XLSM_OUTPUT) $(PIPELINE_OUTPUT) $(DUPLICATES_OUTPUT)
+	rm -f $(XLSX_OUTPUT) $(XLSM_OUTPUT) $(PIPELINE_OUTPUT) $(DUPLICATES_OUTPUT) *-v2.xlsx *-v2.xlsm
 
 

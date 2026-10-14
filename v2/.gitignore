@@ -27,6 +27,8 @@ public/fixed-prices.json
 out.json
 duplicates.txt
 pricing.xlsx
+*-v2.xlsx
+*-v2.xlsm
 public/includes/manifest.json
 *~
 # Generated VBA artifacts

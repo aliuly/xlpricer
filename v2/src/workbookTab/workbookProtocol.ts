@@ -24,6 +24,10 @@ export interface WorkbookInspectResult {
   sheets: string[]
   /** Has a `T` sheet with a `Format version` row (XLPricer v2). */
   isXlpricer: boolean
+  /** A v1 workbook detected by the v1 gate (checkV1Workbook). */
+  isV1: boolean
+  /** Gate failure message for near-miss v1 files (shown to the user). */
+  v1Error?: string
   /** Has `xl/vbaProject.bin` (macro-enabled). */
   hasMacros: boolean
   /** Has the veryHidden `_Frozen` sheet (trim markers). */
@@ -35,6 +39,16 @@ export interface WorkbookInspectResult {
     stale: boolean
     reason?: string
     warnings: string[]
+  }
+  /** v1 extraction preview (the CLI --check equivalent). */
+  v1?: {
+    tabs: Array<{ name: string; rows: number }>
+    dropped: string[]
+    notes: number
+    includes: Array<{ name: string; version: string }>
+    warnings: string[]
+    /** Manual-review notice — shown prominently in the UI. */
+    caveat: string
   }
 }
 
@@ -53,6 +67,16 @@ export type WorkbookOp =
       appMeta?: AppMeta
       force?: boolean
     }
+  | {
+      kind: 'from-v1'
+      outputFormat: 'xlsx' | 'xlsm'
+      dataUrl: string
+      includePayload?: IncludePayload
+      /** Base assumptions rows (v1 notes + dropped tabs are appended). */
+      assumptions: unknown
+      vbaTemplateUrl?: string
+      appMeta?: AppMeta
+    }
 
 export interface WorkbookRequest {
   file: ArrayBuffer
@@ -64,6 +88,6 @@ export interface WorkbookRequest {
 
 export type WorkbookResponse =
   | { type: 'inspect'; result: WorkbookInspectResult }
-  | { type: 'ok'; buffer: ArrayBuffer; warnings?: string[] }
+  | { type: 'ok'; buffer: ArrayBuffer; warnings?: string[]; caveat?: string }
   | { type: 'unchanged'; check: SourceCompare; warnings: string[] }
   | { type: 'err'; message: string; stack?: string }

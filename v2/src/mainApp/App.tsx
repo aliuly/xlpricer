@@ -398,6 +398,7 @@ export default function App() {
               inspection: workbookOps.inspection,
               status: workbookOps.status,
               warnings: workbookOps.warnings,
+              caveat: workbookOps.caveat,
               error: workbookOps.error,
               opKind: workbookOps.opKind,
               setOpKind: workbookOps.setOpKind,

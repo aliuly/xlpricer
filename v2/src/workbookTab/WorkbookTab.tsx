@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { BusyOverlay } from '../mainApp/AppChrome'
 import { collectDefaultIncludePayload, collectIncludePayload } from '../mainApp/useXlsxGenerator'
+import { loadTabAssumptions } from '../mainApp/generateData'
 import type { WorkbookFormat } from '../mainApp/GenOptions'
 import type { UploadedWorkbook, OperationKind } from './useWorkbookOps'
 import type { WorkbookInspectResult, WorkbookOp } from './workbookProtocol'
@@ -11,6 +12,7 @@ interface Props {
   inspection: WorkbookInspectResult | null
   status: string | null
   warnings: string[]
+  caveat: string | null
   error: string | null
   opKind: OperationKind
   setOpKind: (kind: OperationKind) => void
@@ -40,6 +42,7 @@ export default function WorkbookTab({
   inspection,
   status,
   warnings,
+  caveat,
   error,
   opKind,
   setOpKind,
@@ -73,6 +76,12 @@ export default function WorkbookTab({
       setRefreshFormat('xlsx')
       return
     }
+    if (inspection.isV1) {
+      setOpKind('from-v1')
+      setConvertFormat('xlsx')   // v1 conversion defaults to xlsx
+      setRefreshFormat('xlsx')
+      return
+    }
     setOpKind(inspection.trimmed ? 'refresh' : 'convert')
     setConvertFormat(inspection.hasMacros ? 'xlsx' : 'xlsm')
     setRefreshFormat('xlsx')
@@ -92,6 +101,7 @@ export default function WorkbookTab({
   }
 
   const trimmed = inspection?.trimmed ?? false
+  const isV1 = inspection?.isV1 ?? false
   const pricingStale = inspection?.pricing?.stale
   const refreshLabel = trimmed
     ? 'Rebuild full workbook'
@@ -104,19 +114,40 @@ export default function WorkbookTab({
   // sheets to compare) — repricing only needs the pipeline URL then.
   const refreshAvailable = Boolean(pricesUrl)
     && (Boolean(inspection?.pricing) || Boolean(inspection?.trimmed))
+  // v1 conversion needs the pipeline and, for xlsm, the macro template.
+  const fromV1Available = Boolean(pricesUrl)
+    && (convertFormat === 'xlsx' || Boolean(templateUrl))
 
   const canProcess = Boolean(file && inspection && !busy) && (
-    opKind === 'convert'
-      ? !trimmed && (convertFormat === 'xlsx' || convertXlsmAvailable)
-      : opKind === 'trim'
-        ? !trimmed
-        : refreshAvailable && (refreshFormat === 'xlsx'
-          || inspection?.hasMacros
-          || Boolean(templateUrl))
+    opKind === 'from-v1'
+      ? fromV1Available
+      : opKind === 'convert'
+        ? !trimmed && !isV1 && (convertFormat === 'xlsx' || convertXlsmAvailable)
+        : opKind === 'trim'
+          ? !trimmed && !isV1
+          : !isV1 && refreshAvailable && (refreshFormat === 'xlsx'
+            || inspection?.hasMacros
+            || Boolean(templateUrl))
   )
 
   const handleProcess = () => {
     if (!inspection) return
+
+    if (opKind === 'from-v1') {
+      onProcess({
+        kind: 'from-v1',
+        outputFormat: convertFormat,
+        dataUrl: pricesUrl ?? '',
+        // Same include rule as refresh: custom pricing → the user's
+        // Includes-tab configuration; otherwise the standard includes.
+        includePayload: customPricing
+          ? collectIncludePayload(standardIncludes ?? [])
+          : collectDefaultIncludePayload(standardIncludes ?? []),
+        assumptions: loadTabAssumptions(),
+        vbaTemplateUrl: templateUrl,
+      })
+      return
+    }
 
     if (opKind === 'convert') {
       onProcess({
@@ -151,16 +182,26 @@ export default function WorkbookTab({
 
   const detected: string[] = []
   if (inspection) {
-    detected.push(trimmed ? 'trimmed workbook' : 'full workbook')
-    if (inspection.hasMacros) detected.push('macro-enabled')
-    if (inspection.hasFrozen) detected.push('has _Frozen')
-    // Trimmed workbooks have no pricing data — the staleness check is
-    // skipped for them, so no pricing verdict is shown.
-    if (!trimmed) {
-      if (inspection.pricing) {
-        detected.push(pricingStale ? 'pricing out of date' : 'pricing up to date')
-      } else {
-        detected.push('pricing check unavailable')
+    if (inspection.isV1) {
+      const v1 = inspection.v1
+      detected.push('legacy v1 workbook')
+      if (v1) {
+        detected.push(`${v1.tabs.length} Components tab${v1.tabs.length === 1 ? '' : 's'}`)
+        detected.push(`${v1.notes} note${v1.notes === 1 ? '' : 's'}`)
+        if (v1.dropped.length > 0) detected.push(`${v1.dropped.length} dropped tab${v1.dropped.length === 1 ? '' : 's'}`)
+      }
+    } else {
+      detected.push(trimmed ? 'trimmed workbook' : 'full workbook')
+      if (inspection.hasMacros) detected.push('macro-enabled')
+      if (inspection.hasFrozen) detected.push('has _Frozen')
+      // Trimmed workbooks have no pricing data — the staleness check is
+      // skipped for them, so no pricing verdict is shown.
+      if (!trimmed) {
+        if (inspection.pricing) {
+          detected.push(pricingStale ? 'pricing out of date' : 'pricing up to date')
+        } else {
+          detected.push('pricing check unavailable')
+        }
       }
     }
   }
@@ -230,14 +271,34 @@ export default function WorkbookTab({
             </h3>
 
             <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+              {isV1 && (
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="radio" name="wb-op" checked={opKind === 'from-v1'}
+                    onChange={() => setOpKind('from-v1')} />
+                  Convert to v2
+                  <select
+                    value={convertFormat}
+                    onChange={e => setConvertFormat(e.target.value as WorkbookFormat)}
+                    disabled={opKind !== 'from-v1'}
+                    className="px-2 py-1 text-sm rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 disabled:opacity-40"
+                  >
+                    <option value="xlsx">XLSX</option>
+                    <option value="xlsm">XLSM</option>
+                  </select>
+                  <span className="text-xs text-gray-400 dark:text-gray-500">
+                    (rebuilds the workbook in the v2 format from the current pricing)
+                  </span>
+                </label>
+              )}
+
               <label className="flex items-center gap-2 cursor-pointer">
                 <input type="radio" name="wb-op" checked={opKind === 'convert'}
-                  onChange={() => setOpKind('convert')} disabled={trimmed} />
+                  onChange={() => setOpKind('convert')} disabled={trimmed || isV1} />
                 Convert only
                 <select
                   value={convertFormat}
                   onChange={e => setConvertFormat(e.target.value as WorkbookFormat)}
-                  disabled={opKind !== 'convert' || trimmed}
+                  disabled={opKind !== 'convert' || trimmed || isV1}
                   className="px-2 py-1 text-sm rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 disabled:opacity-40"
                 >
                   <option value="xlsx">XLSX</option>
@@ -247,12 +308,12 @@ export default function WorkbookTab({
 
               <label className="flex items-center gap-2 cursor-pointer">
                 <input type="radio" name="wb-op" checked={opKind === 'refresh'}
-                  onChange={() => setOpKind('refresh')} disabled={!refreshAvailable} />
+                  onChange={() => setOpKind('refresh')} disabled={!refreshAvailable || isV1} />
                 {refreshLabel}
                 <select
                   value={refreshFormat}
                   onChange={e => setRefreshFormat(e.target.value as WorkbookFormat)}
-                  disabled={opKind !== 'refresh' || !refreshAvailable}
+                  disabled={opKind !== 'refresh' || !refreshAvailable || isV1}
                   className="px-2 py-1 text-sm rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 disabled:opacity-40"
                 >
                   <option value="xlsx">XLSX</option>
@@ -262,7 +323,7 @@ export default function WorkbookTab({
 
               <label className="flex items-center gap-2 cursor-pointer">
                 <input type="radio" name="wb-op" checked={opKind === 'trim'}
-                  onChange={() => setOpKind('trim')} disabled={trimmed} />
+                  onChange={() => setOpKind('trim')} disabled={trimmed || isV1} />
                 Trim workbook <span className="text-xs text-gray-400 dark:text-gray-500">(outputs XLSX)</span>
               </label>
             </div>
@@ -292,6 +353,11 @@ export default function WorkbookTab({
         {error && (
           <div className="mb-4 px-4 py-2 text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg whitespace-pre-line">
             {error}
+          </div>
+        )}
+        {(caveat || inspection?.v1?.caveat) && (
+          <div className="mb-4 px-4 py-3 text-sm font-semibold text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-900/30 border-2 border-rose-400 dark:border-rose-600 rounded-lg shadow-sm whitespace-pre-line">
+            ⚠️ {caveat ?? inspection?.v1?.caveat}
           </div>
         )}
         {status && (

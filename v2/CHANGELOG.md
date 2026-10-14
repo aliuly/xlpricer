@@ -6,6 +6,11 @@
     (unit starting with "h") are scaled by the FT_HOURS assumption so
     every result is a full-time monthly price, comparable with the
     R12/R24/R36 columns.
+  - v1 → v2 workbook conversion: `--from-v1 <file>` (and `--check`)
+    extracts the user-owned Components tabs from a legacy workbook and
+    regenerates it in the v2 format; `make v1 FILE=…`.  The SPA
+    Conversion mode detects dropped v1 files and offers a
+    "Convert to v2" operation with the same extraction rules.
   - Added data patching (fixes duplicates)
   - Duplicate checking functionality.
   - DDSOG backup enriching.

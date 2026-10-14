@@ -3,7 +3,7 @@
 /* ── Assumptions ──────────────────────────── */
 
 export interface AssumptionsRow {
-  type: 'section' | 'data'
+  type: 'section' | 'data' | 'note'
   key: string
   value: string
   when: string

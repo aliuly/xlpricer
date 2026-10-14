@@ -11,7 +11,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 import { generatePricingXlsx } from '../../src/xlsx/writer'
 import { mergeIntoMacroWorkbook } from '../../src/xlsx/vba'
-import { buildInput } from '../helpers'
+import { buildInput, buildV1Workbook, buildV2FormatWorkbook } from '../helpers'
 
 const root = fileURLToPath(new URL('../..', import.meta.url))
 const TSCLI = join(root, 'node_modules', '.bin', 'tsx')
@@ -270,4 +270,124 @@ describe('CLI conversion smoke', () => {
     },
     120_000,
   )
+})
+
+describe('CLI v1 conversion smoke', () => {
+  let v1File = ''
+  let v2File = ''
+  let noOverviewFile = ''
+
+  beforeAll(async () => {
+    v1File = join(outDir, 'v1-input.xlsx')
+    writeFileSync(v1File, await buildV1Workbook())
+    v2File = join(outDir, 'v2-format.xlsx')
+    writeFileSync(v2File, await buildV2FormatWorkbook())
+    noOverviewFile = join(outDir, 'no-overview.xlsx')
+    const wb = new ExcelJS.Workbook()
+    wb.addWorksheet('Assumptions')
+    writeFileSync(noOverviewFile, Buffer.from(await wb.xlsx.writeBuffer()))
+  })
+
+  it('--check previews the conversion without a URL or output', async () => {
+    const { stdout } = await execFileP(TSCLI, ['src/xlsx/cli.ts',
+      '--from-v1', v1File, '--check',
+    ])
+    const summary = lastJson(stdout)
+    expect(summary.status).toBe('ok')
+    expect(summary.check).toBe(true)
+    expect(summary.tabs).toEqual([{ name: 'Components', rows: 6 }])
+    expect(summary.dropped).toEqual(['Deal Summary'])
+    expect(summary.notes).toBe(2)
+    expect(summary.caveat).toContain('Item descriptions may have changed')
+    expect(summary.output).toBeUndefined()
+  }, 60_000)
+
+  it('converts a v1 workbook into a v2 workbook', async () => {
+    const out = join(outDir, 'v1-converted.xlsx')
+    const { stdout } = await execFileP(TSCLI, ['src/xlsx/cli.ts',
+      `${baseUrl}/prices.json`, 'tests/fixtures/includes/oracle.csv',
+      '--from-v1', v1File,
+      '-o', out,
+      '--assumptions', 'tests/fixtures/assumptions.csv',
+    ])
+    const summary = lastJson(stdout)
+    expect(summary.status).toBe('ok')
+    expect(summary.input).toBe(v1File)
+    expect(existsSync(out)).toBe(true)
+
+    const wb = new ExcelJS.Workbook()
+    await wb.xlsx.load(readFileSync(out))
+    expect(wb.worksheets.map(w => w.name)).toContain('Overview')
+    expect(wb.worksheets.map(w => w.name)).toContain('Components')
+    expect(wb.worksheets.map(w => w.name)).toContain('Finder')
+    expect(wb.worksheets.map(w => w.name)).toContain('T')
+
+    // The Components tab carries the extracted group + data rows.
+    const comp = wb.getWorksheet('Components')!
+    expect(comp.getCell(6, 2).value).toBe('Base Infrastructure')
+    expect(comp.getCell(6, 9).value).toBe('base')
+    expect(comp.getCell(7, 4).value).toBe('Essentials: VPC')
+    expect(comp.getCell(8, 7).value).toBe(500)          // literal H/R kept
+    expect(comp.getCell(9, 2).value).toBe(100)          // other-sheet qty frozen
+    // The kept local qty formula sits on the Anti-virus row (the v2
+    // generator re-inserts the group Total row after each group).
+    const kept = comp.getCell(12, 2).value as { formula?: string }
+    expect(kept.formula).toBe('B7+B8')                  // local qty formula kept
+
+    // Assumptions: trailing notes + the dropped-tabs record.
+    const ass = wb.getWorksheet('Assumptions')!
+    const texts: string[] = []
+    ass.eachRow({ includeEmpty: false }, row => {
+      const c = row.getCell(3).value
+      const b = row.getCell(2).value
+      if (typeof c === 'string') texts.push(c)
+      if (typeof b === 'string') texts.push(b)
+    })
+    expect(texts).toContain('Trailing note one')
+    expect(texts).toContain('Trailing note two')
+    expect(texts).toContain('Dropped tabs')
+    expect(texts).toContain('Deal Summary')
+  }, 120_000)
+
+  it('exits 2 with kind not-v1 when the Overview is missing', async () => {
+    let failed = false
+    try {
+      await execFileP(TSCLI, ['src/xlsx/cli.ts', '--from-v1', noOverviewFile, '--check'])
+    } catch (err) {
+      failed = true
+      const e = err as { code?: unknown; stderr?: string }
+      expect(e.code).toBe(2)
+      const summary = lastJson(String(e.stderr))
+      expect(summary.status).toBe('error')
+      expect(summary.kind).toBe('not-v1')
+    }
+    expect(failed).toBe(true)
+  }, 60_000)
+
+  it('exits 2 with kind v2-file for v2-format input', async () => {
+    let failed = false
+    try {
+      await execFileP(TSCLI, ['src/xlsx/cli.ts', '--from-v1', v2File, '--check'])
+    } catch (err) {
+      failed = true
+      const e = err as { code?: unknown; stderr?: string }
+      expect(e.code).toBe(2)
+      const summary = lastJson(String(e.stderr))
+      expect(summary.status).toBe('error')
+      expect(summary.kind).toBe('v2-file')
+    }
+    expect(failed).toBe(true)
+  }, 60_000)
+
+  it('rejects --check without --from-v1', async () => {
+    let failed = false
+    try {
+      await execFileP(TSCLI, ['src/xlsx/cli.ts', `${baseUrl}/prices.json`, '--check'])
+    } catch (err) {
+      failed = true
+      const e = err as { code?: unknown }
+      expect(e.code).toBe(2)
+    }
+    expect(failed).toBe(true)
+  }, 60_000)
 })

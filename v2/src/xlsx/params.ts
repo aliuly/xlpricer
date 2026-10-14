@@ -17,7 +17,7 @@ import {
 } from './xlu';
 
 /* ── Types ─────────────────────────────────── */
-import type { AssumptionsRow } from '../editorTab/AssumptionsTab';
+import type { AssumptionsRow } from '../editorTab/classify';
 
 
 
@@ -103,6 +103,16 @@ export function genAssSheet(
 	writeCell(ws, r, C_WHO, row.who, ['assumptions', 'who']);
 	writeCell(ws, r, C_COMMENT, row.notes, ['assumptions', 'comment']);
       }
+    } else if (row.type == 'note') {
+      // Plain-text note row: the text lands in column C with the
+      // plain key style — header styling stays reserved for the
+      // column-B section rows.
+      writeCell(ws, r, 2, null, [ 'assumptions','#']);
+      writeCell(ws, r, C_KEY, row.key, [ 'assumptions','key']);
+      writeCell(ws, r, C_VAL, null, ['assumptions', 'value']);
+      writeCell(ws, r, C_WHEN, row.when, ['assumptions', 'when']);
+      writeCell(ws, r, C_WHO, row.who, ['assumptions', 'who']);
+      writeCell(ws, r, C_COMMENT, row.notes, ['assumptions', 'comment']);
     } else {
       writeCell(ws, r, 2, null, [ 'assumptions','#']);
       writeCell(ws, r, C_KEY, row.key, [ 'assumptions','key']);

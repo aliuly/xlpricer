@@ -13,7 +13,7 @@ declare const __GIT_VERSION__: string
 const SOFT_WARNING_BYTES = 3 * 1024 * 1024
 const HARD_LIMIT_BYTES = 32 * 1024 * 1024
 
-export type OperationKind = 'convert' | 'refresh' | 'trim'
+export type OperationKind = 'convert' | 'refresh' | 'trim' | 'from-v1'
 
 export interface UploadedWorkbook {
   name: string
@@ -26,7 +26,7 @@ export interface InspectPricing {
 }
 
 interface PendingDownload {
-  suffix: 'converted' | 'trimmed' | 'reprice'
+  suffix: 'converted' | 'trimmed' | 'reprice' | 'v2'
   ext: 'xlsx' | 'xlsm'
 }
 
@@ -60,6 +60,7 @@ export function useWorkbookOps() {
   const [inspection, setInspection] = useState<WorkbookInspectResult | null>(null)
   const [status, setStatus] = useState<string | null>(null)
   const [warnings, setWarnings] = useState<string[]>([])
+  const [caveat, setCaveat] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [opKind, setOpKind] = useState<OperationKind>('convert')
   const [convertFormat, setConvertFormat] = useState<WorkbookFormat>('xlsm')
@@ -85,6 +86,7 @@ export function useWorkbookOps() {
     setInspection(null)
     setStatus(null)
     setWarnings([])
+    setCaveat(null)
     setError(null)
   }, [])
 
@@ -125,6 +127,7 @@ export function useWorkbookOps() {
     setInspection(null)
     setStatus(null)
     setError(null)
+    setCaveat(null)
     setWarnings(uploaded.size > SOFT_WARNING_BYTES
       ? ['Large file — processing may be slow.']
       : [])
@@ -139,10 +142,13 @@ export function useWorkbookOps() {
       const msg = e.data
       if (msg.type === 'inspect') {
         const result = msg.result
-        if (!result.isXlpricer) {
+        if (!result.isXlpricer && !result.isV1) {
           setFile(null)
           setInspection(null)
-          setError('This file is not an XLPricer v2 workbook.')
+          // Near-miss v1 files carry the gate's reason (missing
+          // Overview, non-v1 Assumptions, …); everything else gets
+          // the generic message.
+          setError(result.v1Error ?? 'This file is not an XLPricer workbook (v1 or v2).')
           return
         }
         if (result.trimmed && !result.hasFrozen) {
@@ -178,7 +184,9 @@ export function useWorkbookOps() {
       ? 'trimmed'
       : op.kind === 'convert'
         ? 'converted'
-        : 'reprice'
+        : op.kind === 'from-v1'
+          ? 'v2'
+          : 'reprice'
     const ext: PendingDownload['ext'] = op.kind === 'trim'
       ? 'xlsx'
       : op.kind === 'convert'
@@ -186,7 +194,7 @@ export function useWorkbookOps() {
         : op.outputFormat
     pendingRef.current = { suffix, ext }
 
-    const requestOp: WorkbookOp = op.kind === 'refresh'
+    const requestOp: WorkbookOp = op.kind === 'refresh' || op.kind === 'from-v1'
       ? {
           ...op,
           appMeta: {
@@ -213,6 +221,7 @@ export function useWorkbookOps() {
           download(msg.buffer, pendingRef.current, file.name)
         }
         setWarnings(msg.warnings ?? [])
+        setCaveat(msg.caveat ?? null)
         return
       }
       if (msg.type === 'unchanged') {
@@ -243,6 +252,7 @@ export function useWorkbookOps() {
     inspection,
     status,
     warnings,
+    caveat,
     error,
     opKind,
     setOpKind,

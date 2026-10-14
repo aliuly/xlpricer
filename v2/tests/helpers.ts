@@ -130,3 +130,106 @@ export function cachedText(
 export function makeTmpDir(prefix: string): string {
   return mkdtempSync(join(tmpdir(), prefix))
 }
+
+/* ── Synthetic v1 workbook fixture ───────────────────────── */
+
+/**
+ * A minimal v1-format workbook (round-tripped like a real file):
+ * Overview referencing `Components!`, a v1-shaped Assumptions sheet
+ * (Format version 1.8.1 + trailing plain-text notes), a Components
+ * tab exercising the extraction rules (group/data/total/empty rows,
+ * formula cells with cached results, a per-row Region override), and
+ * a `Deal Summary` sheet that is neither referenced nor generated.
+ */
+export async function buildV1Workbook(): Promise<Buffer> {
+  const ExcelJS = (await import('exceljs')).default
+  const wb = new ExcelJS.Workbook()
+
+  const ov = wb.addWorksheet('Overview')
+  ov.getCell('R11').value = { formula: "SUMIFS('Components'!B:B)" }
+
+  const ass = wb.addWorksheet('Assumptions')
+  ass.getCell('B2').value = '#'
+  ass.getCell('C2').value = 'Assumption'
+  ass.getCell('D2').value = 'Value'
+  ass.getCell('C3').value = 'Format version'
+  ass.getCell('D3').value = '1.8.1'
+  ass.getCell('B4').value = 'Include files'
+  ass.getCell('C5').value = 'dctemp'
+  ass.getCell('D5').value = '2026-08-31'
+  ass.getCell('B6').value = 'Hours'
+  ass.getCell('C7').value = 'Full Time (24x7)'
+  ass.getCell('D7').value = 730
+  ass.getCell('C8').value = 'Trailing note one'
+  ass.getCell('C9').value = 'Trailing note two'
+
+  wb.addWorksheet('Deal Summary')
+
+  const comp = wb.addWorksheet('Components')
+  comp.getCell(5, 2).value = 'Qty'
+  comp.getCell(5, 3).value = 'Function'
+  comp.getCell(5, 4).value = 'Cloud Desc'
+  comp.getCell(5, 6).value = 'Storage (GiB)'
+  comp.getCell(5, 7).value = 'H/R'
+  comp.getCell(5, 9).value = 'Group'
+  comp.getCell(5, 11).value = 'Region'
+  comp.getCell(5, 12).value = 'EVS Class'
+
+  // Group row: label in Qty, key in Group.
+  comp.getCell(6, 2).value = 'Base Infrastructure'
+  comp.getCell(6, 9).value = 'base'
+  // Data row: default H/R formula (dropped), plain values.
+  comp.getCell(7, 2).value = 1
+  comp.getCell(7, 4).value = 'Essentials: VPC'
+  comp.getCell(7, 7).value = { formula: 'IF($C$3="R36M",1,2)', result: 730 }
+  comp.getCell(7, 9).value = 'base'
+  // Data row: literal H/R override + per-row Region override.
+  comp.getCell(8, 2).value = 2
+  comp.getCell(8, 3).value = 'ADFS Servers'
+  comp.getCell(8, 4).value = 'Compute: General Purpose'
+  comp.getCell(8, 6).value = 100
+  comp.getCell(8, 7).value = 500
+  comp.getCell(8, 9).value = { formula: 'I6', result: 'base' }
+  comp.getCell(8, 11).value = 'eu-nl'
+  // Data row: other-sheet qty formula → frozen to cached value.
+  comp.getCell(9, 2).value = { formula: 'Assumptions!$D$36', result: 100 }
+  comp.getCell(9, 4).value = 'Network: Internet Traffic'
+  comp.getCell(9, 9).value = 'base'
+  // Total row (skipped) and an empty spacer row (skipped).
+  comp.getCell(10, 2).value = { formula: '="Total "&IF($I10="","N/A",$I10)', result: 'Total base' }
+  comp.getCell(10, 9).value = { formula: 'I6', result: 'base' }
+  // Second group + a data row with a local qty formula (kept).
+  comp.getCell(12, 2).value = 'Compute'
+  comp.getCell(12, 9).value = 'com'
+  comp.getCell(13, 2).value = { formula: 'B7+B8', result: 3 }
+  comp.getCell(13, 4).value = 'Anti-virus'
+  comp.getCell(13, 9).value = 'com'
+
+  const raw = await wb.xlsx.writeBuffer()
+  return Buffer.from(raw as unknown as ArrayBuffer)
+}
+
+/** Like buildV1Workbook but Assumptions carries Format version 2.0.1. */
+export async function buildV2FormatWorkbook(): Promise<Buffer> {
+  const ExcelJS = (await import('exceljs')).default
+  const wb = new ExcelJS.Workbook()
+  wb.addWorksheet('Overview')
+  const ass = wb.addWorksheet('Assumptions')
+  ass.getCell('B2').value = '#'
+  ass.getCell('C2').value = 'Assumption'
+  ass.getCell('D2').value = 'Value'
+  ass.getCell('C3').value = 'Format version'
+  ass.getCell('D3').value = '2.0.1'
+  const raw = await wb.xlsx.writeBuffer()
+  return Buffer.from(raw as unknown as ArrayBuffer)
+}
+
+/** Load workbook bytes through ExcelJS. */
+export async function loadWorkbookBytes(bytes: Buffer): Promise<import('exceljs').Workbook> {
+  const ExcelJS = (await import('exceljs')).default
+  const wb = new ExcelJS.Workbook()
+  await (wb.xlsx.load as unknown as (data: Uint8Array) => Promise<import('exceljs').Workbook>)(
+    new Uint8Array(bytes),
+  )
+  return wb
+}

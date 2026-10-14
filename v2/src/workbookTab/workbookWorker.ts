@@ -13,6 +13,13 @@ import JSZip from 'jszip'
 import { FROZEN_SHEET_NAME, META_SHEET_NAME } from '../xlsx/constants'
 import { toXlsm, toXlsx, trimWorkbook, TrimError } from '../xlsx/convert'
 import { refreshWorkbook } from '../xlsx/reprice'
+import {
+  convertV1Workbook,
+  extractV1Workbook,
+  V1_DESCRIPTION_CAVEAT,
+  V1ConvertError,
+} from '../xlsx/v1'
+import type { AssumptionsRow } from '../editorTab/classify'
 import { loadPricedData } from '../homeTab/loadPricing'
 import type {
   WorkbookInspectResult,
@@ -56,9 +63,30 @@ async function inspect(req: WorkbookRequest): Promise<WorkbookInspectResult> {
   const result: WorkbookInspectResult = {
     sheets: wb.worksheets.map(w => w.name),
     isXlpricer: isXlpricer(wb),
+    isV1: false,
     hasMacros: await hasMacros(req.file),
     hasFrozen: Boolean(wb.getWorksheet(FROZEN_SHEET_NAME)),
     trimmed: !hasPrices && !hasVolumes,
+  }
+
+  // v1 detection: a v1 workbook has no T sheet, so only try the v1
+  // gate when the v2 marker is absent.  The extraction doubles as the
+  // preview the UI shows before the user starts the conversion.
+  if (!result.isXlpricer) {
+    try {
+      const extraction = extractV1Workbook(wb)
+      result.isV1 = true
+      result.v1 = {
+        tabs: extraction.tabs.map(t => ({ name: t.name, rows: t.rows.length })),
+        dropped: extraction.dropped,
+        notes: extraction.notes.length,
+        includes: extraction.includes,
+        warnings: extraction.warnings,
+        caveat: V1_DESCRIPTION_CAVEAT,
+      }
+    } catch (err) {
+      if (err instanceof V1ConvertError) result.v1Error = err.message
+    }
   }
 
   if (req.pricing?.dataUrl && result.isXlpricer && !result.trimmed) {
@@ -152,6 +180,27 @@ self.onmessage = async (e: MessageEvent<WorkbookRequest>) => {
         return
       }
       self.postMessage({ type: 'ok', buffer: res.buffer, warnings: res.warnings }, { transfer: [res.buffer] })
+      return
+    }
+
+    /* ── v1 → v2 conversion ── */
+    if (op.kind === 'from-v1') {
+      const pricingData = await loadPricedData(op.dataUrl, op.includePayload)
+      let vbaTemplate: Uint8Array | undefined
+      if (op.outputFormat === 'xlsm') {
+        vbaTemplate = await fetchBytes(op.vbaTemplateUrl)
+      }
+      const result = await convertV1Workbook({
+        file: bytes,
+        pricingData,
+        assumptions: op.assumptions as AssumptionsRow[],
+        vbaTemplate,
+        appMeta: op.appMeta ?? {},
+      })
+      self.postMessage(
+        { type: 'ok', buffer: result.buffer, warnings: result.warnings, caveat: result.caveat },
+        { transfer: [result.buffer] },
+      )
       return
     }
   } catch (err: unknown) {

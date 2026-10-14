@@ -1,18 +1,26 @@
 /* ── XLSX generation CLI entry point ─────── */
 
 import { execSync } from 'node:child_process'
-import { readFileSync, statSync, writeFileSync } from 'fs'
+import { existsSync, readFileSync, statSync, writeFileSync } from 'fs'
 import { resolve } from 'node:path'
 import Papa from 'papaparse'
+import ExcelJS from 'exceljs'
 
 import { generatePricingXlsx } from './writer.ts'
 import type { AppMeta, PricingData } from './writer.ts'
 import { mergeIntoMacroWorkbook } from './vba.ts'
 import { refreshWorkbook, RefreshError } from './reprice.ts'
 import { toXlsx, toXlsm, trimWorkbook } from './convert.ts'
+import {
+  convertV1Workbook,
+  extractV1Workbook,
+  V1_DESCRIPTION_CAVEAT,
+  V1ConvertError,
+} from './v1.ts'
 import { processPricingData } from '../prices/index.ts'
 import type { PricesData, PipelineOptions } from '../prices/types.ts'
 import { classifyAssumptions, classifyComponents } from '../editorTab/classify.ts'
+import type { AssumptionsRow } from '../editorTab/classify.ts'
 
 /* ── Defaults ──────────────────────────────── */
 
@@ -39,8 +47,10 @@ interface ParsedArgs {
   esaExplicit: boolean
   xlsmFile: string | null
   updateFile: string | null
+  fromV1: string | null
   force: boolean
   checkOnly: boolean
+  check: boolean
   toXlsx: boolean
   toXlsm: boolean
   trim: boolean
@@ -113,8 +123,13 @@ function parseArgs(argv: string[]): ParsedArgs {
   const updateIdx = args.findIndex(a => a === '--update')
   const updateFile = updateIdx !== -1 && updateIdx + 1 < args.length ? args[updateIdx + 1] : null
 
+  // --from-v1 <file> (v1 → v2 conversion mode)
+  const fromV1Idx = args.findIndex(a => a === '--from-v1')
+  const fromV1 = fromV1Idx !== -1 && fromV1Idx + 1 < args.length ? args[fromV1Idx + 1] : null
+
   const force = args.includes('--force')
   const checkOnly = args.includes('--check-only')
+  const check = args.includes('--check')
 
   // --to-xlsx / --to-xlsm / --trim (conversion mode)
   const toXlsx = args.includes('--to-xlsx')
@@ -131,7 +146,7 @@ function parseArgs(argv: string[]): ParsedArgs {
 
   // Indices consumed by option values
   const consumed = new Set<number>()
-  for (const idx of [outputIdx, verIdx, spaIdx, assIdx, xlsmIdx, updateIdx]) {
+  for (const idx of [outputIdx, verIdx, spaIdx, assIdx, xlsmIdx, updateIdx, fromV1Idx]) {
     if (idx !== -1) { consumed.add(idx); consumed.add(idx + 1) }
   }
   for (let i = 0; i < args.length; i++) {
@@ -140,6 +155,7 @@ function parseArgs(argv: string[]): ParsedArgs {
       consumed.add(i + 1)
     }
     if (args[i] === '--esa' || args[i] === '--no-esa' || args[i] === '--force' || args[i] === '--check-only'
+      || args[i] === '--check' || args[i] === '--from-v1'
       || args[i] === '--to-xlsx' || args[i] === '--to-xlsm' || args[i] === '--trim') {
       consumed.add(i)
     }
@@ -153,8 +169,8 @@ function parseArgs(argv: string[]): ParsedArgs {
 
   return {
     verbose, outputFile, outputExplicit, version, spaUrl, assumptionsFile,
-    componentFiles, enableEsa, esaExplicit, xlsmFile, updateFile, force,
-    checkOnly, toXlsx, toXlsm, trim, posArgs,
+    componentFiles, enableEsa, esaExplicit, xlsmFile, updateFile, fromV1, force,
+    checkOnly, check, toXlsx, toXlsm, trim, posArgs,
   }
 }
 
@@ -211,7 +227,11 @@ function fail(message: string): never {
 async function main(): Promise<void> {
   const opts = parseArgs(process.argv)
 
-  if (opts.posArgs.length === 0) {
+  if (opts.check && !opts.fromV1) {
+    fail('--check requires --from-v1 <file>')
+  }
+
+  if (opts.posArgs.length === 0 && !opts.fromV1) {
     console.error('Usage: npx tsx src/xlsx/cli.ts <url> [include.csv ...] [options]')
     console.error('')
     console.error('  Fetches pricing data from the given URL, applies include CSV files,')
@@ -251,6 +271,16 @@ async function main(): Promise<void> {
     console.error('    --trim                  TrimWB equivalent: freeze Prices formulas to')
     console.error('                            their cached values, drop pricing sheets,')
     console.error('                            record a _Frozen sheet for later revival')
+    console.error('')
+    console.error('  v1 → v2 conversion mode:')
+    console.error('    --from-v1 <file>        Convert a legacy v1 workbook: extract the')
+    console.error('                            Components tabs the v1 Overview references,')
+    console.error('                            then regenerate the workbook in the v2 format')
+    console.error('                            (URL and include CSVs as in generation mode;')
+    console.error('                            dropped tabs and trailing Assumptions notes')
+    console.error('                            are recorded in the new Assumptions sheet)')
+    console.error('    --check                 With --from-v1: dry-run — report what would')
+    console.error('                            be converted without fetching or writing')
     console.error('')
     console.error('  Example:')
     console.error('    npx tsx src/xlsx/cli.ts https://example.com/prices-latest.json \\')
@@ -302,6 +332,105 @@ async function main(): Promise<void> {
         input: first,
         output: opts.outputFile,
         mode: opts.trim ? 'trim' : (opts.toXlsm ? 'to-xlsm' : 'to-xlsx'),
+        elapsed_ms: Number((performance.now() - start).toFixed(0)),
+      }, null, 2))
+      return
+    }
+
+    /* ── v1 → v2 conversion mode ── */
+    if (opts.fromV1) {
+      const badFlags: string[] = []
+      if (opts.updateFile) badFlags.push('--update')
+      if (opts.toXlsx || opts.toXlsm || opts.trim) badFlags.push('--to-xlsx/--to-xlsm/--trim')
+      if (opts.force || opts.checkOnly) badFlags.push('--force/--check-only')
+      if (opts.componentFiles.length) badFlags.push('--components')
+      if (badFlags.length) fail(`flag(s) ${badFlags.join(', ')} are meaningless with --from-v1`)
+      if (!opts.check && opts.posArgs.length === 0) {
+        fail('--from-v1 requires <url> (omit the URL only with --check)')
+      }
+
+      // Output naming: <input-base>-v2.<ext>; the extension must match
+      // the macro template, exactly like refresh mode.
+      const ext = opts.xlsmFile ? '.xlsm' : '.xlsx'
+      if (!opts.outputExplicit) {
+        opts.outputFile = opts.fromV1.replace(/\.(xlsx|xlsm)$/i, '') + '-v2' + ext
+      } else {
+        const lower = opts.outputFile.toLowerCase()
+        if (!lower.endsWith(ext)) fail(`output must use ${ext} (got ${opts.outputFile})`)
+      }
+      if (resolve(opts.outputFile) === resolve(opts.fromV1)) {
+        fail('output path must differ from the input path')
+      }
+
+      const inputBytes = new Uint8Array(readFileSync(opts.fromV1))
+      const wb = new ExcelJS.Workbook()
+      await (wb.xlsx.load as unknown as (data: Uint8Array) => Promise<ExcelJS.Workbook>)(inputBytes)
+      const extraction = extractV1Workbook(wb)
+
+      if (opts.check) {
+        console.log(JSON.stringify({
+          status: 'ok',
+          input: opts.fromV1,
+          check: true,
+          tabs: extraction.tabs.map(t => ({ name: t.name, rows: t.rows.length })),
+          dropped: extraction.dropped,
+          notes: extraction.notes.length,
+          includes: extraction.includes,
+          warnings: extraction.warnings,
+          caveat: V1_DESCRIPTION_CAVEAT,
+          elapsed_ms: Number((performance.now() - start).toFixed(0)),
+        }, null, 2))
+        return
+      }
+
+      const [url, ...includeFiles] = opts.posArgs
+      const pricingData = await loadPricedData(url, includeFiles, opts.verbose)
+
+      /* ── Base assumptions (defaults CSV; v1 notes are appended) ── */
+      const assumptionsFile = opts.assumptionsFile ?? 'public/assumptions.csv'
+      let assumptions: AssumptionsRow[] = []
+      if (existsSync(assumptionsFile)) {
+        if (opts.verbose) console.error(`Loading assumptions from: ${assumptionsFile}`)
+        const raw = readFileSync(assumptionsFile, 'utf-8')
+        const parsed = Papa.parse<Record<string, string>>(raw, {
+          header: true,
+          skipEmptyLines: true,
+          transformHeader: (h: string) => h.trim(),
+          transform: (v: string) => v.trim(),
+        })
+        assumptions = parsed.data.map(classifyAssumptions)
+      } else if (opts.assumptionsFile) {
+        fail(`assumptions file not found: ${opts.assumptionsFile}`)
+      }
+
+      if (opts.verbose) console.error(`Generating v2 workbook → ${opts.outputFile}`)
+      const result = await convertV1Workbook({
+        file: inputBytes,
+        pricingData,
+        assumptions,
+        ...(opts.xlsmFile ? { vbaTemplate: new Uint8Array(readFileSync(opts.xlsmFile)) } : {}),
+        appMeta: {
+          version: opts.version,
+          spaUrl: opts.spaUrl,
+          sourceUrl: url,
+          enableEsa: opts.enableEsa,
+        },
+      })
+      writeFileSync(opts.outputFile, Buffer.from(result.buffer))
+
+      console.log(JSON.stringify({
+        status: 'ok',
+        input: opts.fromV1,
+        output: opts.outputFile,
+        vba: Boolean(opts.xlsmFile),
+        url,
+        tabs: result.tabs,
+        dropped: result.dropped,
+        notes: result.notes,
+        includes: extraction.includes,
+        warnings: result.warnings,
+        caveat: result.caveat,
+        records: pricingData.count ?? pricingData.records[0]?.length ?? 0,
         elapsed_ms: Number((performance.now() - start).toFixed(0)),
       }, null, 2))
       return
@@ -458,7 +587,7 @@ async function main(): Promise<void> {
     console.error(JSON.stringify({
       status: 'error',
       url: first,
-      ...(err instanceof RefreshError ? { kind: err.kind } : {}),
+      ...(err instanceof RefreshError || err instanceof V1ConvertError ? { kind: err.kind } : {}),
       error: message,
       stack,
       elapsed_ms: Number((performance.now() - start).toFixed(0)),
