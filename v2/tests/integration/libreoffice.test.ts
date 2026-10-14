@@ -163,12 +163,13 @@ maybe('LibreOffice recalc smoke', () => {
     expect(cachedNumber(finder.getCell('E11'))).toBe(4)          // RAM
     expect(cachedNumber(finder.getCell('F11'))).toBeCloseTo(0.05, 5) // priceAmount
     expect(cellText(finder.getCell('G11'))).toBe('h')            // unit
-    expect(cachedNumber(finder.getCell('H11'))).toBeCloseTo(0.04, 5) // R12
-    expect(cachedNumber(finder.getCell('I11'))).toBeCloseTo(0.03, 5) // R24
-    expect(cachedNumber(finder.getCell('J11'))).toBeCloseTo(0.02, 5) // R36
-    // K is the shared match-row index the other columns INDEX into
+    expect(cachedNumber(finder.getCell('H11'))).toBeCloseTo(36.5, 5) // Monthly: 0.05 × FT_HOURS(730)
+    expect(cachedNumber(finder.getCell('I11'))).toBeCloseTo(0.04, 5) // R12
+    expect(cachedNumber(finder.getCell('J11'))).toBeCloseTo(0.03, 5) // R24
+    expect(cachedNumber(finder.getCell('K11'))).toBeCloseTo(0.02, 5) // R36
+    // L is the shared match-row index the other columns INDEX into
     // (block cells beyond the anchor carry no cached result).
-    expect([4, 5]).toContain(cachedNumber(finder.getCell('K11')))
+    expect([4, 5]).toContain(cachedNumber(finder.getCell('L11')))
   }, 180_000)
 
   it('recalculates a refreshed workbook with the same values', async () => {

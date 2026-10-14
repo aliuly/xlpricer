@@ -1,10 +1,8 @@
 /* ── Pricing pipeline CLI entry point ─────── */
 
-import { readFileSync, statSync, writeFileSync } from 'fs';
-import Papa from 'papaparse';
+import { writeFileSync } from 'fs';
 
-import type { PricesData, PipelineOptions } from './types.ts';
-import { processPricingData } from './index.ts';
+import { loadPipelineData } from './load.ts';
 
 async function main(): Promise<void> {
   const args = process.argv.slice(2)
@@ -42,41 +40,7 @@ async function main(): Promise<void> {
   const start = performance.now()
 
   try {
-    if (verbose) {
-      console.error(`Fetching pricing data from: ${url}`)
-    }
-    const res = await fetch(url)
-    if (!res.ok) {
-      throw new Error(`Failed to fetch ${url}: HTTP ${res.status}`)
-    }
-    const data: PricesData = await res.json()
-
-    // Parse include CSV files
-    const includes: PipelineOptions['includes'] = {}
-    for (const file of includeFiles) {
-      const raw = readFileSync(file, 'utf-8')
-      const { mtime } = statSync(file)
-      const parsed = Papa.parse<Record<string, string>>(raw, {
-        header: true,
-        skipEmptyLines: true,
-        transformHeader: (h: string) => h.trim(),
-        transform: (v: string) => v.trim(),
-      })
-      const stem = file.replace(/\.csv$/i, '').split('/').pop()!
-      includes[stem] = {
-        version: mtime.toISOString(),
-        records: parsed.data as unknown as Record<string, unknown>[],
-      }
-      if (verbose) {
-        console.error(`Loaded ${parsed.data.length} includes from ${file} (key: ${stem}, mtime: ${mtime.toISOString()})`)
-      }
-    }
-
-    const opts: PipelineOptions = { verbose }
-    if (includeFiles.length > 0) {
-      opts.includes = includes
-    }
-    await processPricingData(data, opts)
+    const data = await loadPipelineData(url, includeFiles, verbose)
 
     const rows = data.count ?? data.records[0]?.length ?? 0
     const elapsed = (performance.now() - start).toFixed(0)

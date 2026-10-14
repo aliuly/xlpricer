@@ -6,10 +6,11 @@ XLSX_OUTPUT = pricing.xlsx
 XLSM_OUTPUT = pricing.xlsm
 VBA_TEMPLATE = public/vba/template.xlsm
 PIPELINE_OUTPUT = out.json
+DUPLICATES_OUTPUT = duplicates.txt
 BASE ?= /
 
 
-.PHONY: help install ci dev build preview test pipeline xlsx xlsm vba clean manifest test
+.PHONY: help install ci dev build preview test pipeline duplicates xlsx xlsm vba clean manifest test
 
 
 help: ## Show this help
@@ -64,6 +65,9 @@ vba: ## Build the VBA host workbook (public/vba/template.xlsm)
 pipeline: node_modules ## Test pricing pipeline from CLI.  use PRICES_URL to change targets
 	npx tsx src/prices/cli.ts $(PRICES_URL) -o $(PIPELINE_OUTPUT) --verbose $(PRICE_INCLUDES)
 
+duplicates: node_modules ## Report duplicate _XlTitle_/region pairs.  use PRICES_URL to change targets
+	npx tsx src/prices/duplicates.ts $(PRICES_URL) -o $(DUPLICATES_OUTPUT) --verbose $(PRICE_INCLUDES)
+
 xlsx: node_modules ## Generate plain XLSX workbook (no VBA).  Override vars as needed
 	npx tsx src/xlsx/cli.ts $(PRICES_URL) $(PRICE_INCLUDES) \
 		-o $(XLSX_OUTPUT) \
@@ -81,6 +85,6 @@ xlsm: vba node_modules ## Generate macro-enabled XLSM workbook.  Override vars a
 
 clean: ## Remove generated artifacts
 	$(MAKE) -C vba clean
-	rm -f $(XLSX_OUTPUT) $(XLSM_OUTPUT) $(PIPELINE_OUTPUT)
+	rm -f $(XLSX_OUTPUT) $(XLSM_OUTPUT) $(PIPELINE_OUTPUT) $(DUPLICATES_OUTPUT)
 
 

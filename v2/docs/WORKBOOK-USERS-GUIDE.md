@@ -87,8 +87,11 @@ comparing products (requires Excel 2021/365):
   match (the max mirrors the min); type a **max** to set a range.
 - **Results** — "Results (N matches)" counter and the columns
   Description (formatted like the BOM description column), Region,
-  vCpu, RAM, priceAmount, unit, R12/R24/R36 — sorted by priceAmount,
-  cheapest first.
+  vCpu, RAM, priceAmount, unit, Monthly, R12/R24/R36 — sorted by
+  priceAmount, cheapest first.  **Monthly** scales hourly-billed rows
+  (unit starting with `h`) by the FT_HOURS assumption, so every row
+  is a full-time monthly price comparable with R12/R24/R36; non-hourly
+  units are already monthly and pass through unchanged.
 
 The result cells are fixed array formulas — they are read-only
 ("You can't change part of an array" is expected there); edit the

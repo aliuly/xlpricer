@@ -33,6 +33,7 @@ Sub AddToolButtons(ws As Worksheet)
 
   AddButton ws, "btnAddTab", "Add Components", "AddBOM", 1
   AddButton ws, "btnTrimSheet", "Trim Workbook", "TrimWB", 2
+  AddButton ws, "btnHyperCmp", "HyperCompare Export", "ExportCmpTmpl", 3
 End Sub
 
 Sub AddButton(ws As Worksheet, btnName As String, caption As String, _

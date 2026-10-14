@@ -322,8 +322,9 @@ function sourceToBackup(rec: Row, x: Record<string, number>): [string, string] |
   }
 
   if (fam === 'Database') {
-    if (pidpar === 'rds' && !pname.includes('Backup')) return ['Database', 'RDS Backup Space']
+    if (pidpar === 'rds' && !pname.includes('Backup') && !pname.includes('License')) return ['Database', 'RDS Backup Space']
     if (pidpar === 'dds') return ['Database', 'DDS Backup Space']
+    if (pidpar === 'ddsog') return ['Database', 'DDS Backup Space']
     if (pidpar === 'dcs') return ['Database', 'DCS Backup Space']
     if (pname.includes('GeminiDB') && !pname.includes('Backup')) return ['Database', 'GeminiDB backup space']
     if (pname.includes('TaurusDB') && !pname.includes('Backup')) return ['Database', 'Backup Space TaurusDB']

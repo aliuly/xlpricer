@@ -6,7 +6,7 @@ A1 Yearly Overview
 B2 Yearly Prices
 M2 Monthly Prices
 B4 Year
-D4 2026
+D4 2027
 E4 =D4+1
 F4 =E4+1
 G4 =F4+1
@@ -22,7 +22,7 @@ R4 =TEXT(Components!$AR5,"@")
 S4 =TEXT(Components!$AS5,"@")
 T4 =TEXT(Components!$AT5,"@")
 B5 Months
-D5 3
+D5 12
 E5 12
 F5 12
 G5 12
@@ -1197,20 +1197,22 @@ D10 vCpu
 E10 RAM
 F10 priceAmount
 G10 unit
-H10 R12
-I10 R24
-J10 R36
-K10 Row
-B11 =IFERROR(INDEX(Prices!$B$4:Prices!$B$12,$K$11:$K$19-3),"")
-C11 =IFERROR(INDEX(Prices!$AB$4:Prices!$AB$12,$K$11:$K$19-3),"")
-D11 =IFERROR(INDEX(Prices!$M$4:Prices!$M$12,$K$11:$K$19-3),"")
-E11 =IFERROR(INDEX(Prices!$N$4:Prices!$N$12,$K$11:$K$19-3),"")
-F11 =IFERROR(INDEX(Prices!$J$4:Prices!$J$12,$K$11:$K$19-3),"")
-G11 =IFERROR(INDEX(Prices!$K$4:Prices!$K$12,$K$11:$K$19-3),"")
-H11 =IFERROR(INDEX(Prices!$AD$4:Prices!$AD$12,$K$11:$K$19-3),"")
-I11 =IFERROR(INDEX(Prices!$AE$4:Prices!$AE$12,$K$11:$K$19-3),"")
-J11 =IFERROR(INDEX(Prices!$AF$4:Prices!$AF$12,$K$11:$K$19-3),"")
-K11 =IFERROR(_xlfn.VSTACK(_xlfn.SORTBY(_xlfn._xlws.FILTER(ROW(Prices!$B$4:Prices!$B$12),(Prices!$V$4:Prices!$V$12=$C$3)*(($C$5="")+($C$5="(all)")+($C$5="(blank)")*(Prices!$E$4:Prices!$E$12="")+(Prices!$E$4:Prices!$E$12=$C$5))*(($C$8="")+($C$8="(all)")+($C$8="(blank)")*(Prices!$H$4:Prices!$H$12="")+(Prices!$H$4:Prices!$H$12=$C$8))*(($C$6="")+($C$6="(all)")+($C$6="(blank)")*(Prices!$P$4:Prices!$P$12="")+(Prices!$P$4:Prices!$P$12=$C$6))*(($C$7="")+($C$7="(all)")+($C$7="(blank)")*(Prices!$R$4:Prices!$R$12="")+(Prices!$R$4:Prices!$R$12=$C$7))*(($C$4="")+($C$4="(all)")+(Prices!$AB$4:Prices!$AB$12=$C$4))*(($I$3="")+(Prices!$M$4:Prices!$M$12>=$I$3))*(($K$3="")+(Prices!$M$4:Prices!$M$12<=$K$3))*(($I$4="")+(Prices!$N$4:Prices!$N$12>=$I$4))*(($K$4="")+(Prices!$N$4:Prices!$N$12<=$K$4))*(($H$6="")+($H$6="(all)")+(Prices!$L$4:Prices!$L$12=$H$6))),_xlfn._xlws.FILTER(Prices!$J$4:Prices!$J$12,(Prices!$V$4:Prices!$V$12=$C$3)*(($C$5="")+($C$5="(all)")+($C$5="(blank)")*(Prices!$E$4:Prices!$E$12="")+(Prices!$E$4:Prices!$E$12=$C$5))*(($C$8="")+($C$8="(all)")+($C$8="(blank)")*(Prices!$H$4:Prices!$H$12="")+(Prices!$H$4:Prices!$H$12=$C$8))*(($C$6="")+($C$6="(all)")+($C$6="(blank)")*(Prices!$P$4:Prices!$P$12="")+(Prices!$P$4:Prices!$P$12=$C$6))*(($C$7="")+($C$7="(all)")+($C$7="(blank)")*(Prices!$R$4:Prices!$R$12="")+(Prices!$R$4:Prices!$R$12=$C$7))*(($C$4="")+($C$4="(all)")+(Prices!$AB$4:Prices!$AB$12=$C$4))*(($I$3="")+(Prices!$M$4:Prices!$M$12>=$I$3))*(($K$3="")+(Prices!$M$4:Prices!$M$12<=$K$3))*(($I$4="")+(Prices!$N$4:Prices!$N$12>=$I$4))*(($K$4="")+(Prices!$N$4:Prices!$N$12<=$K$4))*(($H$6="")+($H$6="(all)")+(Prices!$L$4:Prices!$L$12=$H$6)))),IF(ROW(INDEX($A:$A,1):INDEX($A:$A,9-$S$3))>0,"","")),"")
+H10 Monthly
+I10 R12
+J10 R24
+K10 R36
+L10 Row
+B11 =IFERROR(INDEX(Prices!$B$4:Prices!$B$12,$L$11:$L$19-3),"")
+C11 =IFERROR(INDEX(Prices!$AB$4:Prices!$AB$12,$L$11:$L$19-3),"")
+D11 =IFERROR(INDEX(Prices!$M$4:Prices!$M$12,$L$11:$L$19-3),"")
+E11 =IFERROR(INDEX(Prices!$N$4:Prices!$N$12,$L$11:$L$19-3),"")
+F11 =IFERROR(INDEX(Prices!$J$4:Prices!$J$12,$L$11:$L$19-3),"")
+G11 =IFERROR(INDEX(Prices!$K$4:Prices!$K$12,$L$11:$L$19-3),"")
+H11 =IFERROR(IF(LEFT(INDEX(Prices!$K$4:Prices!$K$12,$L$11:$L$19-3),1)="h",INDEX(Prices!$J$4:Prices!$J$12,$L$11:$L$19-3)*Assumptions!$D$19,INDEX(Prices!$J$4:Prices!$J$12,$L$11:$L$19-3)),"")
+I11 =IFERROR(INDEX(Prices!$AD$4:Prices!$AD$12,$L$11:$L$19-3),"")
+J11 =IFERROR(INDEX(Prices!$AE$4:Prices!$AE$12,$L$11:$L$19-3),"")
+K11 =IFERROR(INDEX(Prices!$AF$4:Prices!$AF$12,$L$11:$L$19-3),"")
+L11 =IFERROR(_xlfn.VSTACK(_xlfn.SORTBY(_xlfn._xlws.FILTER(ROW(Prices!$B$4:Prices!$B$12),(Prices!$V$4:Prices!$V$12=$C$3)*(($C$5="")+($C$5="(all)")+($C$5="(blank)")*(Prices!$E$4:Prices!$E$12="")+(Prices!$E$4:Prices!$E$12=$C$5))*(($C$8="")+($C$8="(all)")+($C$8="(blank)")*(Prices!$H$4:Prices!$H$12="")+(Prices!$H$4:Prices!$H$12=$C$8))*(($C$6="")+($C$6="(all)")+($C$6="(blank)")*(Prices!$P$4:Prices!$P$12="")+(Prices!$P$4:Prices!$P$12=$C$6))*(($C$7="")+($C$7="(all)")+($C$7="(blank)")*(Prices!$R$4:Prices!$R$12="")+(Prices!$R$4:Prices!$R$12=$C$7))*(($C$4="")+($C$4="(all)")+(Prices!$AB$4:Prices!$AB$12=$C$4))*(($I$3="")+(Prices!$M$4:Prices!$M$12>=$I$3))*(($K$3="")+(Prices!$M$4:Prices!$M$12<=$K$3))*(($I$4="")+(Prices!$N$4:Prices!$N$12>=$I$4))*(($K$4="")+(Prices!$N$4:Prices!$N$12<=$K$4))*(($H$6="")+($H$6="(all)")+(Prices!$L$4:Prices!$L$12=$H$6))),_xlfn._xlws.FILTER(Prices!$J$4:Prices!$J$12,(Prices!$V$4:Prices!$V$12=$C$3)*(($C$5="")+($C$5="(all)")+($C$5="(blank)")*(Prices!$E$4:Prices!$E$12="")+(Prices!$E$4:Prices!$E$12=$C$5))*(($C$8="")+($C$8="(all)")+($C$8="(blank)")*(Prices!$H$4:Prices!$H$12="")+(Prices!$H$4:Prices!$H$12=$C$8))*(($C$6="")+($C$6="(all)")+($C$6="(blank)")*(Prices!$P$4:Prices!$P$12="")+(Prices!$P$4:Prices!$P$12=$C$6))*(($C$7="")+($C$7="(all)")+($C$7="(blank)")*(Prices!$R$4:Prices!$R$12="")+(Prices!$R$4:Prices!$R$12=$C$7))*(($C$4="")+($C$4="(all)")+(Prices!$AB$4:Prices!$AB$12=$C$4))*(($I$3="")+(Prices!$M$4:Prices!$M$12>=$I$3))*(($K$3="")+(Prices!$M$4:Prices!$M$12<=$K$3))*(($I$4="")+(Prices!$N$4:Prices!$N$12>=$I$4))*(($K$4="")+(Prices!$N$4:Prices!$N$12<=$K$4))*(($H$6="")+($H$6="(all)")+(Prices!$L$4:Prices!$L$12=$H$6)))),IF(ROW(INDEX($A:$A,1):INDEX($A:$A,9-$S$3))>0,"","")),"")
 ## Assumptions
 B2 Assumptions
 B3 #

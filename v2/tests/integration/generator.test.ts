@@ -113,7 +113,7 @@ describe('generated workbook layout', () => {
 
     // …and the criteria exact-match the description, guarded on
     // blank/(all).  The other dropdowns treat blank like "(all)" too.
-    const formula = ws.getCell('K11').formula
+    const formula = ws.getCell('L11').formula
     expect(formula).toContain('($H$6="")+($H$6="(all)")')
     expect(formula).toContain('=$H$6)')
     expect(formula).not.toContain('FIND(')
@@ -139,18 +139,20 @@ describe('generated workbook layout', () => {
     expect(ws.getCell('G4').value).toBe('RAM')
     expect(ws.getCell('K4').formula).toContain('IF($I$4="","",$I$4)')
 
-    // Results: unit sits right of priceAmount; K is the shared
+    // Results: unit sits right of priceAmount; the Monthly column
+    // right of unit scales hourly units by FT_HOURS; L is the shared
     // match-row index the other columns INDEX into.
     expect(ws.getCell('F10').value).toBe('priceAmount')
     expect(ws.getCell('G10').value).toBe('unit')
-    expect(ws.getCell('H10').value).toBe('R12')
-    expect(ws.getCell('I10').value).toBe('R24')
-    expect(ws.getCell('J10').value).toBe('R36')
-    expect(ws.getCell('K10').value).toBe('Row')
-    expect(ws.getCell('K11').formula).toContain('SORTBY')
-    expect(ws.getCell('K11').formula).toContain('FILTER(ROW(Prices!')
+    expect(ws.getCell('H10').value).toBe('Monthly')
+    expect(ws.getCell('I10').value).toBe('R12')
+    expect(ws.getCell('J10').value).toBe('R24')
+    expect(ws.getCell('K10').value).toBe('R36')
+    expect(ws.getCell('L10').value).toBe('Row')
+    expect(ws.getCell('L11').formula).toContain('SORTBY')
+    expect(ws.getCell('L11').formula).toContain('FILTER(ROW(Prices!')
     expect(ws.getCell('B11').formula).toContain('INDEX(')
-    expect(ws.getCell('B11').formula).toContain('$K$11')
+    expect(ws.getCell('B11').formula).toContain('$L$11')
 
     // Helper lists moved behind the L/M spacer columns (N..R), and the
     // match count moved to S3.
@@ -158,6 +160,30 @@ describe('generated workbook layout', () => {
     expect(ws.getCell('O3').value).toBe('productId list → C5')
     expect(ws.getCell('P3').value).toBe('osUnit list → C8')
     expect(ws.getCell('S3').formula).toBeTruthy()
+  })
+
+  it('scales hourly units by FT_HOURS in the Monthly results column', async () => {
+    const wb = await loadGenerated(false)
+    const finder = wb.getWorksheet('Finder')!
+    const ass = wb.getWorksheet('Assumptions')!
+
+    // Locate the FT_HOURS assumption row (column C carries the key).
+    let ftRow = 0
+    ass.eachRow({ includeEmpty: false }, row => {
+      if (row.getCell(3).value === '$FT_HOURS') ftRow = row.number
+    })
+    expect(ftRow).toBeGreaterThan(0)
+    const ftRef = `Assumptions!$D$${ftRow}`
+
+    expect(finder.getCell('H10').value).toBe('Monthly')
+    const formula = finder.getCell('H11').formula
+    // Hourly test on the unit column …
+    expect(formula).toContain('IFERROR(IF(LEFT(INDEX(Prices!')
+    expect(formula).toContain(',1)="h"')
+    // … hourly branch scales priceAmount by the FT_HOURS cell …
+    expect(formula).toContain(`*${ftRef},INDEX(`)
+    // … non-hourly branch falls back to the unadjusted priceAmount.
+    expect(formula.split(',1)="h"')[1]).toContain('INDEX(Prices!')
   })
 
   it('formats the Finder Description results like the BOM Description column', async () => {

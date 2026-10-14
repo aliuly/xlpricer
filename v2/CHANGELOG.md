@@ -1,5 +1,14 @@
 # Versions
 
+- next:
+  - Hypercompare export macro
+  - Price Finder: new "Monthly" results column — hourly-billed rows
+    (unit starting with "h") are scaled by the FT_HOURS assumption so
+    every result is a full-time monthly price, comparable with the
+    R12/R24/R36 columns.
+  - Added data patching (fixes duplicates)
+  - Duplicate checking functionality.
+  - DDSOG backup enriching.
 - 2.0.1:
   - New Price Finder tab: search the price list with cascading
     dropdowns and vCpu/RAM min/max boxes; results show Description,

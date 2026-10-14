@@ -138,16 +138,19 @@ flow through automatically.
  ...
 
  Results (247 matches)
- Description  Region  vCpu  RAM  priceAmount  unit  R12  R24  R36  Row
- <spill> ...                                                <spill>
+ Description  Region  vCpu  RAM  priceAmount  unit  Monthly  R12  R24  R36  Row
+ <spill> ...                                                      <spill>
 ```
 
 (Column widths are sized for the RESULTS columns.  The left dropdowns
 merge C..F on their rows; the Description dropdown merges H..K on the
 storageType row.  The **Row** column is the shared index: it resolves
 the criteria once into sorted Prices row numbers, and every other
-results column INDEXes its Prices column with those numbers.  L and M
-are spacer columns before the dropdown helper lists in N–R.)
+results column INDEXes its Prices column with those numbers.  **Monthly**
+scales hourly-billed rows — unit starting with `h` — by `{FT_HOURS}`
+so all prices are full-time monthly figures, comparable with
+R12/R24/R36.  M is the spacer column before the dropdown helper lists
+in N–R.)
 
 - **`productFamily`** — build-time list of distinct values, defaults to
   `Compute`, no `(all)` option: the family filter is always applied.
@@ -200,7 +203,7 @@ are spacer columns before the dropdown helper lists in N–R.)
   an exact match, and typing a max directly overwrites the formula to
   set a range.  Empty bound = no bound.
 - **Results** — the criteria are resolved **once** into sorted Prices
-  row numbers (column K, right of R36):
+  row numbers (column L, right of R36):
 
 ```
 =IFERROR(VSTACK(SORTBY(FILTER(ROW(Prices!$B$4:$B$5369),
@@ -212,12 +215,24 @@ are spacer columns before the dropdown helper lists in N–R.)
   and each visible column is a cheap read against that index:
 
 ```
-=IFERROR(INDEX(Prices!$L$4:$L$5369, $K$11:$K$5369-3), "")
+=IFERROR(INDEX(Prices!$L$4:$L$5369, $L$11:$L$5369-3), "")
 ```
 
   (position = Prices row − `firstRow` + 1).  One FILTER/SORTBY pair
   instead of one FILTER/SORT per column.  Match count via
   `ROWS(FILTER(<title col>, <criteria>))`.
+  The **Monthly** column is the one computed read: hourly-billed rows
+  (unit starting with `h`) are per-hour prices, so it multiplies
+  `priceAmount` by the `{FT_HOURS}` assumption cell (full-time hours
+  per month); non-hourly units are already monthly and pass through
+  unchanged:
+
+```
+=IFERROR(IF(LEFT(INDEX(<unit col>, <Row block> − firstRow + 1),1)="h",
+    INDEX(<priceAmount col>, <Row block> − firstRow + 1) * Assumptions!$D$20,
+    INDEX(<priceAmount col>, <Row block> − firstRow + 1)), "")
+```
+
   Only R12/R24/R36 are shown (RU12/RU24/RU36 are deliberately omitted).
 
 ## Implementation
@@ -235,21 +250,25 @@ Implemented as:
   across H6:K6 and guarded exact match — blank or `(all)` bypasses).
   Column widths are sized for the results columns.  Then the
   dropdown helper lists (N4–R4; columns left visible for now with
-  labels in row 3; L and M are spacer columns between the
+  labels in row 3; M is the spacer column between the
   interface/results and the helpers), and the results
   block
-  (count in B9, headers in row 10; column K holds the shared
+  (count in B9, headers in row 10; column L holds the shared
   match-row index — `SORTBY(FILTER(ROW(…)), FILTER(priceAmount))`
   resolves the criteria once, padded to the fixed size — and each
-  visible column B–J is a cheap `INDEX(<prices column>, K-block −
-  firstRow + 1)` array formula; the first results column is headed
-  "Description" like the Components tabs and carries the BOM
+  visible column B–K is a cheap `INDEX(<prices column>, L-block −
+  firstRow + 1)` array formula, except Monthly which additionally
+  scales hourly units by `{FT_HOURS}`; the first results column is
+  headed "Description" like the Components tabs and carries the BOM
   Description column format — light-grey fill + wrap text — with
   "Region" right after it and "unit" right after priceAmount).
   Column letters and offsets are all derived from `pricesLayout()` —
   nothing is hard-coded.
 - Wired into `writer.ts` after `Prices`; included in **both** xlsx and
-  xlsm outputs, sheet name `Finder`, visible.
+  xlsm outputs, sheet name `Finder`, visible.  The refresh path
+  (`reprice.ts`) regenerates it too — it revives the `FT_HOURS`
+  reference from the untouched Assumptions sheet first, so the
+  Monthly column keeps pointing at the user's own assumption cell.
 - The static dropdowns (`productFamily`, `region`) reuse
   `dataValidationList`; their lists come from the prices records at
   generation time.  The five dynamic dropdowns (description +
@@ -302,7 +321,7 @@ Implemented as:
 - Performance: the description filter is a plain case-sensitive
   equality — the case-insensitive contains scan was too slow — and
   the results block resolves the criteria only once into the shared
-  match-row index (column K), with the visible columns INDEXing from
+  match-row index (column L), with the visible columns INDEXing from
   it: one FILTER/SORTBY pair instead of one FILTER/SORT per column.
   The Description dropdown is its own dynamic helper list scoped to
   all the OTHER criteria (one more FILTER/UNIQUE/SORT chain).

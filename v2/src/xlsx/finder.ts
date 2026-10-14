@@ -33,6 +33,7 @@ import JSZip from 'jszip';
 import {
   colToName,
   dataValidationList,
+  resolveFormula,
   rowcolToCell,
   setColumnWidth,
   writeCell,
@@ -100,7 +101,7 @@ const COUNT_COL = 19;                   // S: hidden count cells
 const BLANK_COL = 20;                   // T: hidden blank-flag cells
 const MATCH_COUNT_CELL = '$S$3';        // total matches (drives the pad)
 
-const RESULTS_ROW_COL = 11;             // K: shared match-row index column
+const RESULTS_ROW_COL = 12;             // L: shared match-row index column
 
 /* ── Helpers ────────────────────────────────────────────── */
 
@@ -160,6 +161,7 @@ function padExpr(pad: string): string {
 
 export function genFinderSheet(
   ws: Worksheet,
+  refMap: Record<string, string>,
   pricingRaw: unknown,
 ): void {
   const prices = pricingRaw as PricesPayload;
@@ -245,14 +247,14 @@ export function genFinderSheet(
     3: 8,              // C: Region results
     4: 8,              // D: vCpu results
     5: 8,              // E: RAM results
-    6: 11,             // F: priceAmount results
+    6: 12,             // F: priceAmount results
     [COL_SIDE]: 10,    // G: unit results
-    [COL_MINL]: 10,    // H: R12 results
-    [COL_MIN]: 10,     // I: R24 results
-    [COL_MAXL]: 10,    // J: R36 results
-    [COL_MAX]: 10,      // K: Row results
-    12: 3,             // L: thin spacer before the helper lists
-    13: 10,            // M: normal spacer before the helper lists
+    [COL_MINL]: 10,    // H: Monthly results
+    [COL_MIN]: 10,     // I: R12 results
+    [COL_MAXL]: 10,    // J: R24 results
+    [COL_MAX]: 10,      // K: R36 results
+    12: 8,             // L: Row results (shared match-row index)
+    13: 10,            // M: spacer before the helper lists
   };
   for (const [c, w] of Object.entries(widths)) {
     setColumnWidth(ws, Number(c), w);
@@ -387,12 +389,12 @@ export function genFinderSheet(
     ['finder', 'count'],
   );
 
-  const headers = ['Description', 'Region', 'vCpu', 'RAM', 'priceAmount', 'unit', 'R12', 'R24', 'R36', 'Row'];
+  const headers = ['Description', 'Region', 'vCpu', 'RAM', 'priceAmount', 'unit', 'Monthly', 'R12', 'R24', 'R36', 'Row'];
   headers.forEach((h, i) => {
     writeCell(ws, ROW_RESULTS_HEADER, COL_LABEL + i, h, ['finder', 'header']);
   });
 
-  // Shared filter (column K): the criteria are resolved ONCE into the
+  // Shared filter (column L): the criteria are resolved ONCE into the
   // matching Prices ROW numbers, sorted cheapest-first by priceAmount.
   // Every visible column below just INDEXes into its own Prices column
   // with those row numbers — no repeated FILTER per column.
@@ -420,19 +422,33 @@ export function genFinderSheet(
     ['ram', 'num'],
     ['priceAmount', 'price_sm'],
     ['unit', 'text'],
+    ['monthly', 'price_lg'],
     ['R12', 'price_lg'],
     ['R24', 'price_lg'],
     ['R36', 'price_lg'],
   ];
   const offset = firstRow - 1; // Prices row number → 1-based column position
+  // Hourly-billed rows (unit starts with "h") carry a per-hour price:
+  // the Monthly column scales them by FT_HOURS so every row shows a
+  // full-time monthly price, comparable with the R12/R24/R36 columns.
+  // Non-hourly units are already monthly and pass through unchanged.
+  const ftHours = resolveFormula('{FT_HOURS}', refMap);
+  const monthlyExpr =
+    `IF(LEFT(INDEX(${data('unit')},${rowBlock}-${offset}),1)="h",` +
+    `INDEX(${data('priceAmount')},${rowBlock}-${offset})*${ftHours},` +
+    `INDEX(${data('priceAmount')},${rowBlock}-${offset}))`;
   results.forEach(([key, fmtKey], i) => {
     const col = COL_LABEL + i;
-    const source = key === '_XlTitle_'
-      ? colRange(TITLE_COL, firstRow, lastRow)
-      : data(key);
+    const formula = key === 'monthly'
+      ? `IFERROR(${monthlyExpr},"")`
+      : `IFERROR(INDEX(${
+          key === '_XlTitle_'
+            ? colRange(TITLE_COL, firstRow, lastRow)
+            : data(key)
+        },${rowBlock}-${offset}),"")`;
     writeArrayCell(
       ws, ROW_RESULTS, col,
-      `IFERROR(INDEX(${source},${rowBlock}-${offset}),"")`,
+      formula,
       arrayRef(ROW_RESULTS, col, maxRows),
       ['finder', 'data', fmtKey],
     );

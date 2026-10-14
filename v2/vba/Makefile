@@ -22,13 +22,15 @@ test: ## Run vbabb unit tests
 build: $(VBA_TEMPLATE) ## Build VBA host workbook (public/vba/template.xlsm)
 
 # Intermediate xlsm (also handy for debugging the VBA directly in Excel)
-project.xlsm: handlers.vba ui.vba bom.vba prep.vba
+project.xlsm: handlers.vba ui.vba bom.vba prep.vba hypercmp.vba
 	$(VBABB) \
 		--output project.xlsm \
 		handlers.vba \
 		ui.vba \
 		bom.vba \
-		prep.vba
+		prep.vba \
+		hypercmp.vba
+
 
 # Strip the template's Sheet1 document module — its own sheet is
 # replaced by the generated workbook's sheets during the merge, and an

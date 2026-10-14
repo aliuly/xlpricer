@@ -90,6 +90,7 @@ export async function generatePricingXlsx(
   );
   genFinderSheet(
     wsFinder,
+    refMap,
     pricingData,
   );
 

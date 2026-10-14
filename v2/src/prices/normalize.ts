@@ -100,6 +100,8 @@ function normalizeUnit(rec: unknown[], x: Record<string, number>): void {
     }
   } else if (unit.endsWith('/h')) {
     unit = 'h:' + unit
+  } else if (unit.indexOf('/h/') !== -1) {
+    unit = 'h:' + unit	
   }
 
   rec[unitIdx] = unit

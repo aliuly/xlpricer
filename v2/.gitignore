@@ -25,6 +25,7 @@ dist-ssr
 __pycache__
 public/fixed-prices.json
 out.json
+duplicates.txt
 pricing.xlsx
 public/includes/manifest.json
 *~

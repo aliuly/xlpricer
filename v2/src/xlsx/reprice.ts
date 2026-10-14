@@ -575,7 +575,11 @@ export async function refreshWorkbook(
   const wsVols = byName.get('Volumes')!;
 
   genPriceSheet(wsPrc, refMap, pricingData);
-  genFinderSheet(wsFinder, pricingData);
+  // The Finder's Monthly column scales hourly prices by the user's
+  // FT_HOURS assumption; revive the refs from the untouched
+  // Assumptions sheet before regenerating the Finder.
+  reviveAssumptionRefs(wb, refMap);
+  genFinderSheet(wsFinder, refMap, pricingData);
   for (const tab of discovered.tabs) {
     const key = tab.name.toLowerCase();
     refMap[`${key}!!f_qxh`] = `${sheetRef(tab.name)}!${tab.qxh}`;
