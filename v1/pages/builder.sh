@@ -5,7 +5,7 @@ DATE=$(date +%Y-%m-%d)
 XLSX="prices-${DATE}.xlsx"
 
 # Record the version of xlpricer that generated this build.
-VERSION=1.8.1-$(python -c "from xlpricer.version import VERSION; print(VERSION)")
+VERSION=$(python -c "from xlpricer.version import VERSION; print(VERSION)")
 
 MAX_VERSIONS=12
 
@@ -41,6 +41,13 @@ if curl -sfL "${BASE_URL}/builds.json" -o /tmp/prev_builds_raw.json 2>/dev/null;
 else
     echo "No previous builds.json found at ${BASE_URL}/builds.json"
 fi
+
+# Only v1 builds belong on these pages: discard wrongly-tagged
+# entries whose version does not start with "1." (a misconfigured run
+# once published 2.x.x-tagged builds).  Version-less entries predate
+# versioning and are kept for history.  Runs before the trim so the
+# discarded entries never consume a history slot.
+PREV_BUILDS=$(echo "$PREV_BUILDS" | jq -f pages/filter_builds.jq)
 
 # Trim previous builds to make room for the new one (keep MAX_VERSIONS-1).
 # Also remove any stale entry for today's date in case this build re-runs.
