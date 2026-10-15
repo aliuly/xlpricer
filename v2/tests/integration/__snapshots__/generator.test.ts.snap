@@ -1029,6 +1029,7 @@ E8 CBR
 G8 CBR Server Backup
 I8 EUR
 J8 0.1
+K8 GiB
 L8 CBR Server Backup
 M8 0
 N8 0
@@ -1051,6 +1052,7 @@ F9 evs.sata
 G9 EVS SATA
 I9 EUR
 J9 0.02
+K9 GiB
 L9 EVS SATA
 M9 0
 N9 0

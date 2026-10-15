@@ -1,5 +1,5 @@
 PRICES_URL = https://aliuly.github.io/pipeline/prices-latest.json
-PRICE_INCLUDES = public/includes/*
+PRICE_INCLUDES = public/includes/*.csv
 XLSX_ASSUMPTIONS = public/assumptions.csv
 XLSX_COMPONENTS = public/preload.csv
 XLSX_OUTPUT = pricing.xlsx

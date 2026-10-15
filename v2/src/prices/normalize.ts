@@ -62,7 +62,7 @@ function normalizeValues(
     }
 
     if (typeof v === 'string') {
-      if (v === 'GiB') {
+      if (v === 'GiB' && idx != x.unit) {
       	v = '';
       } else if (v.endsWith(' GiB')) {
         const num = v.slice(0, -4);

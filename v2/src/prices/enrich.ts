@@ -176,7 +176,7 @@ function processTier(rec: Row, x: Record<string, number>, ws: WorkingState): boo
     entry._tiers = 0
 
     const unit = String(rec[x.unit] ?? '')
-    const suffix = !unit || unit === 'h' ? '' : ` (${unit})`
+    const suffix = !unit || unit === 'h' || unit.startsWith('h:') ? '' : ` (${unit})`
     entry._XlTitle_ = String(rec[x._XlTitle_]) + suffix
     entry._tariffs_ = []
     ws.tiers[tierID] = entry
@@ -371,7 +371,7 @@ function finalize(data: PricesData, x: Record<string, number>, ws: WorkingState)
 
   // Push tier-group rows into records (consumed by the Pricing sheet)
   for (const tier of Object.values(ws.tiers)) {
-    const row: unknown[] = new Array(data.keys.length).fill('')
+    const row: unknown[] = Array.from({ length: data.keys.length }, () => '')
     for (const key of Object.keys(tier)) {
       if (key === '_tariffs_') continue // nested array, not a column value
       const idx = x[key]

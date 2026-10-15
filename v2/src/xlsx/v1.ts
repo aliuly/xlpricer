@@ -395,6 +395,100 @@ export function extractV1Components(
   return { rows, warnings };
 }
 
+/* ── v2 description mapping ─────────────────────────────── */
+
+/**
+ * Title sets derived from the current pricing data, used to adapt v1
+ * BOM descriptions to the v2 price list.  The v2 BOM matches
+ * descriptions against the Prices sheet's title column (`_XlTitle_`,
+ * defined as `PriceListDescs`), and the pipeline appends " (unit)" to
+ * tier-group titles for units other than 'h' (see `processTier` in
+ * src/prices/enrich.ts).  So a v1 group-level description such as
+ * "Network: Internet Traffic Outbound" must gain "(GiB)" to match,
+ * while tariff titles ("… [T1] (until 1)") and flat titles are
+ * unchanged in v2.
+ */
+export interface V1TitleMaps {
+  /** Every v2 title (flat, tier group, tariff) — exact matches convert as-is. */
+  exact: Set<string>;
+  /** v1 group base title → v2 group title with the unit suffix. */
+  groupBase: Map<string, string>;
+}
+
+/**
+ * Title maps derived from the current pricing data, or null when the
+ * payload carries no computed titles (legacy payloads without
+ * `_XlTitle_`), in which case description fixing is skipped.
+ */
+export function v1TitleMaps(pricingData: PricesData): V1TitleMaps | null {
+  const xTitle = pricingData.keys?.indexOf('_XlTitle_') ?? -1;
+  if (xTitle === -1) return null;
+
+  const out: V1TitleMaps = { exact: new Set<string>(), groupBase: new Map<string, string>() };
+  for (const rec of pricingData.records ?? []) {
+    out.exact.add(String(rec[xTitle] ?? ''));
+  }
+  for (const tier of Object.values(pricingData.tiers ?? {})) {
+    const title = String(tier._XlTitle_ ?? '');
+    out.exact.add(title);
+    if (Array.isArray(tier._tariffs_)) {
+      for (const t of tier._tariffs_) {
+        out.exact.add(String(t._XlTitle_ ?? ''));
+      }
+    }
+    // Mirror processTier's suffix rule: only non-empty, non-'h' units.
+    const unit = String(tier.unit ?? '');
+    if (unit !== '' && unit !== 'h' && title.endsWith(` (${unit})`)) {
+      out.groupBase.set(title.slice(0, title.length - ` (${unit})`.length), title);
+    }
+  }
+  return out;
+}
+
+/**
+ * Rewrite v1 BOM descriptions so they match the current v2 price
+ * list: group-level descriptions of tiered items gain the tier's
+ * unit suffix ("Network: Internet Traffic Outbound" → "… (GiB)"),
+ * while tariff ("… [T1] (until 1)") and flat titles are left alone.
+ * Rows matching nothing in the price data are kept as-is and
+ * reported for the manual-review caveat.
+ */
+export function fixV1Descriptions(
+  tabName: string,
+  rows: ComponentsRow[],
+  pricingData: PricesData,
+): { rows: ComponentsRow[]; warnings: string[] } {
+  const maps = v1TitleMaps(pricingData);
+  if (maps === null) return { rows, warnings: [] };
+
+  const unmatched = new Set<string>();
+  let fixed = 0;
+  const out = rows.map(row => {
+    if (row.type !== 'data' || row.description === '') return row;
+    const d = row.description;
+    if (maps.exact.has(d)) return row;
+    const v2 = maps.groupBase.get(d);
+    if (v2 === undefined) {
+      unmatched.add(d);
+      return row;
+    }
+    fixed++;
+    return { ...row, description: v2 };
+  });
+
+  const warnings: string[] = [];
+  if (fixed > 0) {
+    warnings.push(`${tabName}: ${fixed} component description(s) updated to the current price list (unit suffix added)`);
+  }
+  if (unmatched.size > 0) {
+    warnings.push(
+      `${tabName}: ${unmatched.size} component description(s) do not match the current price list and need review: ` +
+      [...unmatched].map(d => `"${d}"`).join(', '),
+    );
+  }
+  return { rows: out, warnings };
+}
+
 /* ── Assumptions notes ─────────────────────────────────── */
 
 /** Trailing plain-text rows after the last valued row (column C). */
@@ -577,6 +671,16 @@ export async function convertV1Workbook(input: V1ConvertInput): Promise<V1Conver
   const extraction = extractV1Workbook(wb);
 
   const warnings = [...extraction.warnings];
+
+  // The v2 price list carries the unit on tier-group titles
+  // ("Network: Internet Traffic Outbound (GiB)"); adapt converted
+  // group-level descriptions accordingly before generating the tabs.
+  for (const tab of extraction.tabs) {
+    const fixed = fixV1Descriptions(tab.name, tab.rows, input.pricingData);
+    tab.rows = fixed.rows;
+    warnings.push(...fixed.warnings);
+  }
+
   if (extraction.includes.length > 0) {
     warnings.push(
       'v1 workbook was built with includes: ' +

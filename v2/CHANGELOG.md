@@ -11,6 +11,10 @@
     regenerates it in the v2 format; `make v1 FILE=…`.  The SPA
     Conversion mode detects dropped v1 files and offers a
     "Convert to v2" operation with the same extraction rules.
+  - v1 → v2 conversion: tiered group-level component descriptions
+    automatically gain the price list's unit suffix (e.g. `Network:
+    Internet Traffic Outbound` → `… (GiB)`) so they keep matching the
+    v2 price list; tariff-level rows with `[Tn]` are preserved as-is.
   - Added data patching (fixes duplicates)
   - Duplicate checking functionality.
   - DDSOG backup enriching.

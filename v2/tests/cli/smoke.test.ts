@@ -295,7 +295,7 @@ describe('CLI v1 conversion smoke', () => {
     const summary = lastJson(stdout)
     expect(summary.status).toBe('ok')
     expect(summary.check).toBe(true)
-    expect(summary.tabs).toEqual([{ name: 'Components', rows: 6 }])
+    expect(summary.tabs).toEqual([{ name: 'Components', rows: 7 }])
     expect(summary.dropped).toEqual(['Deal Summary'])
     expect(summary.notes).toBe(2)
     expect(summary.caveat).toContain('Item descriptions may have changed')
@@ -333,6 +333,8 @@ describe('CLI v1 conversion smoke', () => {
     // generator re-inserts the group Total row after each group).
     const kept = comp.getCell(12, 2).value as { formula?: string }
     expect(kept.formula).toBe('B7+B8')                  // local qty formula kept
+    // The tiered group-level description gained the price-list unit.
+    expect(comp.getCell(13, 4).value).toBe('Storage: OBS Outbound Traffic (GiB)')
 
     // Assumptions: trailing notes + the dropped-tabs record.
     const ass = wb.getWorksheet('Assumptions')!

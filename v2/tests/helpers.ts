@@ -138,8 +138,9 @@ export function makeTmpDir(prefix: string): string {
  * Overview referencing `Components!`, a v1-shaped Assumptions sheet
  * (Format version 1.8.1 + trailing plain-text notes), a Components
  * tab exercising the extraction rules (group/data/total/empty rows,
- * formula cells with cached results, a per-row Region override), and
- * a `Deal Summary` sheet that is neither referenced nor generated.
+ * formula cells with cached results, a per-row Region override, a
+ * tiered group-level description), and a `Deal Summary` sheet that is
+ * neither referenced nor generated.
  */
 export async function buildV1Workbook(): Promise<Buffer> {
   const ExcelJS = (await import('exceljs')).default
@@ -204,6 +205,11 @@ export async function buildV1Workbook(): Promise<Buffer> {
   comp.getCell(13, 2).value = { formula: 'B7+B8', result: 3 }
   comp.getCell(13, 4).value = 'Anti-virus'
   comp.getCell(13, 9).value = 'com'
+  // Tiered group-level description: matches the prices.json fixture's
+  // OBS tier base, so convertV1Workbook adds the "(GiB)" unit suffix.
+  comp.getCell(14, 2).value = 3
+  comp.getCell(14, 4).value = 'Storage: OBS Outbound Traffic'
+  comp.getCell(14, 9).value = 'com'
 
   const raw = await wb.xlsx.writeBuffer()
   return Buffer.from(raw as unknown as ArrayBuffer)

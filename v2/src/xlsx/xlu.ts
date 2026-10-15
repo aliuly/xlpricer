@@ -131,7 +131,7 @@ function colNameToIndex(name: string): number {
  * ```
  */
 export function sheetRef(name: string): string {
-  if (/[ !@#$%^&*()\-+=,.;:"'[\]{}|\\\/?<>]/.test(name)) {
+  if (/[ !@#$%^&*()\-+=,.;:"'[\]{}|\\/?<>]/.test(name)) {
     return `'${name.replace(/'/g, "''")}'`;
   }
   return name;
