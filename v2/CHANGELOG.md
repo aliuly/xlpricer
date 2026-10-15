@@ -14,6 +14,9 @@
   - Added data patching (fixes duplicates)
   - Duplicate checking functionality.
   - DDSOG backup enriching.
+  - Add Components macro: the new tab's Volumes column now derives the
+    pattern tab's name from its formulas, so adding tabs keeps working
+    after a Components tab has been renamed.
 - 2.0.1:
   - New Price Finder tab: search the price list with cascading
     dropdowns and vCpu/RAM min/max boxes; results show Description,

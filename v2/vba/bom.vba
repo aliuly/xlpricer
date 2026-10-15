@@ -101,7 +101,6 @@ Private Function AddVolumesColumn(tabName As String) As String
   Do While ws.Cells(hdrRow, srcCol + 1).Value <> ""
     srcCol = srcCol + 1
   Loop
-  srcName = ws.Cells(hdrRow, srcCol).Value
   newCol = srcCol + 1
 
   ' Insert at the SUM ranges' right edge -> they auto-expand
@@ -113,8 +112,22 @@ Private Function AddVolumesColumn(tabName As String) As String
   ws.Cells(hdrRow, newCol).Value = tabName
   ws.Columns(newCol).ColumnWidth = ws.Columns(srcCol).ColumnWidth
 
-  ' Per-tab formulas on each tier group row: copy + substitute tab name
+  ' Per-tab formulas on each tier group row: copy + substitute tab name.
+  ' Don't take the source tab name from the header cell: it was written
+  ' when the tab was created, so it goes stale if the tab is renamed
+  ' (Excel rewrites the formulas, but not this label).  Derive the
+  ' current name from the column's formulas — the same ground-truth
+  ' rule AddOverviewRow applies — and fall back to the header only
+  ' when the column has no formulas.
   lastRow = ws.Cells(ws.Rows.Count, srcCol).End(xlUp).Row
+  srcName = ""
+  For r = hdrRow + 1 To lastRow
+    If ws.Cells(r, srcCol).HasFormula Then
+      srcName = SheetNameInFormula(ws.Cells(r, srcCol).Formula)
+      Exit For
+    End If
+  Next r
+  If srcName = "" Then srcName = ws.Cells(hdrRow, srcCol).Value
   For r = hdrRow + 1 To lastRow
     If ws.Cells(r, srcCol).HasFormula Then
       f = SwapSheetName(ws.Cells(r, srcCol).Formula, srcName, tabName)
