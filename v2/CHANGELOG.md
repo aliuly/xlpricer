@@ -1,6 +1,6 @@
 # Versions
 
-- next:
+- 2.1:
   - Hypercompare export macro
   - Price Finder: new "Monthly" results column — hourly-billed rows
     (unit starting with "h") are scaled by the FT_HOURS assumption so
