@@ -388,7 +388,7 @@ const COMPUTE_COLS: (number|ColumnDef)[] = [
     name: 'f_backup_price',
     fmt: 'price_h',
     formula: [
-	'=IF({#f_backup_idx}="","",',
+	'=IF(OR({#f_backup_idx}="",{#f_backup_idx}=0),"",',
               'INDEX({PRICES_TABLE},{#f_backup_idx},{cm_priceAmount})',
         ')',
     ],

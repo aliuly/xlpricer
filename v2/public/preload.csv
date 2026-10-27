@@ -14,7 +14,7 @@ com,  Compute
 1,    ,         Essentials: Software Repository Storage for Containers
 1,    ,         Essentials: Image Management Service
 3,    baseline, Compute: General Purpose s9.xl.2 open Linux 4 vcpu 8 GiB s9, 140
-3,    burst,    Compute: Flexible purpose x2.xlarge.2 Linux 4 vcpu 8 GiB x2, 140, ={WK_HOURS}
+3,    burst,    Compute: Flexible purpose x2.xlarge.2 Linux 4 vcpu 8 GiB x2, 140
 mi,   Management Infrastructure
 1,    ,         Essentials: Cloud Eye Service
 1,    ,         Essentials: Cloud Trace Service
