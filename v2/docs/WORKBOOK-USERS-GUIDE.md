@@ -127,6 +127,12 @@ use the group header/footer settings together with the inflation
 adjusted forecast columns.  Set-up costs are only added to the first
 year.
 
+The **Monthly Group Prices** table lists each group's set-up cost, a
+**Reserve%** column (the share of the group's monthly revenue priced
+on reserved R12M/R24M/R36M terms), and the monthly amounts per year;
+the **total w/rampup** row at the bottom applies the ramp-up
+multiplier to the yearly sums.
+
 The Overview also includes:
 
 - **Hyperlinks** to T-Cloud Public, Managed Services, and Enterprise

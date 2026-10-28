@@ -4,7 +4,7 @@
  */
 
 /** Appears in the "Format version" meta row of the Assumptions sheet. */
-export const FORMAT_VERSION = '2.0.1';
+export const FORMAT_VERSION = '2.1.0';
 
 /** Written into the "Non-recurrent items" meta row. */
 export const AS_ONE_TIME = 'Item/ot';

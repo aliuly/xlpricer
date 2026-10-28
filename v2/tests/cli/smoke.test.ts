@@ -11,6 +11,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 import { generatePricingXlsx } from '../../src/xlsx/writer'
 import { mergeIntoMacroWorkbook } from '../../src/xlsx/vba'
+import { FORMAT_VERSION } from '../../src/xlsx/constants'
 import { buildInput, buildV1Workbook, buildV2FormatWorkbook } from '../helpers'
 
 const root = fileURLToPath(new URL('../..', import.meta.url))
@@ -128,7 +129,7 @@ describe('CLI refresh smoke', () => {
     wb.getWorksheet('T')?.eachRow((row) => {
       if (row.getCell(2).value === 'Format version') formatVer = String(row.getCell(3).value)
     })
-    expect(formatVer).toBe('2.0.1')
+    expect(formatVer).toBe(FORMAT_VERSION)
     const names = wb.definedNames.model.map(n => n.name)
     expect(names).toContain('PriceListTable')
     expect(names).toContain('T_ONE_TIME')

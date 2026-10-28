@@ -150,7 +150,10 @@ maybe('LibreOffice recalc smoke', () => {
     expect(monthly).toBeGreaterThan(0)
     const ov = wb.getWorksheet('Overview')!
     const totalTabs = nextTo(ov, 13, 'total tabs')
-    const monthlySum = cachedNumber(ov.getRow(totalTabs.row).getCell(15))
+    // The monthly sum sits right of the "set-up" header (the Reserve%
+    // column precedes it); don't hardcode the column letter.
+    const setupCol = colOf(ov, 'set-up')
+    const monthlySum = cachedNumber(ov.getRow(totalTabs.row).getCell(setupCol + 1))
     expect(monthlySum).toBeCloseTo(monthly!, 5)
 
     /* ── Finder: dynamic arrays computed ── */
@@ -215,7 +218,8 @@ maybe('LibreOffice recalc smoke', () => {
     expect(monthly).toBeGreaterThan(0)
     const ov = wb.getWorksheet('Overview')!
     const totalTabs = nextTo(ov, 13, 'total tabs')
-    expect(cachedNumber(ov.getRow(totalTabs.row).getCell(15))).toBeCloseTo(monthly!, 5)
+    const setupCol = colOf(ov, 'set-up')
+    expect(cachedNumber(ov.getRow(totalTabs.row).getCell(setupCol + 1))).toBeCloseTo(monthly!, 5)
 
     // Tier link computes (the refreshed BOM still carries the OBS row)
     let priceAmtCol = 0

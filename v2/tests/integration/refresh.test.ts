@@ -8,6 +8,7 @@ import { describe, expect, it } from 'vitest'
 import { generatePricingXlsx } from '../../src/xlsx/writer'
 import { mergeIntoMacroWorkbook } from '../../src/xlsx/vba'
 import { refreshWorkbook } from '../../src/xlsx/reprice'
+import { FORMAT_VERSION } from '../../src/xlsx/constants'
 import type { PricesData } from '../../src/prices/types'
 import { buildInput } from '../helpers'
 
@@ -141,7 +142,7 @@ describe('refreshWorkbook', () => {
     t.eachRow((row) => {
       if (row.getCell(2).value === 'Format version') formatVer = String(row.getCell(3).value)
     })
-    expect(formatVer).toBe('2.0.1')
+    expect(formatVer).toBe(FORMAT_VERSION)
 
     // Tab order restored; names are single ranges, none pointing at
     // removed sheets

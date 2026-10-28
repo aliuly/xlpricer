@@ -46,7 +46,7 @@ const USER_COLS: (number|ColumnDef)[] = [
       fmt: 'user',
     },
     name: 'f_func',
-    fmt: 'itext',
+    fmt: 'itext_c',
   },
   {
     h: {
@@ -787,9 +787,9 @@ function wsInflationRow(
 	  ws, r, colloffs,
 	  resolveFormula(
 	    [
-	      '=IF({#f_unit}={T_ONE_TIME},',
+	      '=IFERROR(IF({#f_unit}={T_ONE_TIME},',
 		'{#f_tot_qty},',
-		'0)',
+		'0),0)',
 	    ].join(''),
 	    {...refMap, ...myMap},
 	  ),
@@ -800,7 +800,7 @@ function wsInflationRow(
 	  ws, r, colloffs+y,
 	  resolveFormula(
 	    [
-	      '=IF({#f_unit}={T_ONE_TIME},0,',
+	      '=IFERROR(IF({#f_unit}={T_ONE_TIME},0,',
 		'IF( AND({#f_hrs}="R24M",{#f_pr24m}<>0),',
 		  // 24M reserved pricing calculation
 		  '{#f_qty}*',
@@ -822,7 +822,7 @@ function wsInflationRow(
 		      // Normal calculation
 		      '{#f_tot_qty}*(1+{INFLATION})^({year}-1)',
 		  ')',
-	      '))',
+	      ')),0)',
 	    ].join(''),
 	    {
 	      ...refMap, ...myMap,

@@ -1,5 +1,25 @@
 # Versions
 
+- next:
+  - v1 → v2 conversion: tiered group-level component descriptions
+    automatically gain the price list's unit suffix (e.g. `Network:
+    Internet Traffic Outbound` → `… (GiB)`) so they keep matching the
+    v2 price list; tariff-level rows with `[Tn]` are preserved as-is.
+    Descriptions that match nothing in the price list are kept and
+    flagged for review in the conversion warnings.
+  - Overview: the Monthly Group Prices table gains a **Reserve%**
+    column (share of each group's monthly revenue priced on reserved
+    `R*M` terms) and a **total w/rampup** row that applies the ramp-up
+    multiplier to the yearly totals.
+  - ESA: corrected the revenue cell reference used in the uplift
+    calculation.
+  - BOM: future-price (inflation) formulas are wrapped in IFERROR so
+    rows with missing pricing show 0 instead of an error.
+  - Fixes: backup price stays blank when the backup index is empty or
+    0 (no more random prices); the default burst compute row no
+    longer uses `={WK_HOURS}` for its volume (the assumption remains
+    available but unused by default).
+  - Workbook format version bumped to 2.1.0.
 - 2.1:
   - Hypercompare export macro
   - Price Finder: new "Monthly" results column — hourly-billed rows
@@ -11,10 +31,6 @@
     regenerates it in the v2 format; `make v1 FILE=…`.  The SPA
     Conversion mode detects dropped v1 files and offers a
     "Convert to v2" operation with the same extraction rules.
-  - v1 → v2 conversion: tiered group-level component descriptions
-    automatically gain the price list's unit suffix (e.g. `Network:
-    Internet Traffic Outbound` → `… (GiB)`) so they keep matching the
-    v2 price list; tariff-level rows with `[Tn]` are preserved as-is.
   - Added data patching (fixes duplicates)
   - Duplicate checking functionality.
   - DDSOG backup enriching.

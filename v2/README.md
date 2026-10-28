@@ -25,7 +25,9 @@ discounts, and Enterprise Support Agreement (ESA) calculations.
   detection, macros, trimmed/_Frozen state) and check staleness against the
   live pipeline. Convert (XLSX ↔ XLSM), update/force-reprice, or trim it
   into a compact macro-free file — trimmed workbooks can be rebuilt by
-  re-uploading and force-repricing.
+  re-uploading and force-repricing.  Dropping a legacy v1 workbook
+  offers **Convert to v2**, which extracts the Components tabs and
+  rebuilds the file in the v2 format.
 - **Enterprise Support Agreement** — Built-in ESA cost model with fixed fees,
   optional service components, and tiered uplift bands.
 - **Multi-year projections** — Inflation-adjusted forward pricing with
@@ -190,7 +192,10 @@ The UI supports three modes, persisted in `localStorage` (`xlpricer-mode`):
   live pipeline. Operations: convert (XLSX ↔ XLSM via the macro template),
   update/force reprice (rebuilds Prices/Volumes/Finder from the pipeline;
   trimmed workbooks revive their frozen formulas), and trim (the offline
-  TrimWB equivalent).
+  TrimWB equivalent).  Legacy v1 workbooks are detected too and offer
+  **Convert to v2**: Components tabs are extracted and regenerated in
+  the v2 format, with tiered group-level descriptions adapted to the
+  current price list.
 
 The generator offers format options (XLSX/XLSM and an ESA toggle) plus a
 Custom pricing checkbox shared by all modes: on uses your Includes-tab
@@ -214,7 +219,7 @@ named from deal info.
 
 | Tab | Description |
 |-----|-------------|
-| **Overview** | Multi-year cost summary with per-group subtotals, inflation projections, hyperlinks to documentation, and optional ESA section |
+| **Overview** | Multi-year cost summary with per-group subtotals, a Reserve% column showing reserved-term share, inflation projections, hyperlinks to documentation, and optional ESA section |
 | **Components** | Bill of materials — quantities, service descriptions, storage, hours, region, and pricing model overrides |
 | **Volumes** | Tiered/volume-based pricing adjustments for services like OBS and outbound traffic |
 | **Prices** | Normalized price list with data validation for lookup in Components |

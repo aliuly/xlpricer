@@ -111,7 +111,7 @@ function wsEsaSection(
 	    `=IF({ESA_ENABLED}="Y",${formula},0)`,
 	    {
 		...refMap,
-		revenue: rowcolToCell(totalRow, y+YEAR_MAX+RS_ADJ+1),
+		revenue: rowcolToCell(totalRow+1, y+YEAR_MAX+RS_ADJ+2),
 	    }),
 	['overview','table','percent_c']);
   }
@@ -268,7 +268,7 @@ function wsOVYheading(
 
   r++
   def(myMap,'rampup_row', String(r));
-  writeCell(ws,r,2, 'Ram-up');
+  writeCell(ws,r,2, 'Ramp-up');
   y = 4;
   while (y < YEAR_MAX+4) {
     writeCell(ws,r,y,1,['overview','table','percent_c']);
@@ -317,11 +317,11 @@ function wsYearlyGroup(
 	      {
 		...refMap, ...myMap,
 		year: rowcolToCell(year_row, c, true, false),
-		setup: rowcolToCell(r, left+1),
-		monthly: rowcolToCell(r, left+y+1),
+		setup: rowcolToCell(r, left+2),
+		monthly: rowcolToCell(r, left+y+2),
 		m: rowcolToCell(month_row, c, true, false),
 		r: rowcolToCell(rampup_row, c, true, false),
-		monthly_n1: rowcolToCell(r, left+y),
+		monthly_n1: rowcolToCell(r, left+y+1),
 		m_n1: rowcolToCell(month_row, c-1, true, false),
 	      },
     );
@@ -361,7 +361,7 @@ function wsOVYfooter(
       ws,r, YEAR_MAX+5,
       resolveFormula(
 	  '=SUM({left}:{right})',
-	  { left: rowcolToCell(r,4), right: rowcolToCell(r,YEAR_MAX+3) },
+	  { left: rowcolToCell(r,4), right: rowcolToCell(r,YEAR_MAX+3), },
       ),
       ['overview','table','euro']
   );
@@ -379,17 +379,18 @@ function wsOVMheading(
   const left = YEAR_MAX+ RS_ADJ;
   r++;
   /* ── Section headers ────────────────────────── */
-  wsHeading(ws, r, 'Monthly Prices',left, left+1+YEAR_MAX);
+  wsHeading(ws, r, 'Monthly Prices',left, left+2+YEAR_MAX);
 
   r++;r++;
 
   writeCell(ws, r, left, 'groups', ['overview','table','center']);
-  writeCell(ws, r, left+1, 'set-up', ['overview','table','center']);
+  writeCell(ws, r, left+1, 'Reserve%', ['overview','table','center']);
+  writeCell(ws, r, left+2, 'set-up', ['overview','table','center']);
   if (tabs.length > 0) {
     const n0 = tabs[0];
     for (let y=1; y <= YEAR_MAX; y++) {
       writeCell(
-	  ws,r,left+1+y,
+	  ws,r,left+2+y,
 	  resolveFormula(
 	      `=TEXT({${n0}!YEAR_${y}}{${n0}!YEAR_ROW},"@")`,
 	      refMap
@@ -407,7 +408,7 @@ function wsOVMheading(
     for (const n of tabs) {
       sum.push(`{${sheetRef(n)}!TOTAL_SETUP}`);
     }
-    writeCell(ws, r, left+1,
+    writeCell(ws, r, left+2,
 	resolveFormula(
 	    `=SUM(${sum.join(",")})`,
 	    refMap
@@ -416,7 +417,7 @@ function wsOVMheading(
     for (const n of tabs) {
       sum.push(`{${sheetRef(n)}!TOTAL_MONTHLY}`);
     }
-    writeCell(ws, r, left+2,
+    writeCell(ws, r, left+3,
 	resolveFormula(
 	    `=SUM(${sum.join(",")})`,
 	    refMap
@@ -425,33 +426,33 @@ function wsOVMheading(
 
   r++;
   writeCell(ws, r, left, 'total overview', ['overview','table','center']);
-  writeCell(ws, r, left+1,
-	    resolveFormula(
-		'=SUMIFS({col_setup}:{col_setup},{col_title}:{col_title},"<>total*")',
-		{ col_setup: colToName(left+1), col_title: colToName(left) },
-	    ),  ['overview','table','amt']);
   writeCell(ws, r, left+2,
 	    resolveFormula(
+		'=SUMIFS({col_setup}:{col_setup},{col_title}:{col_title},"<>total*")',
+		{ col_setup: colToName(left+2), col_title: colToName(left) },
+	    ),  ['overview','table','amt']);
+  writeCell(ws, r, left+3,
+	    resolveFormula(
 		'=SUMIFS({col_mrc}:{col_mrc},{col_title}:{col_title},"<>total*")',
-		{ col_mrc: colToName(left+2), col_title: colToName(left) },
+		{ col_mrc: colToName(left+3), col_title: colToName(left) },
 	    ),  ['overview','table','amt']);
 
   r++;
   writeCell(ws, r, left, 'total diff', ['overview','table','center']);
-  writeCell(ws, r, left+1,
-	    resolveFormula(
-		'={tabs}-{calc}',
-		{ tabs: rowcolToCell(r-2,left+1), calc: rowcolToCell(r-1,left+1) },
-	    ),  ['overview','table','amt']);
   writeCell(ws, r, left+2,
 	    resolveFormula(
 		'={tabs}-{calc}',
 		{ tabs: rowcolToCell(r-2,left+2), calc: rowcolToCell(r-1,left+2) },
 	    ),  ['overview','table','amt']);
+  writeCell(ws, r, left+3,
+	    resolveFormula(
+		'={tabs}-{calc}',
+		{ tabs: rowcolToCell(r-2,left+3), calc: rowcolToCell(r-1,left+3) },
+	    ),  ['overview','table','amt']);
 
   r++;
 
-  wsHeading(ws, r, 'Monthly Group Prices',left, left+1+YEAR_MAX);
+  wsHeading(ws, r, 'Monthly Group Prices',left, left+2+YEAR_MAX);
 
   r++;r++;
 
@@ -470,7 +471,29 @@ function wsMonthlyGroup(
 
   writeCell(ws, r, left, key , ['overview','table','center']);
   def(myMap,'grpcell', rowcolToCell(r,left,false,true));
+
+  let y = 1;
   writeCell(ws, r, left+1,
+	    resolveFormula([
+		'=',
+			'IF(',
+			rowcolToCell(r, left+3),
+			'=0',
+			',0,',
+			  `SUMIFS({${tab}!!YEAR_${y}},`,
+			  `{${tab}!!f_qty},"<>Total*",`,
+			  `{${tab}!!f_grouping},"="&{grpcell},`,
+			  `{${tab}!!f_hrs},"=R*M"`,
+			  ')',
+			'/',
+			rowcolToCell(r, left+3),
+			')',
+		 ].join(''),
+		{ ...refMap, ...myMap }
+	    ),  ['overview','table','percent_c']);
+
+
+  writeCell(ws, r, left+2,
 	    resolveFormula([
 		`=SUMIFS({${tab}!!SETUP},`,
 		 `{${tab}!!f_qty},"<>Total*",`,
@@ -479,7 +502,7 @@ function wsMonthlyGroup(
 		{ ...refMap, ...myMap }
 	    ),  ['overview','table','amt']);
   for (let y = 1; y <= YEAR_MAX ; y++) {
-    writeCell(ws, r, left+y+1,
+    writeCell(ws, r, left+y+2,
 	    resolveFormula([
 		`=SUMIFS({${tab}!!YEAR_${y}},`,
 		 `{${tab}!!f_qty},"<>Total*",`,
@@ -502,8 +525,23 @@ function wsOVMfooter(
 
   writeCell(ws, r, left, 'total' , ['overview','table','center']);
 
+  // Overall reserved share = year-1-weighted average of the per-row
+  // Reserve% cells (same year-1 basis as the rows; set-up excluded).
+  writeCell(ws, r, left+1,
+      resolveFormula(
+	  '=IF({denom}=0,0,SUMPRODUCT({n_top}:{n_bottom},{p_top}:{p_bottom})/{denom})',
+	  {
+	      ...refMap, ...myMap,
+	      denom: rowcolToCell(r, left+3),
+	      n_top: rowcolToCell(top_row, left+1),
+	      n_bottom: rowcolToCell(bottom_row, left+1),
+	      p_top: rowcolToCell(top_row, left+3),
+	      p_bottom: rowcolToCell(bottom_row, left+3),
+	  }),
+      ['overview','table','percent_c']);
+
   for (let y = 0; y <= YEAR_MAX ; y++) {
-    let c = left+y+1;
+    let c = left+y+2;
     writeCell(ws,r,c,
 	  resolveFormula('=SUM({start}:{end})', {
 	      ...refMap, ...myMap,
@@ -511,6 +549,28 @@ function wsOVMfooter(
 	      end: rowcolToCell(bottom_row,c),
 	  }), ['overview','table','amt']);
   }
+
+  r++;
+  writeCell(ws, r, left, 'total w/rampup' , ['overview','table','center']);
+  // Ramp-up scales reserved and total year-1 revenue by the same
+  // factor, so the reserved share is unchanged from the total row.
+  // writeCell(ws, r, left+1,
+  //     resolveFormula('={prev}', {
+	 //  ...refMap, ...myMap,
+	 //  prev: rowcolToCell(r-1, left+1),
+  //     }), ['overview','table','percent_c']);
+  for (let y = 0; y <= YEAR_MAX ; y++) {
+    let c = left+y+2;
+    writeCell(ws,r,c,
+	  resolveFormula('={prev}*{col}{rampup_row}',
+	 {
+	      ...refMap, ...myMap,
+	      prev: rowcolToCell(r-1, c),
+	      col: colToName(3+y),
+	  }), ['overview','table','amt']);
+  }
+
+
 }
 
 /* ── Main generator ────────────────────────── */

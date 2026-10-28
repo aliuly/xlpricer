@@ -91,6 +91,15 @@ Work on an existing workbook:
 4. **Process workbook** downloads the result
    (`<name>-converted`, `-reprice` or `-trimmed`).
 
+Legacy **v1 workbooks** are detected on upload ("legacy v1 workbook")
+and offer **Convert to v2** instead: the user-owned Components tabs
+are extracted and the file is rebuilt in the v2 format from the
+current pricing.  Tiered group-level descriptions gain the price
+list's unit suffix (`Network: Internet Traffic Outbound` → `… (GiB)`)
+so they keep matching; tariff-level `[Tn]` rows are preserved as-is,
+and descriptions with no price-list match are kept and listed in the
+warnings for manual review.
+
 > **Re-energizing a trimmed workbook:** upload it and pick
 > *Rebuild full workbook* — the SPA revives the frozen formulas from
 > `_Frozen` and reprices them against the current pipeline.

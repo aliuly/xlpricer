@@ -16,7 +16,7 @@
 '       last tab, so inserting a column there auto-expands the sums
 '   Overview
 '     - per-group rows: B = group label, M = group key, D..I = yearly
-'       formulas, N..T = per-tab SUMIFS (set-up + years)
+'       formulas, N = Reserve%, O..U = per-tab SUMIFS (set-up + years)
 '     - the "total tabs" row (M column) holds SUMs over every tab's
 '       TOTAL_SETUP / TOTAL_MONTHLY (found via the "Set-up:" /
 '       "Monthly Total:" labels on each BOM tab)
@@ -185,7 +185,7 @@ Private Sub AddOverviewRow(tabName As String, srcTab As String, _
   Application.CutCopyMode = False
 
   ' Copy the pattern row (formulas + formats), then rewrite labels
-  ws.Range(ws.Cells(srcRow, 1), ws.Cells(srcRow, 20)).Copy _
+  ws.Range(ws.Cells(srcRow, 1), ws.Cells(srcRow, 21)).Copy _
       Destination:=ws.Cells(newRow, 1)
   Application.CutCopyMode = False
   ws.Cells(newRow, 2).Value = groupLabel      ' B: group label
@@ -193,18 +193,18 @@ Private Sub AddOverviewRow(tabName As String, srcTab As String, _
 
   ' The pattern row's formulas reference their own tab; derive it from
   ' the copied SUMIFS rather than assuming it is srcTab.
-  patTab = SheetNameInFormula(ws.Cells(newRow, 14).Formula)
+  patTab = SheetNameInFormula(ws.Cells(newRow, 15).Formula)
   If patTab = "" Then patTab = srcTab
 
   ' Point every formula in the new row at the new tab
-  For c = 4 To 20
+  For c = 4 To 21
     If ws.Cells(newRow, c).HasFormula Then
       f = SwapSheetName(ws.Cells(newRow, c).Formula, patTab, tabName)
       ws.Cells(newRow, c).Formula = f
     End If
   Next c
 
-  ' Extend the overall totals: "total tabs" row, N and O columns
+  ' Extend the overall totals: "total tabs" row, O and P columns
   totalsRow = FindInColumn(ws, "M", "total tabs")
   If totalsRow = 0 Then Exit Sub
   Set newTab = ThisWorkbook.Worksheets(tabName)
@@ -213,14 +213,14 @@ Private Sub AddOverviewRow(tabName As String, srcTab As String, _
   monthlyCell = FindLabelCell(newTab, "Monthly Total:")
 
   If setupCell <> "" Then
-    f = ws.Cells(totalsRow, 14).Formula      ' N: sum of TOTAL_SETUP
+    f = ws.Cells(totalsRow, 15).Formula      ' O: sum of TOTAL_SETUP
     f = Left(f, Len(f) - 1) & "," & tabRef & "!" & setupCell & ")"
-    ws.Cells(totalsRow, 14).Formula = f
+    ws.Cells(totalsRow, 15).Formula = f
   End If
   If monthlyCell <> "" Then
-    f = ws.Cells(totalsRow, 15).Formula      ' O: sum of TOTAL_MONTHLY
+    f = ws.Cells(totalsRow, 16).Formula      ' P: sum of TOTAL_MONTHLY
     f = Left(f, Len(f) - 1) & "," & tabRef & "!" & monthlyCell & ")"
-    ws.Cells(totalsRow, 15).Formula = f
+    ws.Cells(totalsRow, 16).Formula = f
   End If
 End Sub
 
